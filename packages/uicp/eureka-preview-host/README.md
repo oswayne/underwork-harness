@@ -10,6 +10,11 @@ Self-contained Eureka page preview for the UICP low-code driver. The bundle carr
 - `env.fetcher` must return platform-shaped responses `{ status, msg, data }`; the UICP sandbox host supplies it in the assembled app.
 - Optional `env.theme` (default `cxd`), `env.locale` (default `zh-CN`), `env.isCancel`, `env.copy`.
 
+## Editor write-back
+
+- `mountEurekaEditor(container, schema, env)` mounts the eureka visual editor (React 19, same isolated bundle) and returns a handle with `getValue()` / `setValue()` / `save()`; `save()` runs `env.onSave` with the current schema.
+- `savePageSchema(fs, directory, pageIdentifier, schema)` writes `pages/<identifier>.json` (two-space JSON, trailing newline) through the caller's filesystem seam, so the host UI can persist edits to the local app-package directory and then re-run `apppackage_validate`.
+
 ## Build
 
 `pnpm run build:preview` emits `dist/uicp-eureka-preview.js` (IIFE, `UicpEurekaPreview`) plus its CSS assets. The React 19 runtime is bundled inside; nothing is shared with the hosting app's React 18.
@@ -19,3 +24,4 @@ Self-contained Eureka page preview for the UICP low-code driver. The bundle carr
 - The preview renders with the caller's fetcher; the sandbox data path (`/app-package/entity/...`) is wired in M3.
 - Writes from the eureka editor are M3 scope; this package only renders.
 - The bundle is large (~13 MB, monaco + eureka-ui internals) by design; it is a lazy-loaded chunk, and the editor's `json` language import is not part of this preview build.
+- The visual editor render needs a browser-grade harness; its pure edit state and write-back are unit-covered, and the render adapter is excluded from per-file coverage until the client lane matures.

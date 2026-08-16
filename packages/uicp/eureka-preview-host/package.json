@@ -33,6 +33,8 @@
   "dependencies": {
     "eureka": "^8.14.6",
     "eureka-core": "^8.14.6",
+    "eureka-editor": "^8.14.6",
+    "eureka-editor-core": "^8.14.6",
     "eureka-formula": "^8.14.6",
     "eureka-ui": "^8.14.6",
     "react": "^19.2.8",

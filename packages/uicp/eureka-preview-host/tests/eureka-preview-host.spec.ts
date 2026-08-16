@@ -2,6 +2,9 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import type { EurekaPreviewEnv } from '../src/index.ts'
+import { createEditorHandle } from '../src/editor-state.ts'
+import { savePageSchema } from '../src/save.ts'
+import type { PackageFs } from '../src/save.ts'
 
 // monaco consults editor-command probes and global listeners at module init;
 // jsdom provides neither in the shape eureka expects.
@@ -55,5 +58,30 @@ describe('mountEurekaPreview', () => {
     const handle = mountEurekaPreview(document.getElementById('root')!, { type: 'page', body: '内容' }, fixtureEnv())
     handle.unmount()
     expect(document.getElementById('root')!.innerHTML).toBe('')
+  })
+})
+
+describe('createEditorHandle', () => {
+  it('tracks edits and saves the current value', () => {
+    const saved: unknown[] = []
+    const handle = createEditorHandle({ type: 'page' }, (value) => { saved.push(value) })
+    expect(handle.getValue()).toEqual({ type: 'page' })
+    handle.setValue({ type: 'page', title: '改过' })
+    handle.save()
+    handle.save()
+    expect(saved).toEqual([{ type: 'page', title: '改过' }, { type: 'page', title: '改过' }])
+  })
+})
+
+describe('savePageSchema', () => {
+  it('writes two-space JSON with a trailing newline and returns the path', async () => {
+    const written: { target: { displayPath: string }; content: string }[] = []
+    const fs = {
+      resolve: async (path: string) => ({ displayPath: path }),
+      writeText: async (target: { displayPath: string }, content: string) => { written.push({ target, content }) },
+    } satisfies PackageFs
+    const path = await savePageSchema(fs, '/pkg', 'order-list', { type: 'page', title: '订单' })
+    expect(path).toBe('/pkg/pages/order-list.json')
+    expect(written[0]!.content).toBe('{\n  "type": "page",\n  "title": "订单"\n}\n')
   })
 })

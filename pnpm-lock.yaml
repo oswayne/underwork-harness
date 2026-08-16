@@ -7901,6 +7901,12 @@ importers:
       eureka-core:
         specifier: ^8.14.6
         version: 8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-editor:
+        specifier: ^8.14.6
+        version: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-editor-core:
+        specifier: ^8.14.6
+        version: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
       eureka-formula:
         specifier: ^8.14.6
         version: 8.14.6
@@ -8875,10 +8881,10 @@ importers:
         version: 5.4.21(@types/node@25.9.3)(lightningcss@1.32.0)
       vitepress:
         specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3)
+        version: 1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(axios@1.19.0(debug@4.4.3))(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3)
       vitepress-plugin-mermaid:
         specifier: ^2.0.17
-        version: 2.0.17(mermaid@11.16.0)(vitepress@1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3))
+        version: 2.0.17(mermaid@11.16.0)(vitepress@1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(axios@1.19.0(debug@4.4.3))(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3))
 
 packages:
 
@@ -11813,6 +11819,9 @@ packages:
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
 
+  '@webcomponents/webcomponentsjs@2.8.0':
+    resolution: {integrity: sha512-loGD63sacRzOzSJgQnB9ZAhaQGkN7wl2Zuw7tsphI5Isa0irijrRo6EnJii/GgjGefIFO8AIO7UivzRhFaEk9w==}
+
   '@xmldom/xmldom@0.8.14':
     resolution: {integrity: sha512-T4EDRUBVZYRldYApjEJiU0e1stYWaRAX7CuSnKzrpwdZKo53zGV8/pqfzV6FfwNl9YThD2OumQYvqtvjvgG7aQ==}
     engines: {node: '>=10.0.0'}
@@ -11839,6 +11848,10 @@ packages:
   aes-decrypter@4.0.2:
     resolution: {integrity: sha512-lc+/9s6iJvuaRe5qDlMTpCFjnwpkeOXp8qP3oiZ5jsj1MRg+SBVUmmICrhxHvc8OELSmc+fEyyxAuppY6hrWzw==}
 
+  agent-base@6.0.2:
+    resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
+    engines: {node: '>= 6.0.0'}
+
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
     engines: {node: '>= 14'}
@@ -11860,6 +11873,9 @@ packages:
   algoliasearch@5.55.2:
     resolution: {integrity: sha512-OyacJsaeuLUvGWOynNqYc6sx88XvyoG39wMT8SYqL3l9wwaorDW/LPRbUPfhzw0bWsUWzNCZTnFYOrWFBKsUaw==}
     engines: {node: '>= 14.0.0'}
+
+  amis-postcss@1.0.0:
+    resolution: {integrity: sha512-OeKbbTvsaIcOq2SZ1VV1GyshhF2fFbFXXc8IQ3ZTIu0uTtJBGFVYZ6sJ40nOznWeptEdfYpVdB/JEtBlXlSWag==}
 
   animate.css@4.1.1:
     resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
@@ -11926,9 +11942,15 @@ packages:
   async@3.2.6:
     resolution: {integrity: sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==}
 
+  asynckit@0.4.0:
+    resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
+
   attr-accept@2.2.5:
     resolution: {integrity: sha512-0bDNnY/u6pPwHDMoF0FieU354oBi0a8rD9FcsLwzcGWbc8KS8KPIi7y+s13OlVY+gMWc/9xEMUgNE6Qm8ZllYQ==}
     engines: {node: '>=4'}
+
+  axios@1.19.0:
+    resolution: {integrity: sha512-ht/iuYZXEjFxLH/Hkezgd7m6JKlHHXEUSneaDz8uZe1Gj5QZtCnpyDsckvAiEnT89OEbCLmnte4R4sn7P0EKFw==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -12086,6 +12108,10 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  combined-stream@1.0.8:
+    resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
+    engines: {node: '>= 0.8'}
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
@@ -12365,6 +12391,10 @@ packages:
   decode-named-character-reference@1.3.0:
     resolution: {integrity: sha512-GtpQYB283KrPp6nRw50q3U9/VfOutZOe103qlN7BPP6Ad27xYnOIWv4lPzo8HCAL+mMZofJ9KEy30fq6MfaK6Q==}
 
+  deep-diff@1.0.2:
+    resolution: {integrity: sha512-aWS3UIVH+NPGCD1kki+DCU9Dua032iSsO43LqQpcs4R3+dVv7tX0qBGjiVHJHjplsoUM2XRO/KB92glqc68awg==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
@@ -12373,6 +12403,10 @@ packages:
 
   delaunator@5.1.0:
     resolution: {integrity: sha512-AGrQ4QSgssa1NGmWmLPqN5NY2KajF5MqxetNEO+o0n3ZwZZeTmt7bBnvzHWrmkZFxGgr4HdyFgelzgi06otLuQ==}
+
+  delayed-stream@1.0.0:
+    resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
+    engines: {node: '>=0.4.0'}
 
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
@@ -12502,6 +12536,10 @@ packages:
     resolution: {integrity: sha512-HWcBoN6NileqtSydK2FqHbS/LoDd2pqrnQHLyJzBj4kOp/ky2MWMN694xOfkK8/SnUsW2DH7EfyVlydKCsm1Zw==}
     engines: {node: '>= 0.4'}
 
+  es-set-tostringtag@2.1.0:
+    resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
+    engines: {node: '>= 0.4'}
+
   es-toolkit@1.49.0:
     resolution: {integrity: sha512-G5iZ6Pc/FNRY/soKZHC+TxGDD83rHUDXxzaWhGCX44vAv/tMs56WMusnm/KMNK+luUPsgA9U28cGr4RDlSzL2g==}
 
@@ -12604,6 +12642,26 @@ packages:
     resolution: {integrity: sha512-jT8sA2D2fXF2m0a/1IyqTZ8lTTU22L1DsLglxLDBEnHs/AZAUWwz2XGGQziKPoO7Yky2EY9E+fLf+/xGcPOANQ==}
     peerDependencies:
       eureka-formula: 8.14.6
+      react: ^19.2.8
+      react-dom: ^19.2.8
+
+  eureka-editor-core@8.14.6:
+    resolution: {integrity: sha512-qFvoduKvWgVNmd6Y6zOE68FnYb0VsjCtoWKGNBHeC+yHoQ7tEJ8IX0Vo3M6LkVynkj3aTyCeO+Uhz/l9yYElXA==}
+    peerDependencies:
+      eureka: 8.14.6
+      eureka-core: 8.14.6
+      eureka-formula: 8.14.6
+      eureka-ui: 8.14.6
+      react: ^19.2.8
+      react-dom: ^19.2.8
+
+  eureka-editor@8.14.6:
+    resolution: {integrity: sha512-Hxa4g7HQAMNxCyHMLqRzzMup7jFwDGyylq2yqWdZSkSlugqanPjqLJaHI8Cb+IAfFR3VSv/Q/PGkB729tZIKpA==}
+    peerDependencies:
+      eureka: 8.14.6
+      eureka-core: 8.14.6
+      eureka-formula: 8.14.6
+      eureka-ui: 8.14.6
       react: ^19.2.8
       react-dom: ^19.2.8
 
@@ -12743,9 +12801,22 @@ packages:
   focus-trap@7.8.0:
     resolution: {integrity: sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==}
 
+  follow-redirects@1.16.0:
+    resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
+
+  form-data@4.0.6:
+    resolution: {integrity: sha512-vKatAh4SlVfgbv+YtmhiRjhEMJsYpsG1Y2rMQtR+SVSbytsSD1YGzDIcrAJmdFec88u/+VoGmxnl+80gL1tRCQ==}
+    engines: {node: '>= 6'}
 
   formatly@0.3.0:
     resolution: {integrity: sha512-9XNj/o4wrRFyhSMJOvsuyMwy8aUfBaZ1VrqHVfohyXf0Sw0e+yfKG+xZaY3arGCOMdwFsqObtzVOc1gU9KiT9w==}
@@ -12877,6 +12948,10 @@ packages:
     resolution: {integrity: sha512-1cDNdwJ2Jaohmb3sg4OmKaMBwuC48sYni5HUw2DvsC8LjGTLK9h+eb1X6RyuOHe4hT0ULCW68iomhjUoKUqlPQ==}
     engines: {node: '>= 0.4'}
 
+  has-tostringtag@1.0.2:
+    resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
+    engines: {node: '>= 0.4'}
+
   hasown@2.0.4:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
@@ -12923,6 +12998,10 @@ packages:
   http-proxy-agent@7.0.2:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
     engines: {node: '>= 14'}
+
+  https-proxy-agent@5.0.1:
+    resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
+    engines: {node: '>= 6'}
 
   https-proxy-agent@7.0.6:
     resolution: {integrity: sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==}
@@ -13122,6 +13201,9 @@ packages:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
     engines: {node: '>=6'}
     hasBin: true
+
+  json-ast-comments@1.1.1:
+    resolution: {integrity: sha512-UOHlf7ns5t1GiI3+T5tf9SN2OepXTo/sqhd+cQj++DaUMKQOOCbX+eRlIoHcEv9m902reDTc1mCJD4J69xFJSg==}
 
   json-bigint@1.0.0:
     resolution: {integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==}
@@ -13619,8 +13701,16 @@ packages:
   micromark@4.0.2:
     resolution: {integrity: sha512-zpe98Q6kvavpCr1NPVSCMebCKfD7CA2NqZ+rykeNhONIJBpc1tFKt9hucLGwha3jNTNI8lHpctWJWoimVF4PfA==}
 
+  mime-db@1.52.0:
+    resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
+    engines: {node: '>= 0.6'}
+
   mime-db@1.54.0:
     resolution: {integrity: sha512-aU5EJuIN2WDemCcAp2vFBfp/m4EAhWJnUNSSw0ixs7/kXbd6Pg64EmwJkNdFhB8aWt1sH2CTXrLxo/iAGV3oPQ==}
+    engines: {node: '>= 0.6'}
+
+  mime-types@2.1.35:
+    resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
 
   mime-types@3.0.2:
@@ -14048,6 +14138,10 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
+
   publint@0.3.21:
     resolution: {integrity: sha512-OqejcnMV6E9zel2oCrUOJEiiFkGiAAni0A6ibfQNh1k9Gu5z4F+Yso8lllam7AzmV6Do0vp7u3UpZNRBwuXaHQ==}
     engines: {node: '>=18'}
@@ -14163,6 +14257,13 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
+
+  react-frame-component@5.3.2:
+    resolution: {integrity: sha512-ce0/9xAnnkLDY6zxnTegP3Yjchw5z9aEaz0qKEGecrdnh3nAnQ5kehO84sNeLj3wQPB5ZM0OoVVQDQilhaE/5Q==}
+    peerDependencies:
+      prop-types: ^15.8.1 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react: '>= 16.8 || ^17.0.0 || ^18.0.0 || ^19.0.0'
+      react-dom: '>= 16.8 || ^17.0.0 || ^18.0.0 || ^19.0.0'
 
   react-hook-form@7.85.0:
     resolution: {integrity: sha512-U2MTriFXnclmV4rOE20p2DcRFv5WEg3FIcBFOKcOLFHDVvGIMPvLTkTWefUsonmlaVy23khVDxDWym6uJVGOzw==}
@@ -17841,12 +17942,13 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@vueuse/integrations@12.8.2(focus-trap@7.8.0)(sortablejs@1.15.7)(typescript@6.0.3)':
+  '@vueuse/integrations@12.8.2(axios@1.19.0(debug@4.4.3))(focus-trap@7.8.0)(sortablejs@1.15.7)(typescript@6.0.3)':
     dependencies:
       '@vueuse/core': 12.8.2(typescript@6.0.3)
       '@vueuse/shared': 12.8.2(typescript@6.0.3)
       vue: 3.5.39(typescript@6.0.3)
     optionalDependencies:
+      axios: 1.19.0(debug@4.4.3)
       focus-trap: 7.8.0
       sortablejs: 1.15.7
     transitivePeerDependencies:
@@ -17859,6 +17961,8 @@ snapshots:
       vue: 3.5.39(typescript@6.0.3)
     transitivePeerDependencies:
       - typescript
+
+  '@webcomponents/webcomponentsjs@2.8.0': {}
 
   '@xmldom/xmldom@0.8.14': {}
 
@@ -17881,6 +17985,12 @@ snapshots:
       '@videojs/vhs-utils': 4.1.2
       global: 4.4.0
       pkcs7: 1.0.4
+
+  agent-base@6.0.2:
+    dependencies:
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
 
   agent-base@7.1.4: {}
 
@@ -17918,6 +18028,8 @@ snapshots:
       '@algolia/requester-browser-xhr': 5.55.2
       '@algolia/requester-fetch': 5.55.2
       '@algolia/requester-node-http': 5.55.2
+
+  amis-postcss@1.0.0: {}
 
   animate.css@4.1.1: {}
 
@@ -17997,7 +18109,19 @@ snapshots:
 
   async@3.2.6: {}
 
+  asynckit@0.4.0: {}
+
   attr-accept@2.2.5: {}
+
+  axios@1.19.0(debug@4.4.3):
+    dependencies:
+      follow-redirects: 1.16.0(debug@4.4.3)
+      form-data: 4.0.6
+      https-proxy-agent: 5.0.1
+      proxy-from-env: 2.1.0
+    transitivePeerDependencies:
+      - debug
+      - supports-color
 
   balanced-match@1.0.2: {}
 
@@ -18139,6 +18263,10 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
+
+  combined-stream@1.0.8:
+    dependencies:
+      delayed-stream: 1.0.0
 
   comma-separated-tokens@2.0.3: {}
 
@@ -18424,6 +18552,8 @@ snapshots:
     dependencies:
       character-entities: 2.0.2
 
+  deep-diff@1.0.2: {}
+
   deep-is@0.1.4: {}
 
   defu@6.1.7: {}
@@ -18431,6 +18561,8 @@ snapshots:
   delaunator@5.1.0:
     dependencies:
       robust-predicates: 3.0.3
+
+  delayed-stream@1.0.0: {}
 
   depd@2.0.0: {}
 
@@ -18547,6 +18679,13 @@ snapshots:
   es-object-atoms@1.1.2:
     dependencies:
       es-errors: 1.3.0
+
+  es-set-tostringtag@2.1.0:
+    dependencies:
+      es-errors: 1.3.0
+      get-intrinsic: 1.3.0
+      has-tostringtag: 1.0.2
+      hasown: 2.0.4
 
   es-toolkit@1.49.0: {}
 
@@ -18771,6 +18910,62 @@ snapshots:
       uncontrollable: 9.0.0(react@19.2.8)
     transitivePeerDependencies:
       - react-native
+      - typescript
+
+  eureka-editor-core@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3):
+    dependencies:
+      axios: 1.19.0(debug@4.4.3)
+      dayjs: 1.11.21
+      deep-diff: 1.0.2
+      eureka: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-core: 8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-formula: 8.14.6
+      eureka-ui: 8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      json-ast-comments: 1.1.1
+      json-edit-react: 1.30.2(react@19.2.8)
+      lodash: 4.18.1
+      match-sorter: 8.3.0
+      mobx: 6.16.1
+      mobx-react: 9.2.2(mobx@6.16.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      mobx-state-tree: 7.3.2(mobx@6.16.1)(typescript@6.0.3)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      react-frame-component: 5.3.2(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      sortablejs: 1.15.7
+    transitivePeerDependencies:
+      - debug
+      - prop-types
+      - react-native
+      - supports-color
+      - typescript
+
+  eureka-editor@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3):
+    dependencies:
+      '@webcomponents/webcomponentsjs': 2.8.0
+      axios: 1.19.0(debug@4.4.3)
+      dayjs: 1.11.21
+      decimal.js: 10.6.0
+      deep-diff: 1.0.2
+      eureka: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-core: 8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-editor-core: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      eureka-formula: 8.14.6
+      eureka-postcss: amis-postcss@1.0.0
+      eureka-ui: 8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      lodash: 4.18.1
+      match-sorter: 8.3.0
+      mobx: 6.16.1
+      mobx-react: 9.2.2(mobx@6.16.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      mobx-state-tree: 7.3.2(mobx@6.16.1)(typescript@6.0.3)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      sortablejs: 1.15.7
+      tinycolor2: 1.6.0
+    transitivePeerDependencies:
+      - debug
+      - prop-types
+      - react-native
+      - supports-color
       - typescript
 
   eureka-formula@8.14.6:
@@ -19037,10 +19232,22 @@ snapshots:
     dependencies:
       tabbable: 6.5.0
 
+  follow-redirects@1.16.0(debug@4.4.3):
+    optionalDependencies:
+      debug: 4.4.3
+
   foreground-child@3.3.1:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
+
+  form-data@4.0.6:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.4
+      mime-types: 2.1.35
 
   formatly@0.3.0:
     dependencies:
@@ -19187,6 +19394,10 @@ snapshots:
 
   has-symbols@1.1.0: {}
 
+  has-tostringtag@1.0.2:
+    dependencies:
+      has-symbols: 1.1.0
+
   hasown@2.0.4:
     dependencies:
       function-bind: 1.1.2
@@ -19244,6 +19455,13 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
+      debug: 4.4.3
+    transitivePeerDependencies:
+      - supports-color
+
+  https-proxy-agent@5.0.1:
+    dependencies:
+      agent-base: 6.0.2
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
@@ -19413,6 +19631,8 @@ snapshots:
       - '@noble/hashes'
 
   jsesc@3.1.0: {}
+
+  json-ast-comments@1.1.1: {}
 
   json-bigint@1.0.0:
     dependencies:
@@ -20091,7 +20311,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  mime-db@1.52.0: {}
+
   mime-db@1.54.0: {}
+
+  mime-types@2.1.35:
+    dependencies:
+      mime-db: 1.52.0
 
   mime-types@3.0.2:
     dependencies:
@@ -20527,6 +20753,8 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
+  proxy-from-env@2.1.0: {}
+
   publint@0.3.21:
     dependencies:
       '@publint/pack': 0.1.4
@@ -20670,6 +20898,12 @@ snapshots:
       file-selector: 2.1.2
       prop-types: 15.8.1
       react: 19.2.8
+
+  react-frame-component@5.3.2(prop-types@15.8.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      prop-types: 15.8.1
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   react-hook-form@7.85.0(react@19.2.8):
     dependencies:
@@ -21514,14 +21748,14 @@ snapshots:
       tsx: 4.22.4
       yaml: 2.9.0
 
-  vitepress-plugin-mermaid@2.0.17(mermaid@11.16.0)(vitepress@1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3)):
+  vitepress-plugin-mermaid@2.0.17(mermaid@11.16.0)(vitepress@1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(axios@1.19.0(debug@4.4.3))(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3)):
     dependencies:
       mermaid: 11.16.0
-      vitepress: 1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3)
+      vitepress: 1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(axios@1.19.0(debug@4.4.3))(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3)
     optionalDependencies:
       '@mermaid-js/mermaid-mindmap': 9.3.0
 
-  vitepress@1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3):
+  vitepress@1.6.4(@algolia/client-search@5.55.2)(@types/node@25.9.3)(@types/react@18.3.31)(axios@1.19.0(debug@4.4.3))(lightningcss@1.32.0)(postcss@8.5.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(sortablejs@1.15.7)(typescript@6.0.3):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.55.2)(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
@@ -21534,7 +21768,7 @@ snapshots:
       '@vue/devtools-api': 7.7.10
       '@vue/shared': 3.5.39
       '@vueuse/core': 12.8.2(typescript@6.0.3)
-      '@vueuse/integrations': 12.8.2(focus-trap@7.8.0)(sortablejs@1.15.7)(typescript@6.0.3)
+      '@vueuse/integrations': 12.8.2(axios@1.19.0(debug@4.4.3))(focus-trap@7.8.0)(sortablejs@1.15.7)(typescript@6.0.3)
       focus-trap: 7.8.0
       mark.js: 8.11.1
       minisearch: 7.2.0

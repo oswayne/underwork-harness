@@ -230,6 +230,9 @@ export default defineConfig({
         'packages/client/ui-conversation/src/invariant.ts',
         'packages/client/ui-primitives/src/DisclosureRow.tsx',
         'packages/client/ui-tool/src/*',
+        // Eureka visual editor render needs a browser-grade harness.
+        // TODO(gui): cover and remove as the client test lane matures.
+        'packages/uicp/eureka-preview-host/src/editor.ts',
         'packages/client/ui-slots/src/*',
         'packages/client/ui-layout/src/*',
         'packages/client/web/src/*',

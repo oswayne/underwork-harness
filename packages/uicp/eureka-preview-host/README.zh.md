@@ -10,6 +10,11 @@ UICP 低代码驱动器的自包含 Eureka 页面预览。该 bundle 自带 Reac
 - `env.fetcher` 必须返回平台形状的响应 `{ status, msg, data }`；组装后的应用由 UICP 沙盒 host 提供。
 - 可选 `env.theme`（默认 `cxd`）、`env.locale`（默认 `zh-CN`）、`env.isCancel`、`env.copy`。
 
+## 编辑器写回
+
+- `mountEurekaEditor(container, schema, env)` 挂载 eureka 可视化编辑器（React 19，同一隔离 bundle），返回带 `getValue()` / `setValue()` / `save()` 的句柄；`save()` 以当前 schema 调用 `env.onSave`。
+- `savePageSchema(fs, directory, pageIdentifier, schema)` 经调用方的文件系统接缝写入 `pages/<identifier>.json`（两空格 JSON + 末尾换行），宿主 UI 借此把编辑结果持久化到本地应用包目录，再重跑 `apppackage_validate`。
+
 ## 构建
 
 `pnpm run build:preview` 产出 `dist/uicp-eureka-preview.js`（IIFE，`UicpEurekaPreview`）及其 CSS 资源。React 19 运行时内置其中，与宿主应用的 React 18 完全隔离。
@@ -19,3 +24,4 @@ UICP 低代码驱动器的自包含 Eureka 页面预览。该 bundle 自带 Reac
 - 预览使用调用方的 fetcher；沙盒数据路径（`/app-package/entity/...`）在 M3 接通。
 - eureka 编辑器写回属于 M3 范围；本包只负责渲染。
 - bundle 体积较大（约 13 MB，含 monaco 与 eureka-ui 内部依赖），按设计作为懒加载 chunk；编辑器的 `json` 语言导入不在此预览构建中。
+- 可视化编辑器渲染需要浏览器级测试环境；其纯编辑状态与写回逻辑已单测覆盖，渲染适配在客户端测试通道成熟前排除在每文件覆盖率之外。

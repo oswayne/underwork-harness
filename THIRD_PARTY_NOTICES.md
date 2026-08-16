@@ -59,6 +59,8 @@ External packages that a workspace package resolves at runtime. The tier covers 
 | [`e2b`](https://github.com/e2b-dev/e2b) | MIT |
 | [`eureka`](https://gitee.com/underwork/eureka) | UNLICENSED |
 | [`eureka-core`](https://gitee.com/underwork/eureka) | UNLICENSED |
+| [`eureka-editor`](https://gitee.com/underwork/eureka) | UNLICENSED |
+| [`eureka-editor-core`](https://gitee.com/underwork/eureka) | UNLICENSED |
 | [`eureka-formula`](https://gitee.com/underwork/eureka) | UNLICENSED |
 | [`eureka-ui`](https://gitee.com/underwork/eureka) | UNLICENSED |
 | [`eventsource-parser`](https://github.com/rexxars/eventsource-parser) | MIT |
