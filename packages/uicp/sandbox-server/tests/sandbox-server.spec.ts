@@ -14,6 +14,27 @@ import { SandboxExecutor } from '../src/executor.ts'
 import { SandboxRouter } from '../src/router.ts'
 import { apply, loadPackage, uploadMock } from '../src/index.ts'
 import { MemoryKvBackend } from '../src/memory.ts'
+import { apply as applyInvariant, inject as invariantInject, name as invariantName } from '../src/invariant.ts'
+
+describe('invariant companion', () => {
+  it('registers with the invariant service', async () => {
+    const registered: string[] = []
+    const ctx = {
+      invariants: {
+        register: (pkg: string, installer: (ctx: unknown, fail: (message: string) => never) => void) => {
+          registered.push(pkg)
+          installer(null, (message) => { throw new Error(message) })
+          return () => {}
+        },
+      },
+    } as never
+    const disposer = await applyInvariant(ctx)
+    expect(registered).toEqual(['@deepseek-ai/dsh-sandbox-server'])
+    expect(invariantInject).toEqual(['invariants'])
+    expect(invariantName).toBeTruthy()
+    disposer()
+  })
+})
 
 describe('MemoryKvBackend', () => {
   it('loads, upserts, and deletes records across tables', async () => {
@@ -52,6 +73,7 @@ const ORDER_ENTITY: SandboxEntity = {
     { name: 'amount', label: '金额', type: '数字' },
     { name: 'active', label: '启用', type: '布尔' },
     { name: 'date', label: '日期', type: '日期' },
+    { name: 'extra', label: '对象', type: '对象' },
   ],
 }
 
@@ -136,6 +158,25 @@ describe('tableName / store', () => {
     const ghost = await store.insert('ghost', { note: 'ok' })
     expect(String(ghost._id)).toBeTruthy()
     expect(ghost.level).toBeUndefined()
+  })
+
+  it('parses field values by type on insert', async () => {
+    const { store } = deps()
+    const parsed = await store.insert('order', {
+      orderNo: 'SO-DATE',
+      amount: '7',
+      active: 'true',
+      date: '2026-01-02',
+      extra: { a: 1 },
+    })
+    expect(parsed.amount).toBe(7)
+    expect(parsed.active).toBe(true)
+    expect(parsed.date).toBeInstanceOf(Date)
+    expect(parsed.extra).toEqual({ a: 1 })
+    const invalid = await store.insert('order', { orderNo: 'SO-INVALID', date: 'not-a-date' })
+    expect(invalid.date).toBe('not-a-date')
+    const objectId = await store.insert('order', { orderNo: 'SO-OID', extra: 'x' })
+    expect(objectId.extra).toBe('x')
   })
 })
 
@@ -370,6 +411,8 @@ describe('router', () => {
     expect((await router.handle(request('POST', '/order', {}, { orderNo: 'SYNC' }))).body.status).toBe(0)
     const sync = await router.handle(request('POST', `/order/${id}/func/complete/sync`))
     expect(sync.body.status).toBe(404)
+    const constructorRoute = await router.handle(request('POST', '/order/func/ensureAmount'))
+    expect(constructorRoute.statusCode).toBe(400)
   })
 
   it('maps non-sandbox errors to 500', async () => {

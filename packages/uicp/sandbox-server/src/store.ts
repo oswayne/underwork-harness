@@ -15,6 +15,18 @@ export function tableName(identifier: string): string {
   return identifier.toLowerCase().replaceAll('-', '_')
 }
 
+/** Parse one input value by field type, mirroring `Field.parse`. */
+function parseForType(type: string, value: unknown): unknown {
+  if (type === '数字') return Number(value)
+  if (type === '布尔') return Boolean(value)
+  if (type === '日期' || type === '日期时间') {
+    const date = new Date(String(value))
+    return Number.isNaN(date.getTime()) ? value : date
+  }
+  if (type === '文本' || type === 'ObjectId') return String(value)
+  return value
+}
+
 /** CRUD store for one app-package's entities. */
 export class SandboxStore {
   constructor(
@@ -62,6 +74,9 @@ export class SandboxStore {
       modifier: 'sandbox',
       createTime: new Date().toISOString(),
       modifyTime: new Date().toISOString(),
+    }
+    for (const field of this.fields(identifier)) {
+      if (record[field.name] !== undefined) record[field.name] = parseForType(field.type, record[field.name])
     }
     if (this.entities.get(identifier)?.tree) {
       this.applyTreeData(record, await this.findById(identifier, input.parent))

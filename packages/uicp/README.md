@@ -12,5 +12,6 @@ The UICP low-code platform driver turns dsh into a generation driver for the uic
 | [`tool-apppackage-test/`](tool-apppackage-test/README.md) | Automated test runner: generated cases against the local sandbox | — |
 | [`tool-apppackage-version/`](tool-apppackage-version/README.md) | Local version snapshots: list / snapshot / restore | — |
 | [`tool-apppackage-publish/`](tool-apppackage-publish/README.md) | Adoption-gated, idempotent API save to the platform | — |
+| [`contract-matrix/`](contract-matrix/README.md) | Behavior-matrix corpus + dual-target diff runner (M4 fidelity gate) | — |
 
 The design and implementation documents are [UPGRADE.md](../../UPGRADE.md) and [IMPLEMENTATION.md](../../IMPLEMENTATION.md).

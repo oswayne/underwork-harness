@@ -3,6 +3,27 @@ import type { FileSystem, FsDirEntry, FsInfo, FsTarget } from '@deepseek-ai/dsh-
 import {
   apply, collectProductFiles, listVersions, renderResult, restoreVersion, snapshotVersion,
 } from '../src/index.ts'
+import { apply as applyInvariant, inject as invariantInject, name as invariantName } from '../src/invariant.ts'
+
+describe('invariant companion', () => {
+  it('registers with the invariant service', async () => {
+    const registered: string[] = []
+    const ctx = {
+      invariants: {
+        register: (pkg: string, installer: (ctx: unknown, fail: (message: string) => never) => void) => {
+          registered.push(pkg)
+          installer(null, (message) => { throw new Error(message) })
+          return () => {}
+        },
+      },
+    } as never
+    const disposer = await applyInvariant(ctx)
+    expect(registered).toEqual(['@deepseek-ai/dsh-tool-apppackage-version'])
+    expect(invariantInject).toEqual(['invariants'])
+    expect(invariantName).toBeTruthy()
+    disposer()
+  })
+})
 
 interface Node {
   type: 'file' | 'directory' | 'other'

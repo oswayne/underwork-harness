@@ -7,6 +7,27 @@ import { MemoryKvBackend, SandboxExecutor, SandboxRouter, SandboxStore } from '@
 import { generateCases, type TestCase } from '../src/cases.ts'
 import { runSuite, type CaseResult } from '../src/runner.ts'
 import { apply, loadFixtures, renderResult } from '../src/index.ts'
+import { apply as applyInvariant, inject as invariantInject, name as invariantName } from '../src/invariant.ts'
+
+describe('invariant companion', () => {
+  it('registers with the invariant service', async () => {
+    const registered: string[] = []
+    const ctx = {
+      invariants: {
+        register: (pkg: string, installer: (ctx: unknown, fail: (message: string) => never) => void) => {
+          registered.push(pkg)
+          installer(null, (message) => { throw new Error(message) })
+          return () => {}
+        },
+      },
+    } as never
+    const disposer = await applyInvariant(ctx)
+    expect(registered).toEqual(['@deepseek-ai/dsh-tool-apppackage-test'])
+    expect(invariantInject).toEqual(['invariants'])
+    expect(invariantName).toBeTruthy()
+    disposer()
+  })
+})
 
 const ORDER: SandboxEntity = {
   name: '订单',

@@ -7893,6 +7893,12 @@ importers:
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
 
+  packages/uicp/contract-matrix:
+    devDependencies:
+      '@deepseek-ai/dsh-sandbox-server':
+        specifier: workspace:^
+        version: link:../sandbox-server
+
   packages/uicp/eureka-preview-host:
     dependencies:
       '@deepseek-ai/dsh-invariants':

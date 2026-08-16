@@ -2,9 +2,30 @@ import { describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { apply, collectFiles, renderResult } from '../src/index.ts'
 import { validatePackage } from '../src/validate.ts'
+import { apply as applyInvariant, inject as invariantInject, name as invariantName } from '../src/invariant.ts'
 import type { FileSystem, FsDirEntry, FsTarget } from '@deepseek-ai/dsh-fs'
 
 const SCHEMA_TEXT = readFileSync(new URL('../data/eureka-schema.json', import.meta.url), 'utf8')
+
+describe('invariant companion', () => {
+  it('registers with the invariant service', async () => {
+    const registered: string[] = []
+    const ctx = {
+      invariants: {
+        register: (pkg: string, installer: (ctx: unknown, fail: (message: string) => never) => void) => {
+          registered.push(pkg)
+          installer(null, (message) => { throw new Error(message) })
+          return () => {}
+        },
+      },
+    } as never
+    const disposer = await applyInvariant(ctx)
+    expect(registered).toEqual(['@deepseek-ai/dsh-tool-apppackage-validate'])
+    expect(invariantInject).toEqual(['invariants'])
+    expect(invariantName).toBeTruthy()
+    disposer()
+  })
+})
 
 interface FakeNode {
   type: 'file' | 'directory'

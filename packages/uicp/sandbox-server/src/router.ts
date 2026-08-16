@@ -106,11 +106,11 @@ export class SandboxRouter {
     }
     if (method === 'POST' && rest.length === 2 && rest[0] === 'func') {
       const result = await this.deps.executor.call(identifier, rest[1] as string)
-      return { statusCode: result.status, body: { status: result.status, msg: result.msg ?? '', data: result.data } }
+      return { statusCode: result.status === 0 ? 200 : result.status, body: { status: result.status, msg: result.msg ?? '', data: result.data } }
     }
     if (method === 'POST' && (rest.length === 3 || rest.length === 4) && rest[1] === 'func') {
       const result = await this.deps.executor.call(identifier, rest[2] as string, rest[0])
-      return { statusCode: result.status, body: { status: result.status, msg: result.msg ?? '', data: result.data } }
+      return { statusCode: result.status === 0 ? 200 : result.status, body: { status: result.status, msg: result.msg ?? '', data: result.data } }
     }
     throw new SandboxError(404, '路径不存在')
   }
