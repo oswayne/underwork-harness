@@ -16,6 +16,9 @@
     },
     {
       "path": "../sandbox-server"
+    },
+    {
+      "path": "../../runtime-diagnostics/invariants"
     }
   ]
 }

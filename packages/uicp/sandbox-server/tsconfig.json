@@ -16,6 +16,9 @@
     },
     {
       "path": "../../storage/storage"
+    },
+    {
+      "path": "../../runtime-diagnostics/invariants"
     }
   ]
 }

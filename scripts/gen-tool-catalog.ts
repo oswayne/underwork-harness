@@ -51,6 +51,10 @@ import * as ToolStrReplaceEditor from '@deepseek-ai/dsh-tool-str-replace-editor'
 import TerminalSessionService from '@deepseek-ai/dsh-terminal'
 import * as ToolPty from '@deepseek-ai/dsh-tool-terminal'
 import * as ToolGoal from '@deepseek-ai/dsh-tool-goal'
+import * as ToolApppackagePublish from '@deepseek-ai/dsh-tool-apppackage-publish'
+import * as ToolApppackageTest from '@deepseek-ai/dsh-tool-apppackage-test'
+import * as ToolApppackageValidate from '@deepseek-ai/dsh-tool-apppackage-validate'
+import * as ToolApppackageVersion from '@deepseek-ai/dsh-tool-apppackage-version'
 import * as ToolSchedule from '@deepseek-ai/dsh-schedule'
 import Lsp from '@deepseek-ai/dsh-lsp'
 import * as ToolLsp from '@deepseek-ai/dsh-tool-lsp'
@@ -517,6 +521,57 @@ const TOOL_PACKAGES: ToolPackage[] = [
     },
     note:
       'todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-apppackage-validate',
+    dir: 'tool-apppackage-validate',
+    source: 'packages/uicp/tool-apppackage-validate/src/index.ts',
+    requires: ['ctx.tools', 'ctx.fs'],
+    writes: ['tool/call', 'tool/result'],
+    async mount(ctx) {
+      await ctx.plugin(LocalFileSystem)
+      await ctx.plugin(ToolApppackageValidate)
+    },
+    note:
+      'apppackage_validate statically validates an app-package directory against the app-package contract (Eureka schema included) and reports structured issues plus cross-app dependencies.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-apppackage-test',
+    dir: 'tool-apppackage-test',
+    source: 'packages/uicp/tool-apppackage-test/src/index.ts',
+    requires: ['ctx.tools', 'ctx.fs'],
+    writes: ['tool/call', 'tool/result', 'tests/apppackage.cases.json'],
+    async mount(ctx) {
+      await ctx.plugin(LocalFileSystem)
+      await ctx.plugin(ToolApppackageTest)
+    },
+    note:
+      'apppackage_test builds an in-process sandbox from the app-package directory, seeds fixtures, generates positive/negative/boundary cases, and reports pass/fail/skip.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-apppackage-version',
+    dir: 'tool-apppackage-version',
+    source: 'packages/uicp/tool-apppackage-version/src/index.ts',
+    requires: ['ctx.tools', 'ctx.fs'],
+    writes: ['tool/call', 'versions/<version>/** product files', 'tool/result'],
+    async mount(ctx) {
+      await ctx.plugin(LocalFileSystem)
+      await ctx.plugin(ToolApppackageVersion)
+    },
+    note:
+      'apppackage_version snapshots, lists, and restores local app-package versions; snapshots never touch platform history.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-apppackage-publish',
+    dir: 'tool-apppackage-publish',
+    source: 'packages/uicp/tool-apppackage-publish/src/index.ts',
+    requires: ['ctx.tools'],
+    writes: ['tool/call', 'platform records via POST/PATCH (after adoption)', 'tool/result'],
+    async mount(ctx) {
+      await ctx.plugin(ToolApppackagePublish)
+    },
+    note:
+      'apppackage_publish upserts an adopted app-package directory onto the uicp platform idempotently; fixture data is never written.',
   },
   {
     pkg: '@deepseek-ai/dsh-tool-workflow',

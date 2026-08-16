@@ -29,12 +29,14 @@
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^",
     "@deepseek-ai/dsh-fs": "workspace:^",
     "@deepseek-ai/dsh-sandbox-server": "workspace:^",
     "@deepseek-ai/dsh-tools": "workspace:^"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^",
     "@deepseek-ai/dsh-fs": "workspace:^",
     "@deepseek-ai/dsh-sandbox-server": "workspace:^",
     "@deepseek-ai/dsh-tools": "workspace:^"

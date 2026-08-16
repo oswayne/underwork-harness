@@ -155,7 +155,10 @@ export default defineConfig({
           setupFiles: ['./scripts/test-invariants.ts'],
           server: {
             deps: {
-              inline: [/eureka/, /monaco-editor/, /dayjs/],
+              // eureka's dist uses extensionless dayjs subpath imports; inline
+              // eureka so vite resolves them, while dayjs itself stays external
+              // to preserve its CJS default-export interop for other packages.
+              inline: [/eureka/, /monaco-editor/],
             },
           },
           include: testIncludes,
@@ -180,7 +183,7 @@ export default defineConfig({
           setupFiles: ['./scripts/test-invariants.ts'],
           server: {
             deps: {
-              inline: [/eureka/, /monaco-editor/, /dayjs/],
+              inline: [/eureka/, /monaco-editor/],
             },
           },
           include: processBoundTests,

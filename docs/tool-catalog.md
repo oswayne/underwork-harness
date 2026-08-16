@@ -37,6 +37,10 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-tool-subagent-report` | `report` | `ctx.subagents`, `ctx.systemPrompt`, `a live continuable in-process child Agent` | `tool/call`, `tool/result`, `a user-role message in the direct parent session` | - | Registered per continuable in-process child rather than globally, so this schema is visible only inside such a child and survives its global `toolFilter`. The same contribution installs the child-scoped `tool:report` prompt section, which this catalog does not render. The parent-facing `send_message` tool is installed independently. |
 | `@deepseek-ai/dsh-tool-jobs` | `job_kill`, `job_list`, `job_output` | `ctx.tools`, `ctx.jobs`, `ctx.systemPrompt` | `tool/call`, `tool/result`, `user/message via agent.inject() for background completion notices` | - | The kind-agnostic background-job controller: background bash commands, PTY sends, and subagents are read, listed, and killed through the same three tools. Loading the plugin attaches the controller that arms producers' `ctx.jobs.start()`. |
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`, `owning Agent session` | `tool/call`, `todo/write`, `tool/result` | - | todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task. |
+| `@deepseek-ai/dsh-tool-apppackage-validate` | `apppackage_validate` | `ctx.tools`, `ctx.fs` | `tool/call`, `tool/result` | - | apppackage_validate statically validates an app-package directory against the app-package contract (Eureka schema included) and reports structured issues plus cross-app dependencies. |
+| `@deepseek-ai/dsh-tool-apppackage-test` | `apppackage_test` | `ctx.tools`, `ctx.fs` | `tool/call`, `tool/result`, `tests/apppackage.cases.json` | - | apppackage_test builds an in-process sandbox from the app-package directory, seeds fixtures, generates positive/negative/boundary cases, and reports pass/fail/skip. |
+| `@deepseek-ai/dsh-tool-apppackage-version` | `apppackage_version` | `ctx.tools`, `ctx.fs` | `tool/call`, `versions/<version>/** product files`, `tool/result` | - | apppackage_version snapshots, lists, and restores local app-package versions; snapshots never touch platform history. |
+| `@deepseek-ai/dsh-tool-apppackage-publish` | `apppackage_publish` | `ctx.tools` | `tool/call`, `platform records via POST/PATCH (after adoption)`, `tool/result` | - | apppackage_publish upserts an adopted app-package directory onto the uicp platform idempotently; fixture data is never written. |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`, `ctx.workflowEngine`, `ctx.systemPrompt`, `a calling Agent (exec.agent parents the script children)` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`, `web_search` | `ctx.tools`, `ctx.web`, `ctx.systemPrompt` | `tool/call`, `tool/result` | - | web_search and web_fetch keep provider selection behind ctx.web so model-visible schemas stay stable across backend swaps. |
 
@@ -1728,6 +1732,147 @@ Record and update a structured task list for the current work. Send the ENTIRE l
 Source: [`packages/todo/tool-todo/src/index.ts`](../packages/todo/tool-todo/src/index.ts)
 
 todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task.
+
+<a id="deepseek-aidsh-tool-apppackage-validate"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-validate`
+
+### `apppackage_validate`
+
+Validate an app-package directory against the app-package contract (app-packages/README.md) and report structured issues plus cross-app dependencies. Run it after generating or editing an app package, before adoption or publish.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory, e.g. app-packages/<tenant>/<app>."
+    }
+  },
+  "required": [
+    "directory"
+  ]
+}
+```
+
+Source: [`packages/uicp/tool-apppackage-validate/src/index.ts`](../packages/uicp/tool-apppackage-validate/src/index.ts)
+
+apppackage_validate statically validates an app-package directory against the app-package contract (Eureka schema included) and reports structured issues plus cross-app dependencies.
+
+<a id="deepseek-aidsh-tool-apppackage-test"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-test`
+
+### `apppackage_test`
+
+Generate and run automated tests for an app-package directory against the local sandbox (positive, negative, and boundary cases), then report structured results. Run after apppackage_validate and before adoption.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory, e.g. app-packages/<tenant>/<app>."
+    }
+  },
+  "required": [
+    "directory"
+  ]
+}
+```
+
+Source: [`packages/uicp/tool-apppackage-test/src/index.ts`](../packages/uicp/tool-apppackage-test/src/index.ts)
+
+apppackage_test builds an in-process sandbox from the app-package directory, seeds fixtures, generates positive/negative/boundary cases, and reports pass/fail/skip.
+
+<a id="deepseek-aidsh-tool-apppackage-version"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-version`
+
+### `apppackage_version`
+
+Manage local app-package versions: snapshot product files into versions/, list snapshots, or restore one over the working directory. Run snapshot before platform sync or before an adopted publish.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory."
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "snapshot",
+        "list",
+        "restore"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "description": "Version id for restore; optional for snapshot (defaults to a timestamp)."
+    }
+  },
+  "required": [
+    "directory",
+    "action"
+  ]
+}
+```
+
+Source: [`packages/uicp/tool-apppackage-version/src/index.ts`](../packages/uicp/tool-apppackage-version/src/index.ts)
+
+apppackage_version snapshots, lists, and restores local app-package versions; snapshots never touch platform history.
+
+<a id="deepseek-aidsh-tool-apppackage-publish"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-publish`
+
+### `apppackage_publish`
+
+Save an app-package directory to the uicp platform after the user adopts it. Idempotent upsert in App → Entity → fields → funcs → menu → page order; test data is never written. Requires adopted=true.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory."
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Platform API base URL, e.g. https://api.underwork.cn/uicp."
+    },
+    "token": {
+      "type": "string",
+      "description": "Platform JWT for the Authorization header."
+    },
+    "tenantId": {
+      "type": "string",
+      "description": "Tenant ObjectId for the Tenant header."
+    },
+    "adopted": {
+      "type": "boolean",
+      "description": "Must be true: the user explicitly adopted this package for publication."
+    }
+  },
+  "required": [
+    "directory",
+    "baseUrl",
+    "token",
+    "tenantId",
+    "adopted"
+  ]
+}
+```
+
+Source: [`packages/uicp/tool-apppackage-publish/src/index.ts`](../packages/uicp/tool-apppackage-publish/src/index.ts)
+
+apppackage_publish upserts an adopted app-package directory onto the uicp platform idempotently; fixture data is never written.
 
 <a id="deepseek-aidsh-tool-workflow"></a>
 

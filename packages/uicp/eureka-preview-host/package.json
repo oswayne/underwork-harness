@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "eureka": "^8.14.6",
+    "@deepseek-ai/dsh-invariants": "workspace:^",
     "eureka-core": "^8.14.6",
     "eureka-editor": "^8.14.6",
     "eureka-editor-core": "^8.14.6",

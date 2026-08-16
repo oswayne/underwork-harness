@@ -7895,6 +7895,9 @@ importers:
 
   packages/uicp/eureka-preview-host:
     dependencies:
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       eureka:
         specifier: ^8.14.6
         version: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
@@ -7938,6 +7941,9 @@ importers:
       '@deepseek-ai/dsh-host-webserver':
         specifier: workspace:^
         version: link:../../host/webserver
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       '@deepseek-ai/dsh-storage':
         specifier: workspace:^
         version: link:../../storage/storage
@@ -7947,6 +7953,9 @@ importers:
       '@deepseek-ai/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       '@deepseek-ai/dsh-sandbox-server':
         specifier: workspace:^
         version: link:../sandbox-server
@@ -7962,6 +7971,9 @@ importers:
       '@deepseek-ai/dsh-fs':
         specifier: workspace:^
         version: link:../../fs/fs
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       '@deepseek-ai/dsh-sandbox-server':
         specifier: workspace:^
         version: link:../sandbox-server
@@ -7981,6 +7993,9 @@ importers:
       '@deepseek-ai/dsh-fs':
         specifier: workspace:^
         version: link:../../fs/fs
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       '@deepseek-ai/dsh-tools':
         specifier: workspace:^
         version: link:../../core/tools
@@ -7993,6 +8008,9 @@ importers:
       '@deepseek-ai/dsh-fs':
         specifier: workspace:^
         version: link:../../fs/fs
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       '@deepseek-ai/dsh-tools':
         specifier: workspace:^
         version: link:../../core/tools
