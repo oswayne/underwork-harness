@@ -7936,6 +7936,21 @@ importers:
         specifier: workspace:^
         version: link:../../storage/storage
 
+  packages/uicp/tool-apppackage-test:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-fs':
+        specifier: workspace:^
+        version: link:../../fs/fs
+      '@deepseek-ai/dsh-sandbox-server':
+        specifier: workspace:^
+        version: link:../sandbox-server
+      '@deepseek-ai/dsh-tools':
+        specifier: workspace:^
+        version: link:../../core/tools
+
   packages/uicp/tool-apppackage-validate:
     dependencies:
       ajv:

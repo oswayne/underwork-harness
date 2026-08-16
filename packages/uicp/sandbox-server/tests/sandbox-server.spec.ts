@@ -13,6 +13,21 @@ import {
 import { SandboxExecutor } from '../src/executor.ts'
 import { SandboxRouter } from '../src/router.ts'
 import { apply, loadPackage, uploadMock } from '../src/index.ts'
+import { MemoryKvBackend } from '../src/memory.ts'
+
+describe('MemoryKvBackend', () => {
+  it('loads, upserts, and deletes records across tables', async () => {
+    const backend = new MemoryKvBackend()
+    expect((await backend.loadAll()).tables).toEqual({})
+    await backend.putRecord('a', '1', { v: 1 })
+    await backend.putRecord('a', '2', { v: 2 })
+    await backend.putRecord('b', '1', { v: 3 })
+    expect((await backend.loadAll()).tables.a).toMatchObject({ 1: { v: 1 }, 2: { v: 2 } })
+    await backend.deleteRecord('a', '1')
+    await backend.deleteRecord('a', 'missing')
+    expect(Object.keys((await backend.loadAll()).tables.a!)).toEqual(['2'])
+  })
+})
 
 function memoryBackend(seed: Record<string, Record<string, unknown>> = {}): KvBackend & { data: Record<string, Record<string, unknown>> } {
   const data = structuredClone(seed)

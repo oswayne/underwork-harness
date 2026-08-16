@@ -19,6 +19,11 @@ import { SandboxExecutor } from './executor.ts'
 export const name = 'sandbox-server'
 export const inject = ['webServer', 'storage']
 
+export { MemoryKvBackend } from './memory.ts'
+export { SandboxError, SandboxStore, tableName } from './store.ts'
+export { SandboxExecutor } from './executor.ts'
+export { SandboxRouter } from './router.ts'
+
 /** Sandbox plugin configuration. */
 export interface Config {
   /** Absolute path of the app-package directory whose entities/funcs to serve. */
