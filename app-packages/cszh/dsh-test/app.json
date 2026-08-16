@@ -1,0 +1,15 @@
+{
+  "name": "dsh",
+  "identifier": "dsh-test",
+  "description": "dsh 低代码平台驱动器测试应用包：订单中心示例，含 1 个 Entity + 静态/对象 2 个函数 + 1 个列表页 + 菜单挂载。",
+  "version": "1.0.0",
+  "available": true,
+  "hidden": false,
+  "type": "web",
+  "url": "",
+  "portable": false,
+  "category": "业务",
+  "runtime": "web",
+  "requireRoles": "",
+  "requirePermissions": ""
+}

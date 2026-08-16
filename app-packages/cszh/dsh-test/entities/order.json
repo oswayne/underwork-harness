@@ -1,0 +1,51 @@
+{
+  "name": "订单",
+  "category": "业务",
+  "identifier": "order",
+  "description": "订单主数据：订单号唯一，金额为数字字段，状态流转由对象函数驱动。",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "orderNo",
+      "label": "订单号",
+      "type": "文本",
+      "unique": true,
+      "editable": false,
+      "comment": "业务唯一单号"
+    },
+    {
+      "name": "title",
+      "label": "标题",
+      "type": "文本",
+      "unique": false,
+      "editable": true,
+      "comment": "订单标题"
+    },
+    {
+      "name": "amount",
+      "label": "金额",
+      "type": "数字",
+      "unique": false,
+      "editable": true,
+      "comment": "订单金额"
+    },
+    {
+      "name": "status",
+      "label": "状态",
+      "type": "文本",
+      "unique": false,
+      "editable": true,
+      "comment": "待发货 / 已发货 / 已完成"
+    },
+    {
+      "name": "remark",
+      "label": "备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true,
+      "comment": ""
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "identifier": "summary",
+  "name": "订单汇总",
+  "type": "static",
+  "comment": "汇总订单数与订单总金额"
+}

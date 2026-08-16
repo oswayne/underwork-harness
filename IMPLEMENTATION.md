@@ -89,8 +89,9 @@ Tauri 壳（macOS / Windows，未来 Linux）
 
 | 产物 | 领域对象 | 关键字段 | 创建 API |
 | --- | --- | --- | --- |
-| App | `apppackage/app/domain/App` | name, identifier, description, version, available, hidden, type, url, portable, runtime, trade, category, distribution, requireRoles, requirePermissions | `POST /app-package` |
-| Entity | `apppackage/entity/domain/Schema` | name, category, identifier, description, version, tree, extra, app | `POST /app-package/entity` |
+| App | `apppackage/app/domain/App` | name, logo, identifier, description, version, available, hidden, type, url, portable, runtime, category, distribution, requireRoles, requirePermissions | `POST /app-package` |
+| Entity | `apppackage/entity/domain/Schema` | name, category, identifier, description, version, tree（数据树开关，布尔）, extra, app | `POST /app-package/entity` |
+| 字段 | `apppackage/field/domain/Field` | schema, name, label, type, unique, editable, comment, extra（字段是独立记录，不内嵌于 Schema） | `POST /app-package/entity/field` |
 | Function | `apppackage/func/domain/Func` | app, schema, identifier, name, comment, body, type（static/object/constructor） | `POST /app-package/entity/func` |
 | Menu | `apppackage/menu` | 菜单树 | `POST /app-package/menu` |
 | Page | `apppackage/page/domain/Page` | app, menu, schema（Eureka JSON 字符串） | `POST /app-package/menu/:id/page` |
@@ -102,7 +103,7 @@ Tauri 壳（macOS / Windows，未来 Linux）
 - `Func.exec`：`new vm.Script('(async () => { body })()')`，`runInContext(vm.createContext(context))`；返回值 `?? { status: 0, data: {}, msg: null }`（返回 undefined 时默认成功）。
 - `type: static` 无实体实例；`type: object` 先按 `entityId` 加载实体，经 `context.entity` 传入；`type: constructor` 是数据落库前生命周期钩子（仅单条 `insert` 执行，`insertBatch` 不触发）。
 - 错误语义：函数 throw → 显式调用路径由调用方 catch 并响应 `{ data: err.message, msg: "操作失败", status: 500 }`（平台同时记错误日志；`execFuncSync` 只记日志不响应）；构造函数 throw 或返回非 0 → 保存中止、不落库。
-- 平台沙箱词汇（`Func.buildContext`）：getColl、ObjectId、axios、dayjs、crypto、Buffer、Decimal、ai、requireAdapter、reportError、reportService、executeFunc、__env 等。
+- 平台沙箱词汇（`Func.buildContext`）：getColl、ObjectId、axios、dayjs、crypto、Buffer、Decimal、ai、requireAdapter、reportError、reportService、__funcExecutor、__env 等。
 
 ### 2.3 查询契约（DataQueryApp）
 
@@ -141,7 +142,7 @@ Tauri 壳（macOS / Windows，未来 Linux）
 app-packages/<tenant-identifier>/<app-identifier>/
   tenant.json                  # 租户记录快照（仅标识，不复制配置）
   app.json                     # App 记录
-  entities/<entity-identifier>.json   # Schema（含 tree 字段结构）
+  entities/<entity-identifier>.json   # Schema + 内嵌 fields（平台字段为独立记录）
   funcs/<entity-identifier>/<func-identifier>.js  # Func body（纯 JS，沙盒内部词汇）
   pages/<page-identifier>.json # Eureka 页面 JSON
   menus.json                   # 菜单树与页面挂载
@@ -210,7 +211,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 【实现要点】
 
 - 镜像上述模式：预解析（编译期抛 `SCRIPT_PARSE`）→ worker 内 `vm.createContext` → 注入内部词汇并冻结函数。
-- 内部词汇：`getColl`（指向本地 KV 数据层）、`ObjectId`、`dayjs`、`Decimal`、`crypto`、`Buffer`、`executeFunc`（递归调沙盒函数）、`reportError` / `reportService`（落本地日志）、`__env`。
+- 内部词汇：`getColl`（指向本地 KV 数据层）、`ObjectId`、`dayjs`、`Decimal`、`crypto`、`Buffer`、`__funcExecutor`（递归调沙盒函数）、`reportError` / `reportService`（落本地日志）、`__env`。
 - 外部依赖词汇（axios、ai、requireAdapter 等）**不注入、不支持、不 mock**；使用它们的函数标记"依赖人工处理"。
 - 错误语义（2.2）：正常返回对象 → 原样转发；undefined → `{status:0,data:{},msg:null}`；throw → `{data: err.message, msg:"操作失败", status:500}`（显式调用路径；sync 路径只记日志）。
 - 构造函数生命周期：单条 insert 在组装实体后、落库前执行 `type === 'constructor'` 函数；非 0 中止且不落库；批量 insertBatch 不触发。
@@ -255,7 +256,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 
 ### 5.3 动态跨应用依赖分析
 
-- 扫描页面 JSON（`api` 中的 `/app-package/entity/:identifier/...`）与 Func body（`getColl` / `executeFunc` 调用）提取 identifier。
+- 扫描页面 JSON（`api` 中的 `/app-package/entity/:identifier/...`）与 Func body（`getColl` / `__funcExecutor` 调用）提取 identifier。
 - 经当前租户"实体 → 应用"归属映射（来自"平台 → 目录"同步拉取或沙盒/基准查询）差分（排除本应用包）得跨应用依赖。
 - 分析结果仅作派生缓存，始终以重新分析为准；分析覆盖不到的模式（动态拼接 identifier）显式标记，发布前用户确认。
 - 校验目标存在（同租户）、无悬空引用；发布顺序提示（依赖应用先发布或目标已存在）。

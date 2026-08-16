@@ -1,0 +1,23 @@
+[
+  {
+    "orderNo": "SO-20260816-001",
+    "title": "客户 A 首单",
+    "amount": 128.5,
+    "status": "待发货",
+    "remark": "加急"
+  },
+  {
+    "orderNo": "SO-20260816-002",
+    "title": "客户 B 补货",
+    "amount": 66,
+    "status": "已发货",
+    "remark": ""
+  },
+  {
+    "orderNo": "SO-20260816-003",
+    "title": "客户 C 样品单",
+    "amount": 320,
+    "status": "已完成",
+    "remark": "试用装"
+  }
+]

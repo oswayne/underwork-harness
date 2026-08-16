@@ -30,8 +30,9 @@
 
 | 产物 | 领域对象 | 关键字段 | 创建 API |
 | --- | --- | --- | --- |
-| App | `apppackage/app/domain/App` | name, identifier, description, version, available, hidden, type, url, portable, runtime, trade, category, distribution, requireRoles, requirePermissions | `POST /app-package` |
-| Entity | `apppackage/entity/domain/Schema` | name, category, identifier, description, version, tree, extra, app | `POST /app-package/entity` |
+| App | `apppackage/app/domain/App` | name, logo, identifier, description, version, available, hidden, type, url, portable, runtime, category, distribution, requireRoles, requirePermissions | `POST /app-package` |
+| Entity | `apppackage/entity/domain/Schema` | name, category, identifier, description, version, tree（数据树开关，布尔）, extra, app | `POST /app-package/entity` |
+| 字段 | `apppackage/field/domain/Field` | schema, name, label, type, unique, editable, comment, extra（字段是独立记录，不内嵌于 Schema） | `POST /app-package/entity/field` |
 | Function | `apppackage/func/domain/Func` | app, schema, identifier, name, comment, body, type（static/object） | `POST /app-package/entity/func` |
 | Menu | `apppackage/menu` | 菜单树 | `POST /app-package/menu` |
 | Page | `apppackage/page/domain/Page` | app, menu, schema（Eureka JSON 字符串） | `POST /app-package/menu/:id/page` |
@@ -42,13 +43,14 @@
 
 - `Func.body` 是 JS 代码字符串，运行时以 `(async () => { body })()` 形式在 `vm.Script` 中执行（`Func.exec`）。
 - `type: static` 无实体实例；`type: object` 先按 `entityId` 加载实体实例，经 `context.entity` 传入。`type: constructor` 是**数据落库前的生命周期钩子**：`DataCmdApp.insert` 在实体对象组装完成后、`dataRepository.insert` 落库前遍历实体函数，执行 `type === 'constructor'` 的函数（入参为已组装的 `entity`），返回非 0 status 即中止保存；**构造函数仅在单条 `insert` 路径执行，`insertBatch` 批量插入不触发**。
-- 沙箱上下文词汇（平台侧事实）：getColl、ObjectId、axios、dayjs、crypto、Buffer、Decimal、ai、requireAdapter、reportError、reportService、executeFunc（可递归调用其他函数）、__env 等（`Func.buildContext`）。**沙盒镜像范围排除外部依赖词汇（axios、ai、requireAdapter 等），见 3.11。**
+- 沙箱上下文词汇（平台侧事实）：getColl、ObjectId、axios、dayjs、crypto、Buffer、Decimal、ai、requireAdapter、reportError、reportService、__funcExecutor（可递归调用其他函数）、__env 等（`Func.buildContext`；设计文档早期写作 executeFunc，实为 buildContext 内部变量名）。**沙盒镜像范围排除外部依赖词汇（axios、ai、requireAdapter 等），见 3.11。**
 - 函数执行入口：`POST /app-package/entity/:schemaIdentifier/:id/func/:funcIdentifier`（对象函数）、`POST /app-package/entity/:entityIdentifier/func/:funcIdentifier`（Schema 级执行）。
 
 ### 2.3 页面 JSON 契约
 
 - 页面 JSON 是 Eureka schema，顶层必须是 `type: "page"`；组件树由 eureka 渲染。
 - Eureka 组件 `api` 字段使用 `[method:]url` 形式，接口返回必须为 `{ status, msg, data }`（status 0 表示成功）。
+- 页面查询 `GET /app-package/menu/:id/page` 返回解析后的页面 JSON（非 Page 记录包装）；线上历史页面 JSON 可能携带 `/lowcode/form/schema/...` 数据 URL（平台前端网关改写，直连 API 实测 404），直连路径以 `/app-package/entity/...` 为准（实测 200）。
 - 平台已有从 Entity 生成页面的能力：`POST /app-package/entity/:id/converter-page`（`SchemaCmdApp.generatePage`），模板位于 `apppackage/entity/application/pt/`（PageTemplate、CreateModal、EditModal、DeleteButton）。
 
 ### 2.4 多租户模型
@@ -79,7 +81,7 @@
 ### 2.7 跨应用互动契约（现状事实）
 
 - 实体 identifier 在租户内全局唯一（集合名由 identifier 派生，`sd_<identifier>`），数据 API 不带应用作用域——同租户下任意应用的页面/函数可直接引用其它应用的实体数据。
-- 函数沙箱提供跨应用调用：`executeFunc(schema, func, entityId)` 按 identifier 调用（可调其它应用的函数）；`getColl(coll, tenant)` 可显式访问指定租户的集合（跨租户为平台高级能力）。
+- 函数沙箱提供跨应用调用：`__funcExecutor(schema, func, entityId)` 按 identifier 调用（可调其它应用的函数）；`getColl(coll, tenant)` 可显式访问指定租户的集合（跨租户为平台高级能力）。
 - 应用（`app` 字段）是归属关系，不是访问隔离边界；隔离边界是租户（每租户独立数据库）。
 
 ## 3. 改造设计
@@ -92,7 +94,7 @@
 app-packages/<tenant-identifier>/<app-identifier>/
   tenant.json                  # 租户记录快照（仅标识，不复制配置）
   app.json                     # App 记录
-  entities/<entity-identifier>.json   # Schema，含 tree 字段结构
+  entities/<entity-identifier>.json   # Schema + 内嵌 fields（平台字段为独立记录）
   funcs/<entity-identifier>/<func-identifier>.js  # Func body（纯 JS）
   pages/<page-identifier>.json # Eureka 页面 JSON
   menus.json                   # 菜单树与页面挂载
@@ -145,7 +147,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 
 - 页面 JSON：用 Eureka `schema.json` 做 JSON Schema 校验（additionalProperties: false）。
 - Func body：`vm.Script` 可编译；标识符白名单 = 沙箱支持词汇 + 业务注入变量；使用外部依赖词汇（axios / ai / requireAdapter）的函数标记"依赖人工处理"（不视为校验失败）。
-- Entity：`tree` 结构合法（字段类型、引用关系），identifier 唯一。
+- Entity：`fields` 结构合法（字段类型、引用关系；`tree` 为数据树开关），identifier 唯一。
 - 测试数据：字段类型与 Entity tree 一致、引用关系合法、与 fixture 文件一致。
 - 应用包：App/Entity/Func/Page/Menu 引用完整（menu 挂载、schema 归属、app 归属）。
 - 租户一致性：包内所有记录属于同一租户；导入前校验目标应用包确实属于当前租户。
@@ -224,7 +226,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
   1. 承载与路由：新增 host 插件在 `ctx.webServer` 注册 `/app-package/entity/...` 前缀路由（`packages/host/webserver` 的 `register(route)`，同源免 CORS）；请求处理仿照 `packages/client/connection` 的 rpc 桥模式（raw req/res → Fetch → `request.json()` 解析 → JSON 响应），实现 list/page/tree/CRUD/stats/func 的 REST 语义；
   2. 数据层：复用 `ctx.storage`（storage 中心，sqlite/json 后端），沙盒集合 = 一个 storage 单元（document-per-row KV），数据落应用包目录 `data/`（按会话独立分区），fixture 初始化、可重置；JSON 后端文件可 diff，配合 3.13 版本管理；
   3. 查询引擎：按 2.6 契约自研（参数规范化、like 正则、18 个操作符与类型转换、`_sort`/`_preventListAll`），在 KV 上以全量加载 + 内存过滤/排序实现（本地数据量小），行为矩阵契约测试锁定；
-  4. 函数执行器：镜像 `packages/workflow/workflow-worker-thread` 的 vm 沙箱模式（`new vm.Script('(async () => { body })()')` + `vm.createContext` + 冻结注入函数 + worker 隔离 + 预解析/预算/取消），注入内部词汇（getColl→本地数据、ObjectId、dayjs、Decimal、crypto、Buffer、executeFunc 递归、reportError/reportService、__env）；**外部依赖词汇（axios、ai、requireAdapter 等）不注入、不支持、不 mock**，由用户协作阶段确认（本节约）；
+  4. 函数执行器：镜像 `packages/workflow/workflow-worker-thread` 的 vm 沙箱模式（`new vm.Script('(async () => { body })()')` + `vm.createContext` + 冻结注入函数 + worker 隔离 + 预解析/预算/取消），注入内部词汇（getColl→本地数据、ObjectId、dayjs、Decimal、crypto、Buffer、__funcExecutor 递归、reportError/reportService、__env）；**外部依赖词汇（axios、ai、requireAdapter 等）不注入、不支持、不 mock**，由用户协作阶段确认（本节约）；
   5. 测试与契约：tool 包生成正反例/边界/查询符矩阵用例调沙盒执行、结构化报告回喂；同一语料跑沙盒 vs 真实平台（远程 API/基准环境）的行为矩阵契约测试，作为发布前保真闸门。
 - **查询引擎质量关卡（已定）**：查询实现生成/修改后依次过——代码语法检查 → LLM 审查 Mongo 查询语法与语义 → 仍不确定时人工审查；该关卡是静态质量防线（抓语法与明显语义错误），行为等价的最终闸门仍为行为矩阵契约测试（对真实平台基准）。
 - 页面 `api` 在开发期指向本地沙盒（运行时改写 base URL），采纳保存后指向真实平台；两者路径约定一致（同为 `/app-package/entity/:identifier/...`），页面 JSON 无需为环境改写。
@@ -265,7 +267,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 ### 3.14 跨应用互动（设计）
 
 - **互动形态**：数据级（A 应用页面/函数引用 B 应用实体数据）、函数级（A 应用函数调用 B 应用函数）、页面级（A 应用页面 `api` 指向 B 应用实体接口）。
-- **依赖动态识别（不设静态清单）**：平台与用户都没有预声明机制，人工维护清单会随业务发展失准漂移——因此 dsh 不声明、不手工维护依赖；改为**从产物主动分析**：解析页面 JSON（`api` 中的 `/app-package/entity/:identifier/...` 引用）与 Func body（`getColl` / `executeFunc` 调用）提取 identifier，经当前租户"实体 → 应用"归属映射差分（排除本应用包自身）后，动态得出跨应用依赖。产物变更，依赖随分析自动更新，天然防漂移。
+- **依赖动态识别（不设静态清单）**：平台与用户都没有预声明机制，人工维护清单会随业务发展失准漂移——因此 dsh 不声明、不手工维护依赖；改为**从产物主动分析**：解析页面 JSON（`api` 中的 `/app-package/entity/:identifier/...` 引用）与 Func body（`getColl` / `__funcExecutor` 调用）提取 identifier，经当前租户"实体 → 应用"归属映射差分（排除本应用包自身）后，动态得出跨应用依赖。产物变更，依赖随分析自动更新，天然防漂移。
 - **用户主动发起 = 生成引用**：用户要求"把 A 的页面接到 B 的订单数据"时，dsh 在产物中生成对应引用（页面 api / 函数调用），分析器随后的识别自然建立依赖——发起动作与识别机制解耦。
 - **归属映射来源**："实体 → 应用"归属来自"平台 → 目录"同步拉取的租户实体清单，或沙盒/基准环境查询；分析结果可作为派生缓存（随产物快照），但始终以重新分析为准。
 - **技术落点**：分析器并入 `apppackage_validate`（3.5），扫描页面 JSON 与 Func body 的引用点。

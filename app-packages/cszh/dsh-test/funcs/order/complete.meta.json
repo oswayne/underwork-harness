@@ -1,0 +1,6 @@
+{
+  "identifier": "complete",
+  "name": "标记完成",
+  "type": "object",
+  "comment": "将当前订单状态置为已完成"
+}

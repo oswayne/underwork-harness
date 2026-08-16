@@ -1,0 +1,13 @@
+[
+  {
+    "name": "订单列表",
+    "group": "订单中心",
+    "path": "/order-center/orders",
+    "icon": "fas fa-list",
+    "sort": 1,
+    "hidden": false,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "order-list"
+  }
+]

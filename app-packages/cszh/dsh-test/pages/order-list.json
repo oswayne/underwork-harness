@@ -1,0 +1,380 @@
+{
+  "type": "page",
+  "title": "订单管理",
+  "asideResizor": false,
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body",
+    "header"
+  ],
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "api": {
+        "method": "get",
+        "url": "/app-package/entity/order/page"
+      },
+      "bulkActions": [],
+      "itemActions": [],
+      "columns": [
+        {
+          "label": "ID",
+          "type": "text",
+          "name": "_id",
+          "toggled": false
+        },
+        {
+          "label": "订单号",
+          "type": "text",
+          "name": "orderNo",
+          "toggled": true
+        },
+        {
+          "label": "标题",
+          "type": "text",
+          "name": "title",
+          "toggled": true
+        },
+        {
+          "label": "金额",
+          "type": "text",
+          "name": "amount",
+          "toggled": true
+        },
+        {
+          "label": "状态",
+          "type": "text",
+          "name": "status",
+          "toggled": true
+        },
+        {
+          "label": "创建时间",
+          "type": "datetime",
+          "name": "createTime",
+          "toggled": true
+        },
+        {
+          "label": "操作",
+          "type": "operation",
+          "id": "u:op-column",
+          "placeholder": "-",
+          "buttons": [
+            {
+              "type": "button",
+              "label": "编辑",
+              "level": "link",
+              "id": "u:op-edit",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "ignoreError": false,
+                      "actionType": "dialog",
+                      "dialog": {
+                        "$ref": "modal-ref-2"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "button",
+              "label": "删除",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确认要删除？",
+              "id": "u:op-delete",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "ignoreError": false,
+                      "actionType": "ajax",
+                      "outputVar": "responseResult",
+                      "options": {},
+                      "api": {
+                        "url": "/app-package/entity/order/${_id}",
+                        "method": "delete"
+                      }
+                    },
+                    {
+                      "componentId": "u:crud-order-list",
+                      "ignoreError": false,
+                      "actionType": "reload"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "fixed": "right",
+          "textOverflow": "noWrap",
+          "toggled": true
+        }
+      ],
+      "id": "u:crud-order-list",
+      "perPageAvailable": [
+        20,
+        50,
+        100,
+        500
+      ],
+      "messages": {},
+      "headerToolbar": [
+        {
+          "type": "bulk-actions"
+        },
+        {
+          "type": "button",
+          "id": "u:btn-create",
+          "label": "新增",
+          "level": "primary",
+          "icon": "fa-regular fa-plus",
+          "onEvent": {
+            "click": {
+              "weight": 0,
+              "actions": [
+                {
+                  "ignoreError": false,
+                  "actionType": "dialog",
+                  "dialog": {
+                    "$ref": "modal-ref-1"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "primaryField": "_id",
+      "filter": {
+        "id": "u:filter-order-list",
+        "actions": [
+          {
+            "type": "reset",
+            "label": "重置",
+            "id": "u:filter-reset"
+          },
+          {
+            "type": "submit",
+            "label": "搜索",
+            "primary": true,
+            "id": "u:filter-submit"
+          }
+        ],
+        "feat": "Insert",
+        "body": [
+          {
+            "type": "input-text",
+            "label": "订单号",
+            "name": "orderNo",
+            "id": "u:filter-order-no",
+            "size": "full"
+          }
+        ],
+        "labelAlign": "left",
+        "mode": "inline",
+        "columnCount": 4
+      }
+    }
+  ],
+  "definitions": {
+    "modal-ref-1": {
+      "type": "dialog",
+      "title": "新增订单",
+      "id": "u:dialog-create",
+      "actionType": "dialog",
+      "body": [
+        {
+          "type": "form",
+          "id": "u:form-create",
+          "mode": "normal",
+          "labelAlign": "left",
+          "dsType": "api",
+          "feat": "Insert",
+          "body": [
+            {
+              "type": "input-text",
+              "name": "orderNo",
+              "label": "订单号",
+              "id": "u:create-order-no",
+              "required": true
+            },
+            {
+              "type": "input-text",
+              "name": "title",
+              "label": "标题",
+              "id": "u:create-title",
+              "required": true
+            },
+            {
+              "type": "input-text",
+              "name": "amount",
+              "label": "金额",
+              "id": "u:create-amount"
+            },
+            {
+              "type": "input-text",
+              "name": "status",
+              "label": "状态",
+              "id": "u:create-status"
+            },
+            {
+              "type": "input-text",
+              "name": "remark",
+              "label": "备注",
+              "id": "u:create-remark"
+            }
+          ],
+          "actions": [
+            {
+              "type": "submit",
+              "label": "提交",
+              "primary": true
+            }
+          ],
+          "resetAfterSubmit": true,
+          "api": {
+            "method": "post",
+            "url": "/app-package/entity/order",
+            "dataType": "json"
+          },
+          "onEvent": {
+            "submitSucc": {
+              "weight": 0,
+              "actions": [
+                {
+                  "componentId": "u:crud-order-list",
+                  "ignoreError": false,
+                  "actionType": "reload"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "type": "button",
+          "actionType": "cancel",
+          "label": "取消",
+          "id": "u:dialog-create-cancel"
+        },
+        {
+          "type": "button",
+          "actionType": "confirm",
+          "label": "确定",
+          "primary": true,
+          "id": "u:dialog-create-confirm"
+        }
+      ],
+      "showCloseButton": true,
+      "closeOnOutside": true,
+      "closeOnEsc": false,
+      "showErrorMsg": true,
+      "showLoading": true,
+      "draggable": true,
+      "allowFullscreen": false,
+      "editorSetting": {
+        "displayName": "新增订单"
+      }
+    },
+    "modal-ref-2": {
+      "type": "dialog",
+      "title": "编辑订单",
+      "id": "u:dialog-edit",
+      "actionType": "dialog",
+      "body": [
+        {
+          "type": "form",
+          "id": "u:form-edit",
+          "mode": "normal",
+          "labelAlign": "left",
+          "dsType": "api",
+          "feat": "Insert",
+          "body": [
+            {
+              "type": "input-text",
+              "name": "title",
+              "label": "标题",
+              "id": "u:edit-title",
+              "required": true
+            },
+            {
+              "type": "input-text",
+              "name": "amount",
+              "label": "金额",
+              "id": "u:edit-amount"
+            },
+            {
+              "type": "input-text",
+              "name": "status",
+              "label": "状态",
+              "id": "u:edit-status"
+            },
+            {
+              "type": "input-text",
+              "name": "remark",
+              "label": "备注",
+              "id": "u:edit-remark"
+            }
+          ],
+          "actions": [
+            {
+              "type": "submit",
+              "label": "提交",
+              "primary": true
+            }
+          ],
+          "resetAfterSubmit": true,
+          "api": {
+            "method": "patch",
+            "url": "/app-package/entity/order/${_id}",
+            "dataType": "json"
+          },
+          "onEvent": {
+            "submitSucc": {
+              "weight": 0,
+              "actions": [
+                {
+                  "componentId": "u:crud-order-list",
+                  "ignoreError": false,
+                  "actionType": "reload"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "actions": [
+        {
+          "type": "button",
+          "actionType": "cancel",
+          "label": "取消",
+          "id": "u:dialog-edit-cancel"
+        },
+        {
+          "type": "button",
+          "actionType": "confirm",
+          "label": "确定",
+          "primary": true,
+          "id": "u:dialog-edit-confirm"
+        }
+      ],
+      "showCloseButton": true,
+      "closeOnOutside": true,
+      "closeOnEsc": false,
+      "showErrorMsg": true,
+      "showLoading": true,
+      "draggable": true,
+      "allowFullscreen": false,
+      "editorSetting": {
+        "displayName": "编辑订单"
+      }
+    }
+  }
+}
