@@ -14,7 +14,9 @@ M2 让 agent 按冻结的目录契约生成应用包，但没有校验回路时�
 
 [uicp agent preset](../../../../apps/cli/config/agent-presets/uicp/agent.cordis.yml) 复制 `standard` 并追加工具行与 AppPackage 交付物 persona；[uicp-contract skill](../../../../.agents/skills/uicp-contract/SKILL.md) 提供速查摘要。新组登记在 `packages/README.md` 与 `tsconfig.host.json`；Eureka schema 以内置 `data/eureka-schema.json` 快照在运行时加载。
 
-M2 范围刻意部分交付：identifier 白名单目前只做外部依赖词汇检测（完整沙箱词汇强制由 M3 沙盒 `vm` 上下文承担），依赖提取基于正则（动态拼接的 identifier 交人工确认），eureka 预览/编辑器延后到 eureka 依赖接入方式拍板之后。
+eureka 预览随 [`@deepseek-ai/dsh-eureka-preview-host`](../../../../packages/uicp/eureka-preview-host/README.md) 交付：自包含 React 19 IIFE bundle（eureka 8.14.6 要求 React 19，2026-08-16 实测确认，而 dsh Web UI 保持 React 18），宿主应用加载后直接挂载到页面 DOM，不使用 iframe。编辑器写回仍在 M3。
+
+M2 范围刻意部分交付：identifier 白名单目前只做外部依赖词汇检测（完整沙箱词汇强制由 M3 沙盒 `vm` 上下文承担），依赖提取基于正则（动态拼接的 identifier 交人工确认）。
 
 ## 曾考虑的替代方案
 
@@ -25,4 +27,4 @@ M2 范围刻意部分交付：identifier 白名单目前只做外部依赖词汇
 
 ## 结果
 
-模型可在用户采纳前校验应用包，结构化规范输出进入修正回路。新包达到每文件 100% 覆盖率，preset 与 skill 无需改动上游即可被发现，方案的共享文件清单新增 `tsconfig.host.json`（项目引用）与 `packages/README.md`（组行）。内置 schema 需随 Eureka 发布同步（M4 脚本），eureka 预览仍是 M2 的未决决策。
+模型可在用户采纳前校验应用包，结构化规范输出进入修正回路。新增各包达到每文件 100% 覆盖率，preset 与 skill 无需改动上游即可被发现，方案的共享文件清单新增 `tsconfig.host.json`（项目引用）、`packages/README.md`（组行）与 `vitest.config.ts`（eureka inline 依赖 + monaco alias）。内置 schema 需随 Eureka 发布同步（M4 脚本），eureka 编辑器写回延后到 M3。

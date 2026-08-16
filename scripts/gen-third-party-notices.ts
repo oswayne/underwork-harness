@@ -50,14 +50,24 @@ const FIRST_PARTY = new Set([
 export const CLAUDE_AGENT_SDK_PACKAGE = '@anthropic-ai/claude-agent-sdk'
 const CLAUDE_PLATFORM_PACKAGE_PREFIX = `${CLAUDE_AGENT_SDK_PACKAGE}-`
 const CLAUDE_PLATFORM_DECLARED_LICENSE = 'SEE LICENSE IN LICENSE.md'
+/** Eureka platform packages: private, no license metadata; consumed under the platform's own terms. */
+const EUREKA_RUNTIME_PACKAGES = new Set([
+  'eureka',
+  'eureka-core',
+  'eureka-formula',
+  'eureka-ui',
+  'eureka-editor',
+  'eureka-editor-core',
+])
 
 /**
  * Whether a non-permissive runtime declaration has an identity-scoped owner
  * authorization. This does not reclassify its terms as permissive.
  * @param name - exact npm package identity.
- * @returns true only for the official Claude Agent SDK package.
+ * @returns true for the official Claude Agent SDK package and the platform-owned eureka family.
  */
 export function isOwnerAuthorizedRuntime(name: string): boolean {
+  if (EUREKA_RUNTIME_PACKAGES.has(name)) return true
   return name === CLAUDE_AGENT_SDK_PACKAGE
 }
 
@@ -75,6 +85,14 @@ const OVERRIDES: Record<string, { license?: string; repo?: string }> = {
   '@modelcontextprotocol/server-filesystem': { license: 'MIT / Apache-2.0', repo: 'https://github.com/modelcontextprotocol/servers' },
   // No repository field in the published manifest.
   'node-addon-require-builtin': { repo: 'https://www.npmjs.com/package/node-addon-require-builtin' },
+  // The eureka family ships no license/repository metadata (private project);
+  // consumed under the platform's own terms, recorded as unlicensed here.
+  'eureka': { license: 'UNLICENSED', repo: 'https://gitee.com/underwork/eureka' },
+  'eureka-core': { license: 'UNLICENSED', repo: 'https://gitee.com/underwork/eureka' },
+  'eureka-formula': { license: 'UNLICENSED', repo: 'https://gitee.com/underwork/eureka' },
+  'eureka-ui': { license: 'UNLICENSED', repo: 'https://gitee.com/underwork/eureka' },
+  'eureka-editor': { license: 'UNLICENSED', repo: 'https://gitee.com/underwork/eureka' },
+  'eureka-editor-core': { license: 'UNLICENSED', repo: 'https://gitee.com/underwork/eureka' },
 }
 
 /**

@@ -116,8 +116,22 @@ const processBoundTests = [
 
 export default defineConfig({
   plugins: [pathsPlugin(), standardDecoratorPlugin()],
+  resolve: {
+    alias: {
+      // monaco-editor 0.53 ships only a `module` field; pin the bare import to
+      // its ESM entry so vite's resolver can reach it.
+      'monaco-editor': 'monaco-editor/esm/vs/editor/editor.main.js',
+    },
+  },
   test: {
     setupFiles: ['./scripts/test-invariants.ts'],
+    // eureka's published dist uses extensionless subpath imports that Node ESM
+    // cannot externalize; inline so vite's resolver handles them like the app build.
+    server: {
+      deps: {
+        inline: [/eureka/, /monaco-editor/, /dayjs/],
+      },
+    },
     // .tsx: client component specs (jsdom via per-file @vitest-environment pragma).
     include: testIncludes,
     exclude: windowsUnsupportedTests,
@@ -126,6 +140,11 @@ export default defineConfig({
     projects: [
       {
         plugins: [pathsPlugin(), standardDecoratorPlugin()],
+        resolve: {
+          alias: {
+            'monaco-editor': 'monaco-editor/esm/vs/editor/editor.main.js',
+          },
+        },
         test: {
           name: 'thread-safe',
           execArgv: vitestExecArgv,
@@ -134,6 +153,11 @@ export default defineConfig({
           // Linux, and Windows. Forked workers avoid that shared thread path.
           pool: 'forks',
           setupFiles: ['./scripts/test-invariants.ts'],
+          server: {
+            deps: {
+              inline: [/eureka/, /monaco-editor/, /dayjs/],
+            },
+          },
           include: testIncludes,
           exclude: [
             ...windowsUnsupportedTests,
@@ -144,11 +168,21 @@ export default defineConfig({
       },
       {
         plugins: [pathsPlugin(), standardDecoratorPlugin()],
+        resolve: {
+          alias: {
+            'monaco-editor': 'monaco-editor/esm/vs/editor/editor.main.js',
+          },
+        },
         test: {
           name: 'process-bound',
           execArgv: vitestExecArgv,
           pool: 'forks',
           setupFiles: ['./scripts/test-invariants.ts'],
+          server: {
+            deps: {
+              inline: [/eureka/, /monaco-editor/, /dayjs/],
+            },
+          },
           include: processBoundTests,
           exclude: [
             ...windowsUnsupportedTests,

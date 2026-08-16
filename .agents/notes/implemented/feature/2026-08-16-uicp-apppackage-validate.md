@@ -14,7 +14,9 @@ A new `uicp/` package group ships [`@deepseek-ai/dsh-tool-apppackage-validate`](
 
 The [uicp agent preset](../../../../apps/cli/config/agent-presets/uicp/agent.cordis.yml) copies `standard` and adds the tool row plus an AppPackage-delivery persona; the [uicp-contract skill](../../../../.agents/skills/uicp-contract/SKILL.md) carries the lookup summary. The group registers in `packages/README.md` and `tsconfig.host.json`; the Eureka schema is a vendored `data/eureka-schema.json` snapshot loaded at runtime.
 
-M2 scope is deliberately partial: the identifier whitelist check is external-vocabulary detection only (full sandbox-vocabulary enforcement lives in the M3 sandbox `vm` context), dependency extraction is regex-based (dynamically concatenated identifiers are reported for manual confirmation), and the eureka preview/editor is deferred until the eureka dependency integration decision is made.
+The eureka preview ships as [`@deepseek-ai/dsh-eureka-preview-host`](../../../../packages/uicp/eureka-preview-host/README.md): a self-contained React 19 IIFE bundle (eureka 8.14.6 requires React 19, verified 2026-08-16, while the dsh Web UI stays on React 18) that the hosting app loads and mounts into the page DOM without an iframe. The editor write-back stays in M3.
+
+M2 scope is deliberately partial: the identifier whitelist check is external-vocabulary detection only (full sandbox-vocabulary enforcement lives in the M3 sandbox `vm` context), and dependency extraction is regex-based (dynamically concatenated identifiers are reported for manual confirmation).
 
 ## Alternatives considered
 
@@ -25,4 +27,4 @@ M2 scope is deliberately partial: the identifier whitelist check is external-voc
 
 ## Consequences
 
-The model can validate an app package before the user adopts it, and the structured canonical output feeds the correction loop. The new package holds per-file 100% coverage, the preset and skill are discoverable without upstream edits, and the plan's shared-file list gains `tsconfig.host.json` (project reference) and `packages/README.md` (group row). The vendored schema must be re-synced with Eureka releases (M4 script), and the eureka preview remains the open M2 decision.
+The model can validate an app package before the user adopts it, and the structured canonical output feeds the correction loop. The new packages hold per-file 100% coverage, the preset and skill are discoverable without upstream edits, and the plan's shared-file list gains `tsconfig.host.json` (project references), `packages/README.md` (group row), and `vitest.config.ts` (eureka inline deps + monaco alias). The vendored schema must be re-synced with Eureka releases (M4 script), and the eureka editor write-back is deferred to M3.

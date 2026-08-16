@@ -37,7 +37,7 @@ Tauri 壳（macOS / Windows，未来 Linux）
 | tool 包 | 自动测试执行器 | `packages/uicp/tool-apppackage-test` | 6 |
 | tool 包 | API 保存（逐记录 upsert） | `packages/uicp/tool-apppackage-publish` | 7 |
 | tool 包 | 版本管理（快照/切换/回滚） | `packages/uicp/tool-apppackage-version` | 9 |
-| client 插件 | 登录、导航、会话切换、产物工作区、eureka 视图 | `packages/client/ui-uicp-*`（新包） | 8 |
+| client 插件 | 登录、导航、会话切换、产物工作区、eureka 视图 | `packages/client/ui-uicp-*`（新包）；eureka 预览宿主为 `packages/uicp/eureka-preview-host`（双 React 隔离 bundle） | 8 |
 | 配置层 | agent preset（交付物 = AppPackage） | `apps/cli/config/agent-presets/uicp/` | 8.4 |
 | 配置层 | skill（平台契约词汇） | `packages/skill/*` 或独立 skill 包 | 8.4 |
 | 壳工程 | Tauri v2 桌面壳 | 仓库外独立工程（如 `desktop/`） | 11 |
@@ -305,7 +305,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 - **产物工作区**：注册新 client 插件替换 `details` 槽（tabs：渲染预览 / 可视化编辑 / 原始 JSON / 测试 / 版本）。
 - **联动**：会话选中（`list.current`，持久化）更新上下文；对话引用产物可跳转（自有 store 联动）；布局状态按会话记忆。
 - 零上游修改确认：全部通过既有槽位替换/叠加实现，替换在装配层完成，不改上游文件。
-- eureka/eureka-editor 依赖 monaco，按独立 chunk 懒加载，编辑器仅在使用时装载。
+- eureka/eureka-editor 依赖 monaco，按独立 chunk 懒加载，编辑器仅在使用时装载。**eureka 8.14.6 要求 React 19（与 dsh Web UI 的 React 18 冲突，2026-08-16 实测确认）**：预览由 `packages/uicp/eureka-preview-host` 构建自包含 IIFE bundle（自带 React 19 + eureka），dsh Web UI 动态加载后挂载到 DOM（非 iframe）。
 - 切换租户（工作空间）需显式确认，不允许任务中途静默切换。
 
 ### 8.3 会话与应用包绑定

@@ -211,7 +211,8 @@ app-packages/<tenant-identifier>/<app-identifier>/
 ### 3.10 eureka 依赖集成
 
 - dsh 引入 eureka 相关包作为依赖：`eureka`、`eureka-core`、`eureka-ui`、`eureka-formula`、`eureka-editor`、`eureka-editor-core`。
-- 依赖来源：私有 registry `http://192.168.1.2:11608/`（各包 publishConfig），开发期可用本地 workspace 链接替代；均为 ESM 库、React 18 兼容、exports 完整（`dist` 与 `schema.json`）。
+- 依赖来源：私有 registry `https://verdaccio.underwork.cn`（各包 publishConfig），开发期可用本地 workspace 链接替代；均为 ESM 库、exports 完整（`dist` 与 `schema.json`）。
+- **React 版本（2026-08-16 实测修正）**：eureka 8.14.6 的 peerDependencies 为 React `^19.2.8`，平台侧消费方（uicp-web-admin / uicp-web-editor）均运行 React 19；React 18 实测渲染在 eureka-ui Modal 路径报错、React 19 对照通过。内嵌方案采用**双 React 隔离**：`packages/uicp/eureka-preview-host` 打自包含 IIFE bundle（自带 React 19 + eureka），由 dsh Web UI（React 18）动态加载并挂载到页面 DOM，非 iframe；monaco 等重型依赖随该 bundle 懒加载。
 - 接入点：Web UI 新增"预览/编辑器"视图，承载 3.7 的渲染与编辑；eureka-ui 的 SCSS 主题（`dist/themes`）随视图按需引入。
 - 体积与性能：eureka/eureka-editor 依赖 monaco-editor，按独立 chunk 懒加载，不进入主包；编辑器仅在使用时装载。
 - 版本同步：跟随 eureka 私有 registry 的发布版本升级，升级脚本与 schema.json 同步机制共用（见 6 可持续性）。
