@@ -7967,6 +7967,18 @@ importers:
         specifier: workspace:^
         version: link:../../core/tools
 
+  packages/uicp/tool-apppackage-version:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-fs':
+        specifier: workspace:^
+        version: link:../../fs/fs
+      '@deepseek-ai/dsh-tools':
+        specifier: workspace:^
+        version: link:../../core/tools
+
   packages/util/atomic-write:
     devDependencies:
       '@deepseek-ai/cordis':
