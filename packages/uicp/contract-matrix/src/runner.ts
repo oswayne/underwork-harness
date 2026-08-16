@@ -12,7 +12,7 @@ export interface MatrixRequest {
 
 export interface MatrixResponse {
   statusCode: number
-  body: { status: number; msg: string; data: unknown }
+  body: { status?: number; msg: string; data: unknown }
 }
 
 /** One case outcome. */
@@ -76,8 +76,9 @@ export async function runMatrix(
     if (test.body !== undefined) request.body = test.body
     const response = await target(request)
     const failures: string[] = []
-    const expectedStatus = test.status ?? 200
-    if (response.statusCode !== expectedStatus) failures.push(`statusCode ${response.statusCode} != ${expectedStatus}`)
+    const expectedStatus = test.status ?? 0
+    const actualStatus = response.body.status ?? 0
+    if (actualStatus !== expectedStatus) failures.push(`status ${actualStatus} != ${expectedStatus}`)
     if (test.data !== undefined) {
       const mismatch = matchesData(response.body.data, test.data)
       if (mismatch !== null) failures.push(mismatch)
@@ -92,10 +93,11 @@ export async function diffMatrix(
   left: (request: MatrixRequest) => Promise<MatrixResponse>,
   right: (request: MatrixRequest) => Promise<MatrixResponse>,
   cases: readonly MatrixCase[],
-  resolvePlaceholders: (path: string) => string = path => path,
+  leftResolve: (path: string) => string = path => path,
+  rightResolve: (path: string) => string = path => path,
 ): Promise<{ name: string; left: MatrixResult; right: MatrixResult }[]> {
-  const leftResults = await runMatrix(left, cases, resolvePlaceholders)
-  const rightResults = await runMatrix(right, cases, resolvePlaceholders)
+  const leftResults = await runMatrix(left, cases, leftResolve)
+  const rightResults = await runMatrix(right, cases, rightResolve)
   const divergences: { name: string; left: MatrixResult; right: MatrixResult }[] = []
   for (let index = 0; index < cases.length; index += 1) {
     const leftResult = leftResults[index] as MatrixResult

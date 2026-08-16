@@ -83,7 +83,8 @@ export class SandboxRouter {
       return ok(await store.insert(identifier, record))
     }
     if (method === 'PATCH' && rest.length === 1) {
-      return ok(await store.update(identifier, rest[0], this.requireObject(request.body)))
+      await store.update(identifier, rest[0], this.requireObject(request.body))
+      return ok(rest[0])
     }
     if (method === 'DELETE' && rest.length === 1 && rest[0] === 'data') {
       const outcome = applyQuery(await store.list(identifier), request.query, fields)
@@ -94,7 +95,8 @@ export class SandboxRouter {
       return ok(await store.removeMany(identifier, rows.map(row => row._id)))
     }
     if (method === 'DELETE' && rest.length === 1) {
-      return ok(await store.removeById(identifier, rest[0]))
+      await store.removeById(identifier, rest[0])
+      return ok(rest[0])
     }
     if (method === 'GET' && rest.length === 2 && rest[0] === 'stats' && rest[1] === 'count') {
       const outcome = applyQuery(await store.list(identifier), request.query, fields)

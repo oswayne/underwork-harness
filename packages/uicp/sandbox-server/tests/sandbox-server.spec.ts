@@ -366,11 +366,11 @@ describe('router', () => {
     expect((await router.handle(request('GET', '/order', { amount: 'gt>5' }))).body.data).toMatchObject({ orderNo: 'SO-1' })
     expect((await router.handle(request('GET', '/order/stats/count'))).body.data).toBe(1)
     expect((await router.handle(request('GET', '/order/stats/amount/sum'))).body.data).toBe(10)
-    expect((await router.handle(request('PATCH', `/order/${id}`, {}, { amount: 11 }))).body.data).toMatchObject({ amount: 11 })
+    expect((await router.handle(request('PATCH', `/order/${id}`, {}, { amount: 11 }))).body.data).toBe(id)
     expect((await router.handle(request('POST', '/order/func/summary'))).body.data).toEqual({ count: 1 })
     expect((await router.handle(request('POST', `/order/${id}/func/complete`))).body.status).toBe(0)
     expect((await store.findById('order', id))).toMatchObject({ status: '已完成' })
-    expect((await router.handle(request('DELETE', `/order/${id}`))).body.data).toBeTruthy()
+    expect((await router.handle(request('DELETE', `/order/${id}`))).body.data).toBe(id)
   })
 
   it('runs constructors, batch, tree, and error paths', async () => {

@@ -19,3 +19,5 @@ The M4 fidelity gate requires the same corpus to run against the local sandbox a
 ## Consequences
 
 The corpus already pins sandbox behavior (78 uicp tests, 100% coverage) and the diff runner is ready for the platform endpoint; sandbox insert now parses field values by type (mirroring `Field.parse`), which the matrix's date/boolean cases required.
+
+The first live-platform run (2026-08-16, dsh-test) scored 37/45 consistent; the remaining divergences are platform-side defects: `eq`/`ne` and `in`/`notIn`/`between`/`notBetween` skip numeric type conversion (string-vs-number comparisons), and `ge`/`le` emit invalid Mongo operators (`$ge`/`$le`, HTTP 500). These are recorded for the platform maintainers; the sandbox stays contract-faithful.

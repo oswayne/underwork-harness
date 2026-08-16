@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write packages/uicp/contract-matrix/README.md
-README.md: 29f056df34809234d4a51feec81358a0a845ff99
-README.zh.md: 16aff2a29efd1858a2f9fb5ba08278482988085c
+README.md: a7ae309d5b36f1b9214846a2a09fdee09c9eb07e
+README.zh.md: 24c0f653c6f3b4a9c99090f2ffc3569fcef586e7

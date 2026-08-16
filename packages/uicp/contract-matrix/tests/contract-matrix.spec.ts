@@ -37,7 +37,7 @@ describe('runMatrix against the reference sandbox', () => {
       async () => ({ statusCode: 500, body: { status: 500, msg: 'boom', data: {} } })
     const results = await runMatrix(broken, buildMatrix(), reference.resolve)
     expect(results.every(result => result.passed)).toBe(false)
-    expect(results[0]!.message).toContain('statusCode')
+    expect(results[0]!.message).toContain('status ')
   })
 })
 

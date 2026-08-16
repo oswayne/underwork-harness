@@ -20,3 +20,13 @@ Behavior-matrix contract corpus and dual-target runner for the uicp data sandbox
 ## Known Limitations and Deferred Work
 
 - The platform-side target adapter is pending the benchmark environment; the diff runner is ready and unit-tested against fake targets.
+
+## First platform run (2026-08-16)
+
+Running the corpus against the live platform (dsh-test) yields **37/45 consistent**; the 8 divergences are all platform-side behavior gaps where the sandbox follows the contract:
+
+- `eq` / `ne` on numeric fields compare strings (`{ amount: '20' }`) against stored numbers, matching nothing.
+- `in` / `notIn` / `between` / `notBetween` on numeric fields compare comma-separated strings without type conversion.
+- `ge` / `le` emit the invalid Mongo operators `$ge` / `$le`, failing with HTTP 500.
+
+These are platform-side defects to report to the platform maintainers; the sandbox stays contract-faithful and the matrix keeps flagging them until the platform converges.
