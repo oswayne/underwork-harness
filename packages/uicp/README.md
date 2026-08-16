@@ -8,5 +8,6 @@ The UICP low-code platform driver turns dsh into a generation driver for the uic
 |---|---|---|
 | [`tool-apppackage-validate/`](tool-apppackage-validate/README.md) | Static validation + dynamic cross-app dependency analysis | — |
 | [`eureka-preview-host/`](eureka-preview-host/README.md) | Self-contained Eureka preview bundle (React 19, iframe-free) | — |
+| [`sandbox-server/`](sandbox-server/README.md) | Local data sandbox: CRUD/query/stats/tree + vm Func execution on `ctx.storage` | — |
 
 The design and implementation documents are [UPGRADE.md](../../UPGRADE.md) and [IMPLEMENTATION.md](../../IMPLEMENTATION.md).
