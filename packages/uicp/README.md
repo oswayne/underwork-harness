@@ -11,5 +11,6 @@ The UICP low-code platform driver turns dsh into a generation driver for the uic
 | [`sandbox-server/`](sandbox-server/README.md) | Local data sandbox: CRUD/query/stats/tree + vm Func execution on `ctx.storage` | — |
 | [`tool-apppackage-test/`](tool-apppackage-test/README.md) | Automated test runner: generated cases against the local sandbox | — |
 | [`tool-apppackage-version/`](tool-apppackage-version/README.md) | Local version snapshots: list / snapshot / restore | — |
+| [`tool-apppackage-publish/`](tool-apppackage-publish/README.md) | Adoption-gated, idempotent API save to the platform | — |
 
 The design and implementation documents are [UPGRADE.md](../../UPGRADE.md) and [IMPLEMENTATION.md](../../IMPLEMENTATION.md).

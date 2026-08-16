@@ -275,6 +275,7 @@
     { "path": "./packages/uicp/sandbox-server" },
     { "path": "./packages/uicp/tool-apppackage-test" },
     { "path": "./packages/uicp/tool-apppackage-version" },
+    { "path": "./packages/uicp/tool-apppackage-publish" },
     { "path": "./packages/plan/plan-mode" },
     { "path": "./packages/preset/agent-presets" },
     { "path": "./packages/preset/persona" },
