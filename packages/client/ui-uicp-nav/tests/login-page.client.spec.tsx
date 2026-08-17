@@ -39,7 +39,9 @@ describe('LoginPage', () => {
       core: { invoke: vi.fn(async (cmd: string) => (cmd === 'get_token' ? 'tok' : undefined)) },
     }
     render(<LoginPage t={t} />)
-    expect(await screen.findByRole('progressbar')).toBeTruthy()
+    expect(await screen.findByText('Underwork Harness')).toBeTruthy()
+    expect(screen.getByText('正在验证 Token…')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: '登录' })).toBeNull()
     resolveFetch(new Response(JSON.stringify({ data: {} })))
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: '登录' })).toBeNull()

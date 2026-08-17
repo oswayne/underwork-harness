@@ -15,10 +15,14 @@
 }
 
 .logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  border: 1px solid var(--dsw-alias-border-l2);
+  /* dsh logo style: flat monochrome mark, borderless, theme-adaptive ink. */
+  height: 40px;
+  width: auto;
+  border: none;
+}
+
+body[data-ds-dark-theme] .logo {
+  filter: invert(1);
 }
 
 .title {

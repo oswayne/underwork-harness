@@ -3,6 +3,16 @@ import { Button, Input } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import css from './LoginView.module.css'
 
+/** Brand row (logo + wordmark) shared by the sign-in form and checking seat. */
+export function LoginBrand({ t }: PropsLocale<'nav'>) {
+  return (
+    <div className={css.brand}>
+      <img className={css.logo} src="/uicp-logo.png" alt="" />
+      <span className={css.title}>{t('login.brand')}</span>
+    </div>
+  )
+}
+
 /** JWT input seat rendered by the tenant browser when no token is stored. */
 export function LoginView({
   t,
@@ -18,10 +28,7 @@ export function LoginView({
         if (trimmed !== '' && onSignIn !== undefined) onSignIn(trimmed)
       }}
     >
-      <div className={css.brand}>
-        <img className={css.logo} src="/uicp-logo.jpg" alt="" />
-        <span className={css.title}>{t('login.brand')}</span>
-      </div>
+      <LoginBrand t={t} />
       <Input
         id="uicp-jwt"
         type="password"

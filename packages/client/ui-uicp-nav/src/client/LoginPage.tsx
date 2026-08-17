@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useSyncExternalStore } from 'react'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
-import { LoginView } from './LoginView.tsx'
+import { LoginBrand, LoginView } from './LoginView.tsx'
 import { authSnapshot, refreshAuth, setToken, subscribeAuth } from './token.ts'
 import css from './LoginPage.module.css'
 
@@ -21,8 +21,9 @@ export function LoginPage({ t }: PropsLocale<'nav'>) {
     <div className={css.page}>
       {auth.status === 'checking'
         ? (
-          <div className={css.progress} role="progressbar">
-            <div className={css.progressBar} />
+          <div className={css.checking}>
+            <LoginBrand t={t} />
+            <div className={css.shimmer}>{t('login.checking')}</div>
           </div>
         )
         : (

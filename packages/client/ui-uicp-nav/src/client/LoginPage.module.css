@@ -11,29 +11,71 @@
   background: var(--dsw-alias-bg-base);
 }
 
-/* Indeterminate startup-validation bar: an accent fill sweeping the track. */
-.progress {
-  width: 200px;
-  height: 4px;
-  overflow: hidden;
-  border-radius: 2px;
-  background: var(--dsw-alias-border-l2);
+/* Soft blue backdrop matching the chat hero glow (figma 313:14109: a blurred
+   #6187D8 ellipse behind the input card), so splash → login → chat read as
+   one continuous surface. */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 45% 24% at 50% 56%,
+    rgba(97, 120, 216, 0.09) 0%,
+    rgba(97, 120, 216, 0.04) 45%,
+    transparent 72%
+  );
+  pointer-events: none;
 }
 
-.progressBar {
-  width: 40%;
-  height: 100%;
-  border-radius: 2px;
-  background: var(--dsw-alias-brand-primary);
-  animation: progress-sweep 1.2s ease-in-out infinite;
+.page > * {
+  position: relative;
+  z-index: 1;
 }
 
-@keyframes progress-sweep {
-  from {
-    transform: translateX(-100%);
-  }
+/* Checking seat: dsh turn-status loading pattern — a brand-blue gradient
+   text shimmer sweeping left to right (ChatView.turnStatus). */
+.checking {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.shimmer {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  font: var(--dsw-font-s-strong-14);
+  white-space: nowrap;
+  background: linear-gradient(
+    90deg,
+    var(--dsw-static-deepseek-500) 0%,
+    var(--dsw-static-deepseek-500) 40%,
+    var(--dsw-static-deepseek-200) 50%,
+    var(--dsw-static-deepseek-500) 60%,
+    var(--dsw-static-deepseek-500) 100%
+  );
+  background-position: 100% 0;
+  background-size: 250% 100%;
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: login-shimmer 1.8s linear infinite;
+}
+
+@keyframes login-shimmer {
   to {
-    transform: translateX(350%);
+    background-position: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    background-position: 0 0;
+    background-size: 100% 100%;
+    animation: none;
   }
 }
 
