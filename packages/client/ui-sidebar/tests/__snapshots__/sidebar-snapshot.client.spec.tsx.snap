@@ -17,13 +17,11 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
         class="iconButton toggle"
         type="button"
       >
-        <svg
-          aria-hidden="true"
+        <img
+          alt=""
           class="railFish"
-          data-content="e5deb866"
-          fill="none"
-          height="19.485791610284167"
-          viewBox="0 0 739 600"
+          height="24"
+          src="/app-icon.svg"
           width="24"
         />
         <svg
@@ -103,12 +101,10 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
         <span
           style="display: inline-flex; align-items: center; gap: 9px; height: 24px; color: currentcolor; white-space: nowrap; font-size: 15px; font-weight: 600; letter-spacing: 0.375px;"
         >
-          <svg
-            aria-hidden="true"
-            data-content="e5deb866"
-            fill="none"
-            height="19.485791610284167"
-            viewBox="0 0 739 600"
+          <img
+            alt=""
+            height="24"
+            src="/app-icon.svg"
             width="24"
           />
           Underwork Harness
@@ -201,12 +197,10 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         <span
           style="display: inline-flex; align-items: center; gap: 9px; height: 24px; color: currentcolor; white-space: nowrap; font-size: 15px; font-weight: 600; letter-spacing: 0.375px;"
         >
-          <svg
-            aria-hidden="true"
-            data-content="e5deb866"
-            fill="none"
-            height="19.485791610284167"
-            viewBox="0 0 739 600"
+          <img
+            alt=""
+            height="24"
+            src="/app-icon.svg"
             width="24"
           />
           Underwork Harness

@@ -55,14 +55,12 @@ describe('ic_ds_ icon set', () => {
 })
 
 describe('AppLogo', () => {
-  it('renders the fish path in currentColor at the native ratio', () => {
+  it('renders the app icon image at the requested size', () => {
     const { container } = render(<primitives.AppLogo />)
-    const svg = container.querySelector('svg')!
-    expect(svg.getAttribute('width')).toBe('24')
-    expect(Number(svg.getAttribute('height'))).toBeCloseTo(19.49, 1)
-    expect(svg.getAttribute('viewBox')).toBe('0 0 739 600')
-    expect(container.querySelectorAll('path')).toHaveLength(1)
-    expect(container.innerHTML).toContain('currentColor')
-    expect(container.innerHTML).not.toContain('<rect')
+    const img = container.querySelector('img')!
+    expect(img.getAttribute('src')).toBe('/app-icon.svg')
+    expect(img.getAttribute('width')).toBe('24')
+    expect(img.getAttribute('height')).toBe('24')
+    expect(img.getAttribute('alt')).toBe('')
   })
 })
