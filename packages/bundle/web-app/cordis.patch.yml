@@ -119,6 +119,15 @@
         host: !!js ctx.webStartup.host ?? '127.0.0.1'
         port: !!js ctx.webStartup.port ?? 3080
 
+    # Same-origin platform API proxy: the browser page is served from
+    # http://127.0.0.1:<port> and the platform does not answer browser CORS
+    # for that origin, so /uicp-api/* forwards to the platform with the page's
+    # Authorization/Tenant headers.
+    - id: uicp-api-proxy
+      name: '@deepseek-ai/dsh-uicp-api-proxy'
+      config:
+        upstream: https://api.underwork.cn/uicp
+
     # Web glue owned by this bundle: resolves the built frontend dist (an
     # assembly fact of dsh-web-app, never user config), mounts the
     # frontend-static fallback owner, registers the web-surface prompt

@@ -1426,6 +1426,9 @@ importers:
       '@deepseek-ai/dsh-web-frontend':
         specifier: workspace:^
         version: link:../../../apps/web
+      '@deepseek-ai/dsh-uicp-api-proxy':
+        specifier: workspace:^
+        version: link:../../uicp/api-proxy
       '@deepseek-ai/dsh-workspace':
         specifier: workspace:^
         version: link:../../workspace/workspace
@@ -7947,6 +7950,18 @@ importers:
       '@deepseek-ai/dsh-sandbox-server':
         specifier: workspace:^
         version: link:../sandbox-server
+
+  packages/uicp/api-proxy:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-host-webserver':
+        specifier: workspace:^
+        version: link:../../host/webserver
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
 
   packages/uicp/eureka-preview-host:
     dependencies:

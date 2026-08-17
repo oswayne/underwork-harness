@@ -38,7 +38,11 @@ export async function clearToken(): Promise<void> {
   memoryToken = undefined
 }
 
-/** Platform API base; mirrors uicp-web-admin's gateway base by default. */
+/**
+ * Platform API base. In the browser (shell / `dsh web`) the page is served
+ * from the local host, so platform calls go through the same-origin
+ * `/uicp-api` proxy; elsewhere (tests/scripts) fall back to the direct URL.
+ */
 export const API_BASE = typeof window === 'undefined'
   ? 'https://api.underwork.cn/uicp'
-  : window.__UICP_API_BASE__ ?? 'https://api.underwork.cn/uicp'
+  : window.__UICP_API_BASE__ ?? '/uicp-api'
