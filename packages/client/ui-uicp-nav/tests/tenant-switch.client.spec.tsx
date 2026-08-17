@@ -1,0 +1,142 @@
+// @vitest-environment jsdom
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import { zh } from '../src/locales.ts'
+import { resetNav, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
+import { resetAuth } from '../src/client/token.ts'
+import { TenantSwitch } from '../src/client/TenantSwitch.tsx'
+
+const t = ((key: string) => zh[key as keyof typeof zh]) as never
+
+function shellInvoke() {
+  return vi.fn(async (cmd: string) => {
+    if (cmd === 'get_token') return 'tok'
+    if (cmd === 'app_packages_root') return '/root'
+    return undefined
+  })
+}
+
+function navProps(wide = true) {
+  return { t, wide } as unknown as PropsRuntime<'sidebar.footer.action'> & PropsLocale<'nav'>
+}
+
+describe('TenantSwitch', () => {
+  beforeEach(() => {
+    resetNav()
+    resetAuth()
+    window.localStorage.clear()
+    setPackagesRoot('/root')
+    setNavActions({
+      openSession: vi.fn(),
+      createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined),
+      forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined),
+      registerAppWorkspace: vi.fn(async () => undefined),
+    })
+  })
+  afterEach(() => {
+    cleanup()
+    vi.unstubAllGlobals()
+    vi.restoreAllMocks()
+    delete (window as { __TAURI__?: unknown }).__TAURI__
+  })
+
+  it('renders nothing while no token is stored', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => undefined) } }
+    render(<TenantSwitch {...navProps()} />)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(screen.queryByRole('combobox')).toBeNull()
+  })
+
+  it('lists tenants and registers the default tenant app packages as workspaces', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const register = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [
+          { _id: 't1', name: '租户A', identifier: 'tenant-a', available: true },
+          { _id: 't2', name: '租户B', identifier: 'tenant-b', available: true },
+        ] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [
+        { _id: 'a1', name: '应用', identifier: 'app-x' },
+      ] }))
+    }))
+    render(<TenantSwitch {...navProps()} />)
+    const select = await screen.findByRole('combobox', { name: '当前租户' })
+    expect(select.querySelectorAll('option').length).toBe(2)
+    await waitFor(() => {
+      expect(register).toHaveBeenCalledWith('/root/tenant-a/app-x', '应用')
+    })
+  })
+
+  it('registers the newly selected tenant app packages', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const register = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [
+          { _id: 't1', name: '租户A', identifier: 'tenant-a', available: true },
+          { _id: 't2', name: '租户B', identifier: 'tenant-b', available: true },
+        ] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [
+        { _id: 'a2', name: '应用B', identifier: 'app-y' },
+      ] }))
+    }))
+    render(<TenantSwitch {...navProps()} />)
+    fireEvent.change(await screen.findByRole('combobox', { name: '当前租户' }), { target: { value: 't2' } })
+    await waitFor(() => {
+      expect(register).toHaveBeenCalledWith('/root/tenant-b/app-y', '应用B')
+    })
+  })
+
+  it('skips workspace registration when the packages root is unknown', async () => {
+    resetNav()
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = {
+      core: { invoke: vi.fn(async (cmd: string) => (cmd === 'get_token' ? 'tok' : undefined)) },
+    }
+    const register = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [
+          { _id: 't1', name: '租户A', identifier: 'tenant-a', available: true },
+        ] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [
+        { _id: 'a1', name: '应用', identifier: 'app-x' },
+      ] }))
+    }))
+    render(<TenantSwitch {...navProps()} />)
+    await screen.findByRole('combobox', { name: '当前租户' })
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(register).not.toHaveBeenCalled()
+  })
+
+  it('logs out through the footer action', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 0, data: [] }))))
+    render(<TenantSwitch {...navProps()} />)
+    fireEvent.click(await screen.findByRole('button', { name: '退出' }))
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: '退出' })).toBeNull()
+    })
+  })
+})

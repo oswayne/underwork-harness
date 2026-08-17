@@ -4,7 +4,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import { en, zh, type NavKey } from '../locales.ts'
-import { TenantNav } from './TenantNav.tsx'
+import { TenantSwitch } from './TenantSwitch.tsx'
 import { LoginPage } from './LoginPage.tsx'
 import { SessionSwitchAction } from './SessionSwitchAction.tsx'
 import { setNavActions } from './nav.ts'
@@ -21,9 +21,10 @@ const NS = 'nav'
 export const inject = ['slots', 'locale', 'sessions', 'workspaces']
 
 /**
- * UICP navigation plugin, browser half: replaces the sidebar browsing region
- * with the tenant/app/session tree, gates the whole frame behind a dedicated
- * sign-in page, and adds a session switch header action.
+ * UICP navigation plugin, browser half: gates the whole frame behind a
+ * dedicated sign-in page, adds a session switch header action, and provides
+ * a sidebar-foot tenant switch that adopts each app package as a dsh
+ * Workspace (the native workspace browser lists them and their sessions).
  * Registration defers through slots.inject because the target slot owners
  * (ui-sidebar / ui-conversation) may apply in either order.
  * @param ctx - client root context.
@@ -49,6 +50,12 @@ export function apply(ctx: ClientContext): void {
         })
     },
     archiveSession: async (id) => { await ctx.workspaces.archiveSession(id) },
+    registerAppWorkspace: async (cwd, title) => {
+      const workspace = await ctx.workspaces.create({ path: cwd })
+      await ctx.workspaces.rename(workspace.workspaceId, title).catch(() => {
+        // A title conflict with another workspace keeps the basename title.
+      })
+    },
   })
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-uicp-nav: dictionaries')
   ctx.effect(
@@ -62,9 +69,14 @@ export function apply(ctx: ClientContext): void {
     'ui-uicp-nav: full-window login gate',
   )
   ctx.effect(
-    () => ctx.slots.inject('sidebar.workspaces', () =>
-      ctx.slots.register({ name: 'sidebar.workspaces', locale: NS }, TenantNav)),
-    'ui-uicp-nav: tenant browser',
+    () => ctx.slots.inject('sidebar.footer.action', () =>
+      ctx.slots.register({
+        name: 'sidebar.footer.action',
+        id: 'uicp.tenant.switch',
+        order: 100,
+        locale: NS,
+      }, TenantSwitch)),
+    'ui-uicp-nav: tenant switch and app-workspace registration',
   )
   ctx.effect(
     () => ctx.slots.inject('conversation.session.header.actions', () =>

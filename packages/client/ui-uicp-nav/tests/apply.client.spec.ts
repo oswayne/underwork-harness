@@ -3,9 +3,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { apply, inject } from '../src/client/index.ts'
-import { TenantNav } from '../src/client/TenantNav.tsx'
+import { TenantSwitch } from '../src/client/TenantSwitch.tsx'
 import { SessionSwitchAction } from '../src/client/SessionSwitchAction.tsx'
-import { createSession, openSession, resetNav } from '../src/client/nav.ts'
+import { createSession, openSession, registerAppWorkspace, resetNav } from '../src/client/nav.ts'
 
 async function bench() {
   const ctx = new Context()
@@ -17,11 +17,14 @@ async function bench() {
     title: 'app', sessionIds: [], createdAt: '0', updatedAt: '0',
   }))
   const startSession = vi.fn()
+  const renameWorkspace = vi.fn(async () => undefined)
   ctx.provide('sessions', { open } as never)
-  ctx.provide('workspaces', { create: createWorkspace, startSession } as never)
+  ctx.provide('workspaces', { create: createWorkspace, startSession, rename: renameWorkspace } as never)
   const locale = new LocaleRuntime(ctx)
   ctx.provide('locale', locale)
-  return { ctx, slots: ctx.get('slots') as SlotRegistry, locale, open, createWorkspace, startSession }
+  return {
+    ctx, slots: ctx.get('slots') as SlotRegistry, locale, open, createWorkspace, startSession, renameWorkspace,
+  }
 }
 
 function declare(slots: SlotRegistry, entries: Array<[string, 'single' | 'list', 'root' | 'session']>): void {
@@ -34,12 +37,12 @@ describe('ui-uicp-nav apply', () => {
     expect(inject).toEqual(['slots', 'locale', 'sessions', 'workspaces'])
   })
 
-  it('registers the browser and header action with dictionaries', async () => {
+  it('registers the tenant switch and header action with dictionaries', async () => {
     resetNav()
     const b = await bench()
-    declare(b.slots, [['sidebar.workspaces', 'single', 'root'], ['conversation.session.header.actions', 'list', 'session']])
+    declare(b.slots, [['sidebar.footer.action', 'list', 'root'], ['conversation.session.header.actions', 'list', 'session']])
     await b.ctx.plugin({ inject: [...inject], apply }).await()
-    expect(b.slots.entries('sidebar.workspaces')[0]!.component).toBe(TenantNav)
+    expect(b.slots.entries('sidebar.footer.action')[0]!.component).toBe(TenantSwitch)
     const action = b.slots.entries('conversation.session.header.actions')[0]!
     expect(action.component).toBe(SessionSwitchAction)
     expect(b.locale.bind('nav')('login.title')).toBe('登录')
@@ -48,12 +51,15 @@ describe('ui-uicp-nav apply', () => {
   it('routes session and workspace actions through the provided services', async () => {
     resetNav()
     const b = await bench()
-    declare(b.slots, [['sidebar.workspaces', 'single', 'root']])
+    declare(b.slots, [['sidebar.footer.action', 'list', 'root']])
     await b.ctx.plugin({ inject: [...inject], apply }).await()
     openSession('s1' as never)
     await createSession('/root/t/a')
+    await registerAppWorkspace('/root/t/a', '应用')
     expect(b.open).toHaveBeenCalledWith('s1')
     expect(b.createWorkspace).toHaveBeenCalledWith({ path: '/root/t/a' })
     expect(b.startSession).toHaveBeenCalledWith('ws-1')
+    expect(b.createWorkspace).toHaveBeenCalledWith({ path: '/root/t/a' })
+    expect(b.renameWorkspace).toHaveBeenCalledWith('ws-1', '应用')
   })
 })

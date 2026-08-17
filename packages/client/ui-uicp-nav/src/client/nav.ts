@@ -21,6 +21,8 @@ export interface NavActions {
   renameSession: (id: SessionId, title: string) => Promise<void>
   forkSession: (id: SessionId) => void
   archiveSession: (id: SessionId) => Promise<void>
+  /** Adopt an app-package directory as a dsh Workspace titled with the app name. */
+  registerAppWorkspace: (cwd: string, title: string) => Promise<void>
 }
 
 /**
@@ -81,17 +83,37 @@ export function archiveSession(id: SessionId): Promise<void> | undefined {
   return state.actions?.archiveSession(id)
 }
 
+export function registerAppWorkspace(cwd: string, title: string): Promise<void> | undefined {
+  return state.actions?.registerAppWorkspace(cwd, title)
+}
+
 export function setPackagesRoot(root: string): void {
   state.packagesRoot = root
 }
 
-/** Resolve the app-packages root from the shell, remembering it locally. */
-export async function resolvePackagesRoot(): Promise<void> {
+/**
+ * Resolve the app-packages root from the shell, remembering it locally.
+ * The Tauri bridge may not be ready on first render, so a failed invoke is
+ * retried; an unavailable bridge leaves the root unset (plain-browser mode).
+ * @returns the resolved root, or undefined when the shell is unavailable.
+ */
+export async function resolvePackagesRoot(): Promise<string | undefined> {
   const core = window.__TAURI__?.core
   if (core !== undefined) {
-    const root = await core.invoke('app_packages_root')
-    if (typeof root === 'string' && root !== '') setPackagesRoot(root)
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const root = await core.invoke('app_packages_root')
+        if (typeof root === 'string' && root !== '') {
+          setPackagesRoot(root)
+          return root
+        }
+      } catch {
+        // Bridge not ready yet: wait and retry below.
+      }
+      await new Promise(resolve => setTimeout(resolve, 300))
+    }
   }
+  return state.packagesRoot
 }
 
 export function packagesRoot(): string | undefined {

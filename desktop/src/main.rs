@@ -104,10 +104,24 @@ fn clear_token(state: tauri::State<Token>) {
     state.clear()
 }
 
-/// Absolute root of app-package directories (dev: the current working dir).
+/// Absolute root of app-package directories. Dev resolution: the nearest
+/// `app-packages` directory walking up from the launch cwd (so launching the
+/// binary from `desktop/` still finds the repo's app-packages), overridable
+/// with `UICP_APP_PACKAGES_ROOT`.
 #[tauri::command]
 fn app_packages_root() -> Result<String, String> {
+    if let Ok(env) = std::env::var("UICP_APP_PACKAGES_ROOT") {
+        if !env.is_empty() {
+            return Ok(env)
+        }
+    }
     let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
+    for ancestor in cwd.ancestors() {
+        let candidate = ancestor.join("app-packages");
+        if candidate.is_dir() {
+            return Ok(candidate.to_string_lossy().into_owned())
+        }
+    }
     Ok(cwd.join("app-packages").to_string_lossy().into_owned())
 }
 

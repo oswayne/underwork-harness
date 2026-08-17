@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   appCwd, archiveSession, createSession, currentApp, currentTenant, forkSession,
-  openSession, packagesRoot, renameSession, resolvePackagesRoot, resetNav,
+  openSession, packagesRoot, registerAppWorkspace, renameSession, resolvePackagesRoot, resetNav,
   selectApp, selectTenant, setNavActions, setPackagesRoot,
 } from '../src/client/nav.ts'
 
@@ -37,17 +37,23 @@ describe('ui-uicp-nav nav state', () => {
     const rename = vi.fn(async () => undefined)
     const fork = vi.fn()
     const archive = vi.fn(async () => undefined)
-    setNavActions({ openSession: open, createSession: create, renameSession: rename, forkSession: fork, archiveSession: archive })
+    const register = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: open, createSession: create, renameSession: rename, forkSession: fork,
+      archiveSession: archive, registerAppWorkspace: register,
+    })
     openSession('s1' as never)
     await createSession('/p')
     await renameSession('s1' as never, '新标题')
     forkSession('s1' as never)
     await archiveSession('s1' as never)
+    await registerAppWorkspace('/p', '应用')
     expect(open).toHaveBeenCalledWith('s1')
     expect(create).toHaveBeenCalledWith('/p')
     expect(rename).toHaveBeenCalledWith('s1', '新标题')
     expect(fork).toHaveBeenCalledWith('s1')
     expect(archive).toHaveBeenCalledWith('s1')
+    expect(register).toHaveBeenCalledWith('/p', '应用')
   })
 
   it('resolves the packages root from the shell when present', async () => {
