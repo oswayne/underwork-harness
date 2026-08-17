@@ -101,18 +101,24 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     if (!res.ok || !succeeded(body)) throw new Error(body.msg ?? `HTTP ${res.status}`)
     const apps = body.data ?? []
     let registered = 0
+    const failures: string[] = []
     for (const app of apps) {
       const pending = registerAppWorkspace(`${root}/${tenant.identifier}/${app.identifier}`, app.name)
-      if (pending === undefined) continue
+      if (pending === undefined) {
+        failures.push('nav actions unavailable')
+        continue
+      }
       try {
         await pending
         registered += 1
-      } catch {
+      } catch (reason) {
         // Directory not synced yet: the app appears once it exists locally.
+        failures.push(reason instanceof Error ? reason.message : String(reason))
       }
     }
     if (apps.length > 0 && registered === 0) {
-      setError(t('nav.rootUnavailable', { root }))
+      console.warn('uicp-nav: app workspace registration failed', failures)
+      setError(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
     }
   }
 

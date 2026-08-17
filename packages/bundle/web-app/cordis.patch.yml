@@ -225,12 +225,11 @@
       name: '@deepseek-ai/dsh-client-ui-deliverables'
 
 
-    # UICP fork: workspace browsing is replaced by the uicp navigation
-    # plugin; the upstream occupant stays unloaded to avoid a single-slot
-    # collision on `sidebar.workspaces`.
+    # UICP M0: the sidebar hands `sidebar.workspaces` back to the native
+    # workspace browser; app packages are adopted as Workspaces by the
+    # uicp tenant switch, so the upstream occupant must stay loaded.
     - id: ui-workspace
       name: '@deepseek-ai/dsh-client-ui-workspace'
-      disabled: true
 
     - id: ui-uicp-nav
       name: '@deepseek-ai/dsh-client-ui-uicp-nav'
