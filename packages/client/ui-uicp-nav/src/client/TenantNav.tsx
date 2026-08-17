@@ -3,7 +3,7 @@ import { useSyncExternalStore } from 'react'
 import {
   Button, IconArchiveOutline20, IconBranchOutline16, IconEditOutline16,
   IconEllipsisOutline16, IconFolderClose16, IconFolderOpen16, IconPlusOutline16,
-  IconTriangleRightFill14, Menu, Modal, StateDot,
+  Menu, Modal, StateDot,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
@@ -109,8 +109,9 @@ function SessionRow({ row, selected, now, t, onOpen, onRename, onFork, onArchive
  * with a JWT, then lists every available tenant (project) as a folder root.
  * Expanding a project lazily loads its app packages; expanding an app package
  * shows the sessions bound to its workspace directory. Row chrome and
- * interactions mirror the dsh workspace browser (folder -> chevron hover
- * swap, session hover menu with rename/fork/archive, active-folder tint).
+ * interactions mirror the dsh workspace browser (folder icon opens/closes
+ * with the branch state, session hover menu with rename/fork/archive,
+ * active-folder tint).
  */
 export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocale<'nav'>) {
   const { t } = props
@@ -288,9 +289,6 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                 <span className={[css.slot, css.folder, tenantContainsCurrent && css.folderActive].filter(Boolean).join(' ')}>
                   {tenantOpen ? <IconFolderOpen16 /> : <IconFolderClose16 />}
                 </span>
-                <span className={[css.slot, css.chevron].join(' ')}>
-                  <IconTriangleRightFill14 className={[css.arrow, tenantOpen && css.arrowOpen].filter(Boolean).join(' ')} />
-                </span>
                 <span className={css.title}>{tenant.name}</span>
               </div>
               {tenantOpen && (
@@ -320,9 +318,6 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                         >
                           <span className={[css.slot, css.folder, (active || containsCurrent) && css.folderActive].filter(Boolean).join(' ')}>
                             {appOpen ? <IconFolderOpen16 /> : <IconFolderClose16 />}
-                          </span>
-                          <span className={[css.slot, css.chevron].join(' ')}>
-                            <IconTriangleRightFill14 className={[css.arrow, appOpen && css.arrowOpen].filter(Boolean).join(' ')} />
                           </span>
                           <span className={css.title}>{app.name}</span>
                           {cwd !== undefined && (
