@@ -46,6 +46,11 @@ async function packageDir(): Promise<string> {
     title: '订单详情',
     body: [],
   }))
+  await writeFile(join(dir, 'pages', 'order_detail.json'), JSON.stringify({
+    type: 'page',
+    title: '下划线页',
+    body: [],
+  }))
   await writeFile(join(dir, 'data', 'order.json'), JSON.stringify([
     { orderNo: 'SO-001', amount: 12.5 },
   ]))
@@ -91,7 +96,21 @@ describe('pageHandler', () => {
     expect(body.data.pages).toEqual([
       { id: 'order-detail', title: '订单详情' },
       { id: 'order-list', title: '订单管理' },
+      { id: 'order_detail', title: '下划线页' },
     ])
+  })
+
+  it('serves pages whose ids are not strictly kebab-case', async () => {
+    const app = await packageDir()
+    const { res, captured } = fakeRes()
+    await pageHandler(
+      fakeReq(`/uicp/preview/page?cwd=${encodeURIComponent(app)}&page=order_detail`),
+      res,
+      join(app, '..'),
+    )
+    expect(captured.statusCode).toBe(200)
+    const body = JSON.parse(captured.body) as { data: { schema: { title?: string } } }
+    expect(body.data.schema.title).toBe('下划线页')
   })
 
   it('rejects a requested page outside the package and a bad cwd', async () => {

@@ -29,8 +29,11 @@ const PREVIEW_DIST = join(dirname(PREVIEW_HOST_PKG), 'dist')
 const BUNDLE_JS = join(PREVIEW_DIST, 'uicp-eureka-preview.js')
 const BUNDLE_CSS = join(PREVIEW_DIST, 'uicp-eureka-preview.css')
 
-/** Page identifier and entity identifiers are lowercase kebab-case. */
-const IDENTIFIER = /^[a-z0-9][a-z0-9-]*$/
+/** A page id must be a single path segment (no separators or traversal). */
+function safePageId(pageId: string): boolean {
+  return pageId !== '' && pageId !== '.' && pageId !== '..'
+    && !pageId.includes('/') && !pageId.includes('\\')
+}
 
 /**
  * Resolve the app-packages root: explicit config, else the nearest
@@ -68,7 +71,7 @@ export function resolvePackageDir(root: string, cwdValue: string | undefined): s
 /** Extract entity identifiers referenced by one page JSON text. */
 function referencedEntities(pageText: string): string[] {
   const ids = new Set<string>()
-  for (const match of pageText.matchAll(/\/app-package\/entity\/([a-z0-9][a-z0-9-]*)\//g)) {
+  for (const match of pageText.matchAll(/\/app-package\/entity\/([a-z0-9_-]+)\//g)) {
     const entity = match[1]
     if (entity !== undefined) ids.add(entity)
   }
@@ -83,7 +86,7 @@ export interface PageInfo {
   title: string
 }
 
-/** List the app-package's pages with their titles, in directory order. */
+/** List the app-package's pages with their titles, sorted by identifier. */
 async function listPages(dir: string): Promise<PageInfo[]> {
   const pageDir = join(dir, 'pages')
   if (!existsSync(pageDir)) return []
@@ -91,7 +94,6 @@ async function listPages(dir: string): Promise<PageInfo[]> {
   for (const file of await readdir(pageDir)) {
     if (!file.endsWith('.json')) continue
     const id = file.slice(0, -5)
-    if (!IDENTIFIER.test(id)) continue
     let title = id
     try {
       const parsed = JSON.parse(await readFile(join(pageDir, file), 'utf8')) as { title?: unknown }
@@ -102,7 +104,7 @@ async function listPages(dir: string): Promise<PageInfo[]> {
     }
     pages.push({ id, title })
   }
-  return pages
+  return pages.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 }
 
 /**
@@ -131,7 +133,7 @@ export async function pageHandler(
   }
   const pageFile = pageId === undefined
     ? await firstPageFile(dir)
-    : IDENTIFIER.test(pageId) ? join(dir, 'pages', `${pageId}.json`) : undefined
+    : safePageId(pageId) ? join(dir, 'pages', `${pageId}.json`) : undefined
   if (pageFile === undefined || !existsSync(pageFile)) {
     json(404, { status: 404, msg: 'page not found in the app-package directory', data: null })
     return
@@ -156,7 +158,7 @@ async function firstPageFile(dir: string): Promise<string | undefined> {
   const pageDir = join(dir, 'pages')
   if (!existsSync(pageDir)) return undefined
   const files = await readdir(pageDir)
-  const page = files.find(file => file.endsWith('.json') && IDENTIFIER.test(file.slice(0, -5)))
+  const page = files.filter(file => file.endsWith('.json')).sort()[0]
   return page === undefined ? undefined : join(pageDir, page)
 }
 
