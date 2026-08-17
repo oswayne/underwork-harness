@@ -14,15 +14,21 @@ const TABS: readonly { id: TabId; key: AppPackageKey }[] = [
   { id: 'versions', key: 'workspace.tab.versions' },
 ]
 
+/** Injected close-details callback for the workspace header. */
+export interface AppPackageWorkspaceInjected {
+  /** Close the right details column. */
+  closeDetails: () => void
+}
+
 /**
  * App-package product workspace replacing the upstream details seat: tabs for
  * preview and the M3 surfaces (editor / JSON / tests / versions). M2 renders
  * the eureka preview with fixture data; the other tabs are placeholders.
  */
 export function AppPackageWorkspace(
-  props: PropsRuntime<'details'> & PropsLocale<'apppackage'>,
+  props: PropsRuntime<'details'> & AppPackageWorkspaceInjected & PropsLocale<'apppackage'>,
 ) {
-  const { t } = props
+  const { t, closeDetails } = props
   const current = props.useSessions(s => s.current)
   const row = props.useSessions(s => current === undefined ? undefined : s.byId[current])
   const cwd = row?.cwd
@@ -45,6 +51,16 @@ export function AppPackageWorkspace(
             {t(item.key)}
           </button>
         ))}
+        <button
+          type="button"
+          className={css.close}
+          aria-label={t('workspace.close')}
+          onClick={closeDetails}
+        >
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden>
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
       </div>
       <div className={css.body}>
         {tab === 'preview'

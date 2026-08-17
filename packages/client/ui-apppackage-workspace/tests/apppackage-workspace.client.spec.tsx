@@ -8,7 +8,7 @@ import { PreviewPanel } from '../src/client/PreviewPanel.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh] ?? key) as never
 
-function props(cwd: string | undefined) {
+function props(cwd: string | undefined, closeDetails = vi.fn()) {
   const sessionState = (cwd === undefined
     ? { ids: [], byId: {}, current: undefined }
     : {
@@ -19,7 +19,9 @@ function props(cwd: string | undefined) {
   const useSessions = ((sel: (s: unknown) => unknown) => {
     return sel(sessionState)
   }) as never
-  return { t, useSessions } as unknown as PropsRuntime<'details'> & PropsLocale<'apppackage'>
+  return {
+    t, useSessions, closeDetails,
+  } as unknown as PropsRuntime<'details'> & PropsLocale<'apppackage'>
 }
 
 afterEach(() => {
@@ -58,6 +60,13 @@ describe('AppPackageWorkspace', () => {
   it('shows the no-session hint without a current cwd', () => {
     render(<AppPackageWorkspace {...props(undefined)} />)
     expect(screen.getByText('选择一个会话以预览应用包页面')).toBeTruthy()
+  })
+
+  it('closes the details column from the workspace header', () => {
+    const closeDetails = vi.fn()
+    render(<AppPackageWorkspace {...props(undefined, closeDetails)} />)
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }))
+    expect(closeDetails).toHaveBeenCalledOnce()
   })
 
   it('lets the user switch pages when the package has several', async () => {

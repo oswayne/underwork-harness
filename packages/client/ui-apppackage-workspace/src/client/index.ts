@@ -2,7 +2,7 @@ import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
-import { AppPackageWorkspace } from './AppPackageWorkspace.tsx'
+import { AppPackageWorkspace, type AppPackageWorkspaceInjected } from './AppPackageWorkspace.tsx'
 import { PreviewAction, type PreviewActionInjected } from './PreviewAction.tsx'
 import { en, zh, type AppPackageKey } from '../locales.ts'
 
@@ -33,6 +33,9 @@ export function apply(ctx: ClientContext): void {
         // upstream DetailsPanel (default 0) without upstream edits.
         priority: -100,
         locale: NS,
+        inject: (): AppPackageWorkspaceInjected => ({
+          closeDetails: () => { ctx.layout.closeDetails() },
+        }),
       }, AppPackageWorkspace)),
     'ui-apppackage-workspace: details workspace',
   )
