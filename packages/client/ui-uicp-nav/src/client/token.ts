@@ -1,8 +1,12 @@
 /**
- * Platform token access for the M0 shell: preferred storage is the Tauri
- * shell command (keychain later); in-memory fallback keeps the web UI usable
- * in a plain browser during development. The token never lands in
- * localStorage/sessionStorage.
+ * Platform token access for the M0 shell: the webview's localStorage is the
+ * app's local store (SharedPreferences-style), mirrored through the Tauri
+ * shell commands to a file in the app data directory. The mirror matters
+ * because the desktop sidecar serves on an OS-assigned port that changes
+ * between launches, and localStorage is origin-scoped by port. In-memory
+ * fallback keeps the web UI usable in a plain browser during development.
+ * Sign-in phase is decided by validating the stored token against
+ * `/user/user/self` on entry.
  */
 declare global {
   interface Window {
@@ -16,13 +20,28 @@ declare global {
 }
 
 let memoryToken: string | undefined
+/** localStorage key for the platform token. */
+const TOKEN_KEY = 'uicp.platform.token'
 
 /** Auth listeners run on every effective-token change (sign-in/logout). */
 type AuthListener = () => void
 
-/** Effective token as known by the UI layer (bridged or in-memory). */
-let currentToken: string | undefined
+/** Sign-in phases driven by stored-token validation against the platform. */
+export type AuthStatus = 'checking' | 'authenticated' | 'anonymous'
+
+/** One auth snapshot: phase, the validated token, and the last failure flag. */
+export interface AuthState {
+  status: AuthStatus
+  token: string | undefined
+  /** True when the last validation failed (the form shows an explanation). */
+  invalid: boolean
+}
+
+const initialState: AuthState = { status: 'checking', token: undefined, invalid: false }
+let authState: AuthState = initialState
 const authListeners = new Set<AuthListener>()
+/** In-flight validation shared by concurrent refreshAuth callers. */
+let validation: Promise<void> | undefined
 
 /**
  * Subscribe to effective-token changes. Returns the unsubscribe function.
@@ -35,33 +54,92 @@ export function subscribeAuth(listener: AuthListener): () => void {
   }
 }
 
-/** Synchronous snapshot of the effective token for useSyncExternalStore. */
-export function authSnapshot(): string | undefined {
-  return currentToken
+/** Synchronous snapshot of the auth state for useSyncExternalStore. */
+export function authSnapshot(): AuthState {
+  return authState
 }
 
-function setCurrentToken(token: string | undefined): void {
-  if (currentToken === token) return
-  currentToken = token
+function setState(next: AuthState): void {
+  authState = next
   for (const listener of authListeners) listener()
 }
 
-/** Resolve the stored token into the auth store (idempotent, fire-and-forget). */
+function readLocalToken(): string | undefined {
+  try {
+    const value = window.localStorage.getItem(TOKEN_KEY)
+    return value !== null && value !== '' ? value : undefined
+  } catch {
+    // Storage unavailable (non-browser environments): the shell bridge stays authoritative.
+    return undefined
+  }
+}
+
+function writeLocalToken(token: string | undefined): void {
+  try {
+    if (token === undefined) window.localStorage.removeItem(TOKEN_KEY)
+    else window.localStorage.setItem(TOKEN_KEY, token)
+  } catch {
+    // Storage unavailable: the shell bridge stays authoritative.
+  }
+}
+
+/**
+ * Ask the platform whether the JWT still identifies a user. Any failure —
+ * transport, HTTP status, or a non-zero platform status — counts as invalid.
+ */
+async function validateToken(token: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE}/user/user/self`, { headers: { Authorization: token } })
+    if (!res.ok) return false
+    const body = (await res.json()) as { status?: number }
+    return (body.status ?? 0) === 0
+  } catch {
+    // Transport or parse failure: the JWT cannot be used.
+    return false
+  }
+}
+
+/**
+ * Resolve the stored token, validate it against the platform, and publish the
+ * resulting auth phase. Concurrent callers share one in-flight validation.
+ */
 export function refreshAuth(): void {
-  void getToken().then(setCurrentToken)
+  validation ??= (async () => {
+    const token = await getToken()
+    if (token === undefined) {
+      setState({ status: 'anonymous', token: undefined, invalid: false })
+      return
+    }
+    setState({ status: 'checking', token, invalid: false })
+    if (!(await validateToken(token))) {
+      await clearToken()
+      setState({ status: 'anonymous', token: undefined, invalid: true })
+      return
+    }
+    setState({ status: 'authenticated', token, invalid: false })
+  })()
+  void validation.finally(() => {
+    validation = undefined
+  })
 }
 
 /** Test hook: reset the auth store between tests. */
 export function resetAuth(): void {
-  currentToken = undefined
+  authState = initialState
+  validation = undefined
 }
 
 export async function getToken(): Promise<string | undefined> {
+  const local = readLocalToken()
+  if (local !== undefined) return local
   const core = window.__TAURI__?.core
   if (core !== undefined) {
     try {
       const stored = await core.invoke('get_token')
-      if (typeof stored === 'string' && stored !== '') return stored
+      if (typeof stored === 'string' && stored !== '') {
+        writeLocalToken(stored)
+        return stored
+      }
     } catch (error) {
       // Shell command not permitted (M0 capability gap): fall through to the
       // in-memory token so the browser flow stays usable.
@@ -72,6 +150,7 @@ export async function getToken(): Promise<string | undefined> {
 }
 
 export async function setToken(token: string): Promise<void> {
+  writeLocalToken(token)
   const core = window.__TAURI__?.core
   if (core !== undefined) {
     try {
@@ -81,10 +160,17 @@ export async function setToken(token: string): Promise<void> {
     }
   }
   memoryToken = token
-  setCurrentToken(token)
+  setState({ status: 'checking', token, invalid: false })
+  if (!(await validateToken(token))) {
+    await clearToken()
+    setState({ status: 'anonymous', token: undefined, invalid: true })
+    return
+  }
+  setState({ status: 'authenticated', token, invalid: false })
 }
 
 export async function clearToken(): Promise<void> {
+  writeLocalToken(undefined)
   const core = window.__TAURI__?.core
   if (core !== undefined) {
     try {
@@ -94,7 +180,7 @@ export async function clearToken(): Promise<void> {
     }
   }
   memoryToken = undefined
-  setCurrentToken(undefined)
+  setState({ status: 'anonymous', token: undefined, invalid: false })
 }
 
 /**

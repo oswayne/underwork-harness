@@ -5,6 +5,8 @@
 
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
+use std::fs;
+use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::process::Stdio;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -18,7 +20,44 @@ struct DshProcess {
     child: Mutex<Option<Child>>,
     shutdown: AtomicBool,
 }
-struct Token(Mutex<Option<String>>);
+
+/// Platform token persisted to the app data directory (keychain lands in a
+/// later milestone): the value survives restarts so the web UI can validate
+/// it against the platform instead of asking for a new one.
+struct Token {
+    value: Mutex<Option<String>>,
+    file: PathBuf,
+}
+
+impl Token {
+    /// Load the persisted token; a missing or blank file means signed out.
+    fn new(file: PathBuf) -> Self {
+        let value = fs::read_to_string(&file)
+            .ok()
+            .map(|s| s.trim().to_string())
+            .filter(|s| !s.is_empty());
+        Self { value: Mutex::new(value), file }
+    }
+
+    /// Store the token and persist it to disk.
+    fn set(&self, token: String) {
+        if let Some(parent) = self.file.parent() {
+            let _ = fs::create_dir_all(parent);
+        }
+        if let Ok(mut guard) = self.value.lock() {
+            *guard = Some(token.clone());
+            let _ = fs::write(&self.file, token);
+        }
+    }
+
+    /// Clear the token and remove its persisted file.
+    fn clear(&self) {
+        if let Ok(mut guard) = self.value.lock() {
+            *guard = None;
+        }
+        let _ = fs::remove_file(&self.file);
+    }
+}
 
 fn spawn_dsh() -> std::io::Result<Child> {
     // Port 0 lets the OS assign a free port; the sidecar prints the actual
@@ -50,23 +89,19 @@ fn server_ready(url: &tauri::Url) -> bool {
 /// Read the stored platform token (keychain lands in a later milestone).
 #[tauri::command]
 fn get_token(state: tauri::State<Token>) -> Option<String> {
-    state.0.lock().ok()?.clone()
+    state.value.lock().ok()?.clone()
 }
 
 /// Store the platform token.
 #[tauri::command]
 fn set_token(state: tauri::State<Token>, token: String) {
-    if let Ok(mut guard) = state.0.lock() {
-        *guard = Some(token);
-    }
+    state.set(token)
 }
 
 /// Clear the stored platform token.
 #[tauri::command]
 fn clear_token(state: tauri::State<Token>) {
-    if let Ok(mut guard) = state.0.lock() {
-        *guard = None;
-    }
+    state.clear()
 }
 
 /// Absolute root of app-package directories (dev: the current working dir).
@@ -82,9 +117,13 @@ fn main() {
             child: Mutex::new(None),
             shutdown: AtomicBool::new(false),
         })
-        .manage(Token(Mutex::new(None)))
         .invoke_handler(tauri::generate_handler![get_token, set_token, clear_token, app_packages_root])
         .setup(|app| {
+            // Persistent token file under the app data directory.
+            let token_file = app.path().app_data_dir()
+                .map_err(|e| format!("app data dir: {e}"))?
+                .join("platform.token");
+            app.manage(Token::new(token_file));
             // Guardian thread: spawn the dsh sidecar, restart on crash with
             // exponential backoff, navigate the window once the service is
             // ready, and stop on the exit flag.

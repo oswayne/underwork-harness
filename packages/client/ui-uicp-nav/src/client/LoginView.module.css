@@ -1,21 +1,23 @@
 .form {
+  box-sizing: border-box;
+  width: 300px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: var(--dsh-sidebar-inline-padding, 8px);
+  gap: 16px;
   color: var(--dsw-alias-label-primary);
 }
 
 .brand {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
 }
 
 .logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   border: 1px solid var(--dsw-alias-border-l2);
 }
 
@@ -24,5 +26,6 @@
   font-size: 16px;
   line-height: 24px;
   font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--dsw-alias-label-primary);
 }

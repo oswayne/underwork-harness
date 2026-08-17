@@ -6,13 +6,13 @@
 
 ## 注册
 
-- 通过 `shell.overlay` 条目（`id: uicp.login`）在无 token 时以全屏登录页盖住整个应用；登出后回到该登录页。
+- 通过 `shell.overlay` 条目（`id: uicp.login`）盖住整个应用：进入时用已存 token 请求 `/user/user/self` 校验，仅当仍能识别用户时才进入应用；token 失效则清除并重新输入。登出后回到该登录页。
 - 替换 `sidebar.workspaces` 为租户/应用包/会话浏览器（single 槽；上游 ui-workspace 的 occupant 由装配层排除）。
 - 新增 `conversation.session.header.actions` 条目（`id: uicp.session.switch`），渲染会话选择器。
 
 ## Token 存储
 
-平台 Token 经壳的 `get_token` / `set_token` / `clear_token` 命令存取（钥匙串在后续里程碑接入），无 Tauri 桥时以内存兜底。Token 永不进入 localStorage/sessionStorage。登录态经 `subscribeAuth` / `authSnapshot` store 共享，登录门与侧栏浏览器协同响应。
+平台 Token 存放在 webview 的 localStorage（应用的本地存储，类似 SharedPreferences），并经壳的 `get_token` / `set_token` / `clear_token` 命令镜像到应用数据目录文件。镜像可跨 sidecar 每次启动变化的端口存活（端口变化会让按源隔离的 localStorage 丢失）；无 Tauri 桥时以内存兜底。登录态经 `subscribeAuth` / `authSnapshot` store 共享，登录门与侧栏浏览器协同响应。
 
 ## 会话创建
 

@@ -36,6 +36,7 @@ describe('TenantNav', () => {
   beforeEach(() => {
     resetNav()
     resetAuth()
+    window.localStorage.clear()
     setPackagesRoot('/root')
     setNavActions({ openSession: vi.fn(), createSession: vi.fn(async () => undefined) })
   })
@@ -73,7 +74,10 @@ describe('TenantNav', () => {
 
   it('surfaces tenant fetch errors', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 400, msg: 'bad' }))))
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/user/user/self')) return new Response(JSON.stringify({ data: {} }))
+      return new Response(JSON.stringify({ status: 400, msg: 'bad' }))
+    }))
     render(<TenantNav {...navProps(listState([]))} />)
     expect(await screen.findByText('Error: bad')).toBeTruthy()
   })
@@ -116,7 +120,12 @@ describe('TenantNav', () => {
   it('cancels the in-flight tenant request on unmount', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     let resolveFetch: (value: Response) => void = () => undefined
-    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) => { resolveFetch = resolve })))
+    vi.stubGlobal('fetch', vi.fn((url: string) => {
+      if (url.endsWith('/user/user/self')) {
+        return Promise.resolve(new Response(JSON.stringify({ data: {} })))
+      }
+      return new Promise<Response>((resolve) => { resolveFetch = resolve })
+    }))
     const { unmount } = render(<TenantNav {...navProps(listState([]))} />)
     unmount()
     resolveFetch(new Response(JSON.stringify({ status: 0, data: [] })))
@@ -140,6 +149,9 @@ describe('TenantNav', () => {
   it('surfaces app-package fetch errors', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/user/user/self')) {
+        return new Response(JSON.stringify({ data: {} }))
+      }
       if (url.endsWith('/systemctl/tenant/list')) {
         return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
       }

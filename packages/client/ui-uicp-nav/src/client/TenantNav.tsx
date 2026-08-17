@@ -25,7 +25,8 @@ const succeeded = (body: { status?: number }): boolean => (body.status ?? 0) ===
 export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocale<'nav'>) {
   const { t } = props
   const list = props.useSessions(s => s)
-  const token = useSyncExternalStore(subscribeAuth, authSnapshot)
+  const auth = useSyncExternalStore(subscribeAuth, authSnapshot)
+  const token = auth.status === 'authenticated' ? auth.token : undefined
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [apps, setApps] = useState<AppPackage[]>([])
   const [tenant, setTenant] = useState<SelectedTenant | undefined>()

@@ -6,13 +6,13 @@ UICP platform navigation plugin for the desktop driver: a dedicated full-window 
 
 ## Registration
 
-- Gates the whole frame behind a `shell.overlay` entry (`id: uicp.login`) rendering the sign-in form until a token exists; logout returns to it.
+- Gates the whole frame behind a `shell.overlay` entry (`id: uicp.login`): a stored token is validated against `/user/user/self` on entry, and the app opens only when it still identifies a user; an invalid token is cleared for re-entry. Logout returns to it.
 - Replaces `sidebar.workspaces` with the tenant/app-package/session browser (single slot; the upstream ui-workspace occupant is excluded by composition).
 - Adds a `conversation.session.header.actions` entry (`id: uicp.session.switch`) rendering a session selector.
 
 ## Token storage
 
-The platform token is stored through the shell `get_token` / `set_token` / `clear_token` commands (keychain in a later milestone), with an in-memory fallback when the Tauri bridge is absent. The token never lands in localStorage/sessionStorage. Sign-in state is shared through the `subscribeAuth` / `authSnapshot` store so the login gate and the sidebar browser react together.
+The platform token lives in the webview's localStorage (the app's local store, SharedPreferences-style) and is mirrored through the shell `get_token` / `set_token` / `clear_token` commands to a file in the app data directory. The mirror survives the sidecar's per-launch port change, which would otherwise orphan the origin-scoped localStorage; in-memory fallback keeps the web UI usable in a plain browser. Sign-in state is shared through the `subscribeAuth` / `authSnapshot` store so the login gate and the sidebar browser react together.
 
 ## Session creation
 
