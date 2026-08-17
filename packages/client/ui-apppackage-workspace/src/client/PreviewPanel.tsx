@@ -60,6 +60,7 @@ export function PreviewPanel({ cwd, t }: PreviewPanelProps) {
           msg?: string
         }
         if (body.status !== 0 || body.data === undefined) {
+          console.warn('uicp preview: page fetch failed', body)
           throw new Error(body.msg ?? 'preview load failed')
         }
         const api = await loadPreviewBundle()
