@@ -20,10 +20,10 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
         <svg
           aria-hidden="true"
           class="railFish"
-          data-content="965fe321"
+          data-content="0e150e4a"
           fill="none"
-          height="17.6580310880829"
-          viewBox="0 0 23.16 17.04"
+          height="17.170418006430868"
+          viewBox="0 0 622 445"
           width="24"
         />
         <svg
@@ -100,14 +100,19 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
         class="brand wide"
         type="button"
       >
-        <svg
-          aria-hidden="true"
-          data-content="951274b9"
-          fill="none"
-          height="24"
-          viewBox="0 0 182 24"
-          width="182"
-        />
+        <span
+          style="display: inline-flex; align-items: center; gap: 9px; height: 24px; color: currentcolor; white-space: nowrap; font-size: 15px; font-weight: 600; letter-spacing: 0.375px;"
+        >
+          <svg
+            aria-hidden="true"
+            data-content="0e150e4a"
+            fill="none"
+            height="17.170418006430868"
+            viewBox="0 0 622 445"
+            width="24"
+          />
+          Underwork Harness
+        </span>
       </button>
       <button
         aria-label="Collapse sidebar"
@@ -193,14 +198,19 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         class="brand wide"
         type="button"
       >
-        <svg
-          aria-hidden="true"
-          data-content="951274b9"
-          fill="none"
-          height="24"
-          viewBox="0 0 182 24"
-          width="182"
-        />
+        <span
+          style="display: inline-flex; align-items: center; gap: 9px; height: 24px; color: currentcolor; white-space: nowrap; font-size: 15px; font-weight: 600; letter-spacing: 0.375px;"
+        >
+          <svg
+            aria-hidden="true"
+            data-content="0e150e4a"
+            fill="none"
+            height="17.170418006430868"
+            viewBox="0 0 622 445"
+            width="24"
+          />
+          Underwork Harness
+        </span>
       </button>
       <button
         aria-label="收起侧边栏"
