@@ -61,13 +61,24 @@ const EUREKA_RUNTIME_PACKAGES = new Set([
 ])
 
 /**
+ * Runtime packages whose compound open-source licenses defeat the simple
+ * permissive allowlist but are distributable: Font Awesome Free ships code
+ * under MIT, fonts under OFL-1.1, and icons under CC-BY-4.0. Recorded here so
+ * the notices gate accepts the compound expression.
+ */
+const COMPOUND_PERMISSIVE_RUNTIME = new Set([
+  '@fortawesome/fontawesome-free',
+])
+
+/**
  * Whether a non-permissive runtime declaration has an identity-scoped owner
  * authorization. This does not reclassify its terms as permissive.
  * @param name - exact npm package identity.
- * @returns true for the official Claude Agent SDK package and the platform-owned eureka family.
+ * @returns true for the official Claude Agent SDK package, the platform-owned eureka family, and the recorded compound-permissive packages.
  */
 export function isOwnerAuthorizedRuntime(name: string): boolean {
   if (EUREKA_RUNTIME_PACKAGES.has(name)) return true
+  if (COMPOUND_PERMISSIVE_RUNTIME.has(name)) return true
   return name === CLAUDE_AGENT_SDK_PACKAGE
 }
 

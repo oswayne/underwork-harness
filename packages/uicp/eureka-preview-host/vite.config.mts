@@ -19,6 +19,9 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   build: {
+    // Inline every asset (icon/KaTeX fonts) as data URIs so the emitted CSS
+    // is self-contained and the preview seam only serves bundle.js/.css.
+    assetsInlineLimit: 20 * 1024 * 1024,
     lib: {
       entry: 'src/index.ts',
       name: 'UicpEurekaPreview',

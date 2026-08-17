@@ -8041,6 +8041,9 @@ importers:
       '@deepseek-ai/dsh-invariants':
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
+      '@fortawesome/fontawesome-free':
+        specifier: ^7.2.0
+        version: 7.3.1
       eureka:
         specifier: ^8.14.6
         version: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
@@ -10076,6 +10079,10 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fortawesome/fontawesome-free@7.3.1':
+    resolution: {integrity: sha512-wmglKKPDIkgV3aWlZzWECCPoGIkYCulzBwxG9+w7rc5BGapZ6cPMpoPOT8k36J0Ni7PPX6c/rsoMWfS4d1MUMg==}
+    engines: {node: '>=6'}
 
   '@google/genai@1.52.0':
     resolution: {integrity: sha512-gwSvbpiN/17O9TbsqSsE/OzZcpv5Fo4RQjdngGgogtuB9RsyJ8ZHhX5KjHj1bp5N9snN2eK8LDGXSaWW2hof8Q==}
@@ -16499,6 +16506,8 @@ snapshots:
       tabbable: 6.5.0
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@fortawesome/fontawesome-free@7.3.1': {}
 
   '@google/genai@1.52.0(@modelcontextprotocol/sdk@1.29.0(zod@4.4.3))':
     dependencies:
