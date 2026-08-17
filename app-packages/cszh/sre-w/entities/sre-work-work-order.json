@@ -1,0 +1,172 @@
+{
+  "name": "工单管理",
+  "category": "移动工单",
+  "identifier": "sre-work-work-order",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "equ_addr",
+      "label": "位置",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "custom_email",
+      "label": "客户邮箱",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "work_no",
+      "label": "工单号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "dispatch_notes",
+      "label": "派单备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "type",
+      "label": "类型",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "report_person_phone",
+      "label": "上报人电话",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "report_person",
+      "label": "上报人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_name",
+      "label": "设备名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_type",
+      "label": "设备类型",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "app_type",
+      "label": "申请类型",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "worker_name",
+      "label": "工人姓名",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "complete_time",
+      "label": "工单完成时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "report_time",
+      "label": "上报时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "urgency",
+      "label": "紧急程度",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "dispatch_time",
+      "label": "派单时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "worker_remark",
+      "label": "工人备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "worker_phone",
+      "label": "工人电话",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "working_hours",
+      "label": "工时",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "satisfaction",
+      "label": "满意度",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "status",
+      "label": "工单状态",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "worker_email",
+      "label": "工人邮箱",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_id",
+      "label": "设备ID",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "work_person_id",
+      "label": "工人id",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}

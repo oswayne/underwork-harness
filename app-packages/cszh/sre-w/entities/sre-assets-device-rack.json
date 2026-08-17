@@ -1,0 +1,116 @@
+{
+  "name": "设备台账",
+  "category": "资产管理",
+  "identifier": "sre-assets-device-rack",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "name",
+      "label": "名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "status",
+      "label": "设备运行状态",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "head",
+      "label": "负责人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "type",
+      "label": "设备类型",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "address",
+      "label": "安装地点",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_no",
+      "label": "设备编号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "contact",
+      "label": "联系方式",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "installation_time",
+      "label": "安装时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "fault_phenomenon",
+      "label": "故障现象",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "last_maintenance_time",
+      "label": "上次保养时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "enable_time",
+      "label": "启用时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "cabinet",
+      "label": "所在机柜",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "remark",
+      "label": "备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "entered_by",
+      "label": "录入人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "supplier",
+      "label": "供应商",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}

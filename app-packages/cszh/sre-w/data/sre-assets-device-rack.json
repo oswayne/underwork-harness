@@ -1,0 +1,53 @@
+[
+  {
+    "name": "2414",
+    "status": "0",
+    "head": "67659429a464ccf47598bebd",
+    "type": "1",
+    "address": "大撒大声地",
+    "equ_no": "123124124",
+    "contact": "13657845474",
+    "installation_time": "2025-05-16T07:10:32.483Z",
+    "fault_phenomenon": "",
+    "last_maintenance_time": "2025-05-16T00:00:00.000Z",
+    "enable_time": "2025-05-16T07:10:32.483Z",
+    "cabinet": "测试",
+    "remark": "",
+    "entered_by": "67659429a464ccf47598bebd",
+    "supplier": "rwerwerw1234124"
+  },
+  {
+    "name": "4324",
+    "status": "0",
+    "head": "67659429a464ccf47598bebd",
+    "type": "1",
+    "address": "rwerew324",
+    "equ_no": "32432re2353255",
+    "contact": "13655857477",
+    "installation_time": "2025-05-01T00:00:00.000Z",
+    "fault_phenomenon": "",
+    "last_maintenance_time": "2025-05-16T03:58:19.430Z",
+    "enable_time": "2025-05-01T00:00:00.000Z",
+    "cabinet": "测试",
+    "remark": "",
+    "entered_by": "677348a1f1105174cf215e35",
+    "supplier": "fsdfsdfs"
+  },
+  {
+    "name": "1312",
+    "status": "0",
+    "head": "67659429a464ccf47598bebd",
+    "type": "1",
+    "address": "dfgdsfdds",
+    "equ_no": "rwer234351235",
+    "contact": "13654456789",
+    "installation_time": "2025-05-16T00:00:00.000Z",
+    "fault_phenomenon": "",
+    "last_maintenance_time": "2025-05-16T03:49:06.422Z",
+    "enable_time": "2025-05-01T00:00:00.000Z",
+    "cabinet": "测试",
+    "remark": "",
+    "entered_by": "677348a1f1105174cf215e35",
+    "supplier": "dadasdas"
+  }
+]

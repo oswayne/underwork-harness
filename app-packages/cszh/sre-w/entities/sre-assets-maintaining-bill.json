@@ -1,0 +1,123 @@
+{
+  "name": "保养单",
+  "category": "资产管理",
+  "identifier": "sre-assets-maintaining-bill",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "plan_no",
+      "label": "保养计划编码",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_name",
+      "label": "设备名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "maintenance_time",
+      "label": "本次保养时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_no",
+      "label": "设备编码",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "sheet_no",
+      "label": "保养单号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_id",
+      "label": "设备id",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "frequency",
+      "label": "保养频次（天/次）",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "last_maintenance_time",
+      "label": "上次保养时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "maintenance_person",
+      "label": "保养人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "maintenance_required_time",
+      "label": "保养时长",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "remark",
+      "label": "备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "status",
+      "label": "设备运行状态",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "maintenance_project",
+      "label": "保养项",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "maintenance_content",
+      "label": "保养内容及要求",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "result",
+      "label": "保养结果",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "fault_phenomenon",
+      "label": "故障现象",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}

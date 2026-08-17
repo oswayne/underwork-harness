@@ -1,0 +1,60 @@
+{
+  "name": "保养计划",
+  "category": "资产管理",
+  "identifier": "sre-assets-maintaining-plan",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "plan_no",
+      "label": "保养计划编码",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "name",
+      "label": "保养计划名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "first_date",
+      "label": "初次保养日期",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "maintenance_plan_detailss",
+      "label": "保养计划明细",
+      "type": "对象",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "frequency",
+      "label": "保养频次（天/次）",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "head",
+      "label": "保养负责人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equipments",
+      "label": "保养设备",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}

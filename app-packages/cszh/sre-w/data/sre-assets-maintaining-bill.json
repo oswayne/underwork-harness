@@ -1,0 +1,20 @@
+[
+  {
+    "plan_no": "fdsf",
+    "equ_name": "",
+    "maintenance_time": "2025-05-16T16:12:36.000Z",
+    "equ_no": "123124124",
+    "sheet_no": "214wrwer",
+    "equ_id": "6826b80f94c09033363fc15a",
+    "frequency": 1.0,
+    "last_maintenance_time": "2025-05-16T00:00:00.000Z",
+    "maintenance_person": "67659429a464ccf47598bebd",
+    "maintenance_required_time": "",
+    "remark": "",
+    "status": "0",
+    "maintenance_project": "",
+    "maintenance_content": "",
+    "result": "0",
+    "fault_phenomenon": ""
+  }
+]

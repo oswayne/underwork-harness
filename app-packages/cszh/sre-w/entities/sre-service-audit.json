@@ -1,0 +1,151 @@
+{
+  "name": "审批管理",
+  "category": "一站式服务台",
+  "identifier": "sre-service-audit",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "type",
+      "label": "审批单类型",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "approve_no",
+      "label": "审批单号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "amt",
+      "label": "金额（元）",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "app_person",
+      "label": "申请人姓名",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "app_email",
+      "label": "申请人邮箱",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "work_no",
+      "label": "涉及工单号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "amt_info",
+      "label": "费用说明",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "material",
+      "label": "材料名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "amt_type",
+      "label": "费用类型",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "amt_time",
+      "label": "费用发生日期",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "status",
+      "label": "状态",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "approved_email",
+      "label": "审批人邮箱",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "approved_time",
+      "label": "审批时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "material_file",
+      "label": "附件",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "app_time",
+      "label": "申请时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "material_info",
+      "label": "材料说明",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "remark",
+      "label": "备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "opinion",
+      "label": "处理人意见",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "approved_persson",
+      "label": "审批人姓名",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "createdBy",
+      "label": "发起人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}

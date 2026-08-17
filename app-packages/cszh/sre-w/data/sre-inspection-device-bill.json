@@ -1,0 +1,64 @@
+[
+  {
+    "details_resultss": "",
+    "time_plan_name": "日巡检",
+    "name": "巡检单",
+    "time": "2025-05-19T06:37:34.946Z",
+    "executor": "677348a1f1105174cf215e35",
+    "time_plan_id": "682a962f93f3d468b98661c5",
+    "content_name": "ccc",
+    "equ_name": "",
+    "plan_id": "",
+    "inspection_times": 2.0,
+    "equ_status": "",
+    "createdBy": "",
+    "no": "",
+    "task_status": "",
+    "remark": "",
+    "plan_name": "测试12312",
+    "content_id": "682a93fd93f3d468b98661ad",
+    "equ_id": "6826b80f94c09033363fc15a",
+    "result": "",
+    "fault_phenomenon": ""
+  },
+  {
+    "details_resultss": [
+      {
+        "project": "1",
+        "method": "2",
+        "criterion_standard": "3",
+        "required_time": 4,
+        "times": 1,
+        "res": "0"
+      },
+      {
+        "project": "5",
+        "method": "6",
+        "criterion_standard": "7",
+        "required_time": 8,
+        "times": 1,
+        "res": "1"
+      }
+    ],
+    "time_plan_name": "日巡检",
+    "name": "巡检单",
+    "time": "2025-05-19T15:07:05.000Z",
+    "executor": "677348a1f1105174cf215e35",
+    "time_plan_id": "682a962f93f3d468b98661c5",
+    "content_name": "ccc",
+    "equ_name": "",
+    "plan_id": "",
+    "inspection_times": 2.0,
+    "equ_status": "1",
+    "createdBy": "",
+    "no": "",
+    "task_status": "",
+    "remark": "",
+    "plan_name": "测试12312",
+    "content_id": "682a93fd93f3d468b98661ad",
+    "equ_id": "6826b7db94c09033363fc147",
+    "inspection_times_done": 1.0,
+    "result": "1",
+    "fault_phenomenon": "硬件"
+  }
+]

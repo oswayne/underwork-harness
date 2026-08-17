@@ -1,0 +1,165 @@
+{
+  "name": "设备巡检单",
+  "category": "巡检管理",
+  "identifier": "sre-inspection-device-bill",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "details_resultss",
+      "label": "巡检明细结果单",
+      "type": "对象",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "time_plan_name",
+      "label": "巡检时间方案名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "name",
+      "label": "巡检单名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "time",
+      "label": "巡检时间",
+      "type": "日期",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "executor",
+      "label": "巡检员",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "time_plan_id",
+      "label": "巡检时间方案id",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "content_name",
+      "label": "巡检内容名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_name",
+      "label": "设备名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "plan_id",
+      "label": "巡检计划id",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "inspection_times",
+      "label": "巡检规定次数",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_status",
+      "label": "设备运行状态",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "hours_spent",
+      "label": "巡检花费工时",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "createdBy",
+      "label": "创建人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "no",
+      "label": "巡检单号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "task_status",
+      "label": "巡检任务情况",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "remark",
+      "label": "备注",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "plan_name",
+      "label": "巡检计划名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "content_id",
+      "label": "巡检内容id",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "equ_id",
+      "label": "设备id",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "inspection_times_done",
+      "label": "已巡检次数",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "result",
+      "label": "巡检结果",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "fault_phenomenon",
+      "label": "故障现象",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}

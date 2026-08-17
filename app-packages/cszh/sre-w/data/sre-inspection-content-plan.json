@@ -1,0 +1,22 @@
+[
+  {
+    "inspection_contentplans_detailss": [
+      {
+        "project": "1",
+        "method": "2",
+        "criterion_standard": "3",
+        "required_time": 4
+      },
+      {
+        "project": "5",
+        "method": "6",
+        "criterion_standard": "7",
+        "required_time": 8
+      }
+    ],
+    "required_time_sum": 12.0,
+    "createdBy": "677348a1f1105174cf215e35",
+    "no": "dsf123",
+    "name": "ccc"
+  }
+]

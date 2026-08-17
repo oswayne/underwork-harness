@@ -1,0 +1,177 @@
+[
+  {
+    "remarks": "",
+    "identifier": "spzt",
+    "type": "",
+    "label": "已撤销",
+    "value": "已撤销"
+  },
+  {
+    "remarks": "",
+    "identifier": "spzt",
+    "type": "",
+    "label": "已拒绝",
+    "value": "已拒绝"
+  },
+  {
+    "remarks": "",
+    "identifier": "spzt",
+    "type": "",
+    "label": "已通过",
+    "value": "已通过"
+  },
+  {
+    "remarks": "",
+    "identifier": "spzt",
+    "type": "",
+    "label": "待审批",
+    "value": "待审批"
+  },
+  {
+    "remarks": "",
+    "identifier": "gdzt",
+    "type": "",
+    "label": "已完成",
+    "value": "已完成"
+  },
+  {
+    "remarks": "",
+    "identifier": "gdzt",
+    "type": "",
+    "label": "已拒绝",
+    "value": "已拒绝"
+  },
+  {
+    "remarks": "",
+    "identifier": "gdzt",
+    "type": "",
+    "label": "已接受",
+    "value": "已接受"
+  },
+  {
+    "remarks": "",
+    "identifier": "gdzt",
+    "type": "",
+    "label": "待接受",
+    "value": "待接受"
+  },
+  {
+    "remarks": "",
+    "identifier": "gdzt",
+    "type": "",
+    "label": "待分配",
+    "value": "待分配"
+  },
+  {
+    "remarks": "",
+    "identifier": "zjzsk-zsklb",
+    "type": "",
+    "label": "标准巡检手册",
+    "value": "标准巡检手册"
+  },
+  {
+    "remarks": "",
+    "identifier": "zjzsk-zsklb",
+    "type": "",
+    "label": "标准保养手册",
+    "value": "标准保养手册"
+  },
+  {
+    "remarks": "",
+    "identifier": "zjzsk-zsklb",
+    "type": "",
+    "label": "标准故障代码",
+    "value": "标准故障代码"
+  },
+  {
+    "remarks": "",
+    "identifier": "zjzsk-zsklb",
+    "type": "",
+    "label": "标准作业指导书",
+    "value": "标准作业指导书"
+  },
+  {
+    "remarks": "",
+    "identifier": "zjzsk-zsklb",
+    "type": "",
+    "label": "标准系统类别",
+    "value": "标准系统类别"
+  },
+  {
+    "remarks": "",
+    "identifier": "spjl-fylx",
+    "type": "",
+    "label": "其他",
+    "value": "其他"
+  },
+  {
+    "remarks": "",
+    "identifier": "spjl-fylx",
+    "type": "",
+    "label": "报销",
+    "value": "报销"
+  },
+  {
+    "remarks": "",
+    "identifier": "sbyycb-sslb",
+    "type": "",
+    "label": "其他成本",
+    "value": "其他成本"
+  },
+  {
+    "remarks": "",
+    "identifier": "sbyycb-sslb",
+    "type": "",
+    "label": "人力成本",
+    "value": "人力成本"
+  },
+  {
+    "remarks": "",
+    "identifier": "sbyycb-sslb",
+    "type": "",
+    "label": "消耗品成本",
+    "value": "消耗品成本"
+  },
+  {
+    "remarks": "",
+    "identifier": "sbyycb-sslb",
+    "type": "",
+    "label": "设备维护",
+    "value": "设备维护"
+  },
+  {
+    "remarks": "",
+    "identifier": "sbyycb-sslb",
+    "type": "",
+    "label": "设备购置",
+    "value": "设备购置"
+  },
+  {
+    "remarks": "",
+    "identifier": "gzxx",
+    "type": "",
+    "label": "人为配置",
+    "value": "人为配置"
+  },
+  {
+    "remarks": "",
+    "identifier": "gzxx",
+    "type": "",
+    "label": "网络",
+    "value": "网络"
+  },
+  {
+    "remarks": "",
+    "identifier": "gzxx",
+    "type": "",
+    "label": "硬件",
+    "value": "硬件"
+  },
+  {
+    "remarks": "",
+    "identifier": "gzxx",
+    "type": "",
+    "label": "软件",
+    "value": "软件"
+  }
+]

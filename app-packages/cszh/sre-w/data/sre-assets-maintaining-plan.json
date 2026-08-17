@@ -1,0 +1,17 @@
+[
+  {
+    "plan_no": "fdsf",
+    "name": "恶趣味",
+    "first_date": "2025-05-16T00:00:00.000Z",
+    "maintenance_plan_detailss": [
+      {
+        "project": "qwe",
+        "content": "eqwe",
+        "required_time": 1
+      }
+    ],
+    "frequency": 1.0,
+    "head": "677348a1f1105174cf215e35",
+    "equipments": "6826b80f94c09033363fc15a"
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "name": "巡检内容方案",
+  "category": "巡检管理",
+  "identifier": "sre-inspection-content-plan",
+  "description": "",
+  "version": "1.0.0",
+  "tree": false,
+  "extra": {},
+  "fields": [
+    {
+      "name": "inspection_contentplans_detailss",
+      "label": "巡检内容明细",
+      "type": "对象",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "required_time_sum",
+      "label": "巡检所需总时间",
+      "type": "数字",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "createdBy",
+      "label": "创建人",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "no",
+      "label": "内容方案编号",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    },
+    {
+      "name": "name",
+      "label": "内容方案名称",
+      "type": "文本",
+      "unique": false,
+      "editable": true
+    }
+  ]
+}
