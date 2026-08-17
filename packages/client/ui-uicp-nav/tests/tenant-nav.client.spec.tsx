@@ -10,7 +10,9 @@ import { TenantNav } from '../src/client/TenantNav.tsx'
 const t = ((key: string) => zh[key as keyof typeof zh]) as never
 
 function listState(sessions: Array<{ id: string; cwd?: string; title: string }>, current?: string) {
-  const byId = Object.fromEntries(sessions.map(s => [s.id, { id: s.id, cwd: s.cwd, displayTitle: s.title }]))
+  const byId = Object.fromEntries(sessions.map(s => [s.id, {
+    id: s.id, cwd: s.cwd, displayTitle: s.title, updatedAt: Date.now() - 60_000,
+  }]))
   return { ids: sessions.map(s => s.id), byId, current, phase: 'ready' } as never
 }
 
@@ -100,9 +102,9 @@ describe('TenantNav', () => {
     render(<TenantNav {...navProps(sessions)} />)
     fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
     fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
-    expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
-    expect(screen.queryByRole('treeitem', { name: '其它' })).toBeNull()
-    fireEvent.click(screen.getByRole('treeitem', { name: '会话1' }))
+    expect(await screen.findByRole('treeitem', { name: /会话1/ })).toBeTruthy()
+    expect(screen.queryByRole('treeitem', { name: /其它/ })).toBeNull()
+    fireEvent.click(screen.getByRole('treeitem', { name: /会话1/ }))
     expect(openSession).toHaveBeenCalledWith('s1')
     fireEvent.click(screen.getByRole('button', { name: '新建会话' }))
     expect(createSession).toHaveBeenCalledWith('/root/tenant-a/app-x')
@@ -122,9 +124,9 @@ describe('TenantNav', () => {
     fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
     const appRow = await screen.findByRole('treeitem', { name: '应用' })
     fireEvent.click(appRow)
-    expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
+    expect(await screen.findByRole('treeitem', { name: /会话1/ })).toBeTruthy()
     fireEvent.click(screen.getByRole('treeitem', { name: '应用' }))
-    expect(screen.queryByRole('treeitem', { name: '会话1' })).toBeNull()
+    expect(screen.queryByRole('treeitem', { name: /会话1/ })).toBeNull()
   })
 
   it('starts collapsed and reveals sessions only after expanding both levels', async () => {
@@ -138,11 +140,11 @@ describe('TenantNav', () => {
     const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }], 's1')
     render(<TenantNav {...navProps(sessions)} />)
     expect(await screen.findByRole('treeitem', { name: /租户A/ })).toBeTruthy()
-    expect(screen.queryByRole('treeitem', { name: '会话1' })).toBeNull()
+    expect(screen.queryByRole('treeitem', { name: /会话1/ })).toBeNull()
     fireEvent.click(screen.getByRole('treeitem', { name: /租户A/ }))
     fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
-    expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
-    expect(screen.getByRole('treeitem', { name: '会话1' }).getAttribute('aria-selected')).toBe('true')
+    expect(await screen.findByRole('treeitem', { name: /会话1/ })).toBeTruthy()
+    expect(screen.getByRole('treeitem', { name: /会话1/ }).getAttribute('aria-selected')).toBe('true')
   })
 
   it('logs out and clears the browsing tree', async () => {

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
 import {
-  Button, IconPlusOutline16, IconTriangleRightFill14, StateDot,
+  Button, IconFolderClose16, IconFolderOpen16, IconPlusOutline16,
+  IconTriangleRightFill14, StateDot,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
@@ -21,6 +22,20 @@ interface Tenant {
 
 /** Platform data responses omit `status` on success; missing means ok (eureka contract). */
 const succeeded = (body: { status?: number }): boolean => (body.status ?? 0) === 0
+
+/** Compact relative time ("刚刚"/"5分钟"), same buckets as the dsh browser rows. */
+function relativeTime(updatedAt: number, now: number): { unit: 'now' | 'minutes' | 'hours' | 'days' | 'months' | 'years'; n: number } {
+  const MIN = 60_000
+  const HOUR = 3_600_000
+  const DAY = 86_400_000
+  const diff = Math.max(0, now - updatedAt)
+  if (diff < MIN) return { unit: 'now', n: 0 }
+  if (diff < HOUR) return { unit: 'minutes', n: Math.floor(diff / MIN) }
+  if (diff < DAY) return { unit: 'hours', n: Math.floor(diff / HOUR) }
+  if (diff < 30 * DAY) return { unit: 'days', n: Math.floor(diff / DAY) }
+  if (diff < 365 * DAY) return { unit: 'months', n: Math.floor(diff / (30 * DAY)) }
+  return { unit: 'years', n: Math.floor(diff / (365 * DAY)) }
+}
 
 /**
  * Tenant/app/session tree occupying the sidebar browsing region: signs in
@@ -144,6 +159,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
   }
 
   if (token === undefined) return null
+  const now = Date.now()
   return (
     <div className={css.root}>
       <h3 className={css.sectionHeader}>{t('nav.projects')}</h3>
@@ -162,13 +178,13 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                 aria-expanded={tenantOpen}
                 onClick={() => { toggleTenant(tenant) }}
               >
-                <span className={css.slot}>
+                <span className={[css.slot, css.folder].join(' ')}>
+                  {tenantOpen ? <IconFolderOpen16 /> : <IconFolderClose16 />}
+                </span>
+                <span className={[css.slot, css.chevron].join(' ')}>
                   <IconTriangleRightFill14 className={[css.arrow, tenantOpen && css.arrowOpen].filter(Boolean).join(' ')} />
                 </span>
-                <span className={css.text}>
-                  <span className={css.title}>{tenant.name}</span>
-                  <span className={css.meta}>{tenant.identifier}</span>
-                </span>
+                <span className={css.title}>{tenant.name}</span>
               </div>
               {tenantOpen && (
                 <div role="group" className={css.group}>
@@ -194,12 +210,13 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                           aria-expanded={appOpen}
                           onClick={() => { toggleApp(tenant, app) }}
                         >
-                          <span className={css.slot}>
+                          <span className={[css.slot, css.folder].join(' ')}>
+                            {appOpen ? <IconFolderOpen16 /> : <IconFolderClose16 />}
+                          </span>
+                          <span className={[css.slot, css.chevron].join(' ')}>
                             <IconTriangleRightFill14 className={[css.arrow, appOpen && css.arrowOpen].filter(Boolean).join(' ')} />
                           </span>
-                          <span className={css.text}>
-                            <span className={css.title}>{app.name}</span>
-                          </span>
+                          <span className={css.title}>{app.name}</span>
                           {cwd !== undefined && (
                             <span className={css.rowActions}>
                               <button
@@ -220,6 +237,8 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                           <div role="group" className={css.group}>
                             {sessions.map((row) => {
                               const selected = row.id === list.current
+                              const { unit, n } = relativeTime(row.updatedAt, now)
+                              const time = unit === 'now' ? t('time.now') : t(`time.${unit}`, { n })
                               const dot = row.pendingInteraction !== undefined
                                 ? <StateDot state="warning" />
                                 : row.running
@@ -237,6 +256,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                                 >
                                   <span className={css.slot}>{dot}</span>
                                   <span className={css.title}>{row.displayTitle}</span>
+                                  <span className={css.time}>{time}</span>
                                 </div>
                               )
                             })}

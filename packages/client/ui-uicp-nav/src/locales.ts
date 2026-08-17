@@ -12,6 +12,12 @@ export const zh = {
   'nav.newSession': '新建会话',
   'nav.empty': '（空）',
   'nav.logout': '退出',
+  'time.now': '刚刚',
+  'time.minutes': '{n}分钟',
+  'time.hours': '{n}小时',
+  'time.days': '{n}天',
+  'time.months': '{n}个月',
+  'time.years': '{n}年',
 }
 
 /** English dictionary. */
@@ -29,4 +35,10 @@ export const en: Record<NavKey, string> = {
   'nav.newSession': 'New session',
   'nav.empty': '(empty)',
   'nav.logout': 'Sign out',
+  'time.now': 'now',
+  'time.minutes': '{n}min',
+  'time.hours': '{n}h',
+  'time.days': '{n}d',
+  'time.months': '{n}mo',
+  'time.years': '{n}y',
 }
