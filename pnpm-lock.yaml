@@ -2945,6 +2945,9 @@ importers:
       '@deepseek-ai/dsh-client-web-react':
         specifier: workspace:^
         version: link:../web-react
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:^
@@ -2982,9 +2985,6 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
 
   packages/client/ui-user-questions:
     dependencies:

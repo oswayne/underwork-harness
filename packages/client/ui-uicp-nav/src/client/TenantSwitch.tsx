@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
+import { createPortal } from 'react-dom'
 import {
   IconChevronDownOutline14, IconLoadingOutline16, Menu,
 } from '@deepseek-ai/dsh-client-ui-primitives'
@@ -28,6 +29,9 @@ const succeeded = (body: { status?: number }): boolean => (body.status ?? 0) ===
 
 /** localStorage key remembering the last selected tenant (project). */
 const TENANT_KEY = 'uicp.platform.tenant'
+
+/** How long a switch may stay quiet before the sidebar veil appears (dsh slow-load pattern). */
+const VEIL_DELAY_MS = 300
 
 function readStoredTenant(): string | undefined {
   try {
@@ -62,6 +66,23 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const [error, setError] = useState<string | undefined>()
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [veilWidth, setVeilWidth] = useState(0)
+  const [veilVisible, setVeilVisible] = useState(false)
+
+  // Mask the whole sidebar column while a switch runs, after a short delay
+  // so fast switches never flash it. The width comes from the layout frame's
+  // first grid child (the sidebar column) via the shell overlay hook.
+  useEffect(() => {
+    if (!busy) {
+      setVeilVisible(false)
+      return
+    }
+    const layer = document.querySelector('[data-shell-overlay]')
+    const sidebar = layer?.parentElement?.firstElementChild
+    if (sidebar instanceof Element) setVeilWidth(sidebar.getBoundingClientRect().width)
+    const timer = window.setTimeout(() => { setVeilVisible(true) }, VEIL_DELAY_MS)
+    return () => { window.clearTimeout(timer) }
+  }, [busy])
 
   useEffect(() => {
     refreshAuth()
@@ -130,30 +151,31 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     const tenant = tenants.find(item => item._id === id)
     if (tenant === undefined || busy) return
     const root = packagesRoot()
-    if (root !== undefined) pruneOtherTenants(root, tenant)
     setTenantId(id)
     writeStoredTenant(id)
     selectTenant(tenant)
     setBusy(true)
-    void registerApps(tenant).then(() => {
-      setError(undefined)
-    }).catch((reason: unknown) => {
-      setError(reason instanceof Error ? reason.message : String(reason))
-    }).finally(() => {
-      setBusy(false)
-    })
+    void (async () => {
+      try {
+        await registerApps(tenant)
+        // Adopt the new tenant before dropping the old one, so a failed
+        // switch leaves the previous tenant fully intact.
+        if (root !== undefined) await pruneOtherTenants(root, tenant)
+        setError(undefined)
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : String(reason))
+      } finally {
+        setBusy(false)
+      }
+    })()
   }
 
   /** Drop app-package Workspaces of every other tenant (sessions stay open). */
-  const pruneOtherTenants = (root: string, tenant: Tenant): void => {
+  const pruneOtherTenants = async (root: string, tenant: Tenant): Promise<void> => {
     const prefix = `${root}/${tenant.identifier}/`
-    for (const workspace of workspaces) {
-      if (workspace.path.startsWith(`${root}/`) && !workspace.path.startsWith(prefix)) {
-        void deleteWorkspace(workspace.workspaceId)?.catch(() => {
-          // The workspace may already be gone.
-        })
-      }
-    }
+    await Promise.allSettled(workspaces
+      .filter(workspace => workspace.path.startsWith(`${root}/`) && !workspace.path.startsWith(prefix))
+      .map(workspace => deleteWorkspace(workspace.workspaceId) ?? Promise.resolve()))
   }
 
   // Initial pass: land on the stored tenant (else the first), register only
@@ -175,7 +197,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         selectTenant(effective)
       }
       if (effective === undefined) return
-      pruneOtherTenants(root, effective)
+      await pruneOtherTenants(root, effective)
       try {
         await registerApps(effective)
         setError(undefined)
@@ -190,9 +212,9 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   useEffect(() => {
     const root = packagesRoot()
     const effective = tenants.find(item => item._id === tenantId)
-    if (root === undefined || effective === undefined) return
-    pruneOtherTenants(root, effective)
-  }, [workspaces, tenants, tenantId])
+    if (root === undefined || effective === undefined || busy) return
+    void pruneOtherTenants(root, effective)
+  }, [workspaces, tenants, tenantId, busy])
 
   if (token === undefined || !wide) return null
   const current = tenants.find(item => item._id === tenantId)
@@ -227,6 +249,13 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
           </button>
         )}
       />
+      {veilVisible && createPortal(
+        <div className={css.veil} style={{ width: veilWidth }}>
+          <IconLoadingOutline16 className={css.veilSpinner} size={20} />
+          <span className={css.veilText}>{t('nav.switchingTenant')}</span>
+        </div>,
+        document.body,
+      )}
     </div>
   )
 }

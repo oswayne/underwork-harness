@@ -112,7 +112,7 @@ describe('TenantSwitch', () => {
     })
   })
 
-  it('shows a loading state while the tenant switch registration is in flight', async () => {
+  it('shows a loading state and masks the sidebar while the tenant switch is in flight', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     let release: (() => void) | undefined
     const gate = new Promise<void>((resolve) => { release = resolve })
@@ -139,9 +139,11 @@ describe('TenantSwitch', () => {
     fireEvent.click(await screen.findByRole('menuitem', { name: '租户B' }))
     const trigger = await screen.findByRole('button', { name: '租户B' })
     expect(trigger.getAttribute('aria-busy')).toBe('true')
+    expect(await screen.findByText('正在切换租户…')).toBeTruthy()
     release?.()
     await waitFor(() => {
       expect(screen.getByRole('button', { name: '租户B' }).getAttribute('aria-busy')).toBe('false')
+      expect(screen.queryByText('正在切换租户…')).toBeNull()
     })
   })
 
