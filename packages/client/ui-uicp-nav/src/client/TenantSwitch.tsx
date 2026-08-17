@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
 import { IconChevronDownOutline14, Menu } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import { WorkspaceCreateError } from '@deepseek-ai/dsh-client-runtime/client'
 import { API_BASE, authSnapshot, refreshAuth, subscribeAuth } from './token.ts'
 import { packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant } from './nav.ts'
 import css from './TenantSwitch.module.css'
@@ -101,6 +102,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     if (!res.ok || !succeeded(body)) throw new Error(body.msg ?? `HTTP ${res.status}`)
     const apps = body.data ?? []
     let registered = 0
+    let missingDirs = 0
     const failures: string[] = []
     for (const app of apps) {
       const pending = registerAppWorkspace(`${root}/${tenant.identifier}/${app.identifier}`, app.name)
@@ -112,13 +114,20 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         await pending
         registered += 1
       } catch (reason) {
-        // Directory not synced yet: the app appears once it exists locally.
-        failures.push(reason instanceof Error ? reason.message : String(reason))
+        const missing = reason instanceof WorkspaceCreateError
+          ? reason.rpcError.code === 'workspace-invalid-path'
+          : reason instanceof Error && reason.message.includes('ENOENT')
+        if (missing) missingDirs += 1
+        else failures.push(reason instanceof Error ? reason.message : String(reason))
       }
     }
     if (apps.length > 0 && registered === 0) {
-      console.warn('uicp-nav: app workspace registration failed', failures)
-      setError(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
+      if (missingDirs === apps.length) {
+        setError(t('nav.notSynced'))
+      } else {
+        console.warn('uicp-nav: app workspace registration failed', failures)
+        setError(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
+      }
     }
   }
 

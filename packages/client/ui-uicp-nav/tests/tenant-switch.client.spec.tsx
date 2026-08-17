@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import { WorkspaceCreateError } from '@deepseek-ai/dsh-client-runtime/client'
 import { zh } from '../src/locales.ts'
 import { resetNav, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
 import { resetAuth } from '../src/client/token.ts'
@@ -130,5 +131,34 @@ describe('TenantSwitch', () => {
     await screen.findByRole('button', { name: '租户A' })
     await new Promise(resolve => setTimeout(resolve, 0))
     expect(register).not.toHaveBeenCalled()
+  })
+
+  it('skips app packages without local directories and shows a sync hint', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const register = vi.fn(async () => {
+      throw new WorkspaceCreateError({
+        code: 'workspace-invalid-path',
+        message: 'ENOENT: no such file or directory',
+      } as never)
+    })
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [
+          { _id: 't1', name: '租户A', identifier: 'tenant-a', available: true },
+        ] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [
+        { _id: 'a1', name: '应用', identifier: 'app-x' },
+      ] }))
+    }))
+    render(<TenantSwitch {...navProps()} />)
+    await screen.findByRole('button', { name: '租户A' })
+    expect(await screen.findByText(/暂无已同步到本地的应用包/)).toBeTruthy()
+    expect(register).toHaveBeenCalledWith('/root/tenant-a/app-x', '应用')
   })
 })

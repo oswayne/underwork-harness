@@ -9,6 +9,7 @@ export const zh = {
   'nav.tenant': '当前租户',
   'nav.rootUnavailable': '应用包目录不可用（{root}）',
   'nav.rootMissing': '无法获取应用包根目录',
+  'nav.notSynced': '该租户暂无已同步到本地的应用包，请先在 app-packages 目录同步后重试',
   'nav.sessions': '会话',
 }
 
@@ -24,5 +25,6 @@ export const en: Record<NavKey, string> = {
   'nav.tenant': 'Tenant',
   'nav.rootUnavailable': 'App package directory unavailable ({root})',
   'nav.rootMissing': 'Cannot resolve the app-package root',
+  'nav.notSynced': 'No app packages synced locally for this tenant yet; sync them under app-packages and retry',
   'nav.sessions': 'Sessions',
 }
