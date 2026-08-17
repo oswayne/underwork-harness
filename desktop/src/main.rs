@@ -67,6 +67,9 @@ fn spawn_dsh() -> std::io::Result<Child> {
     // URL (`dsh web: http://127.0.0.1:<port>`) as its readiness line.
     Command::new("pnpm")
         .args(["dsh", "web", "--port", "0"])
+        // The sidecar exits when this shell dies, so a killed app cannot
+        // orphan the web server.
+        .env("DSH_WATCH_PID", std::process::id().to_string())
         .stdout(Stdio::piped())
         .spawn()
 }

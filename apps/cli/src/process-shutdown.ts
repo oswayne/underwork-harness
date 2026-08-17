@@ -3,6 +3,9 @@
 /** Maximum grace allowed for the application tree to dispose before process exit. */
 export const PROCESS_SHUTDOWN_TIMEOUT_MS = 5_000
 
+/** Parent-liveness poll interval for the optional launcher watchdog. */
+export const PARENT_WATCH_INTERVAL_MS = 2_000
+
 /** Process-exit controller shared by normal completion and Unix signal handlers. */
 export interface ProcessShutdown {
   /** Start or join graceful disposal before allowing natural completion with `code`. */
@@ -74,4 +77,28 @@ export function createProcessShutdown(
       void start(code, true)
     },
   }
+}
+
+/**
+ * Exit when the launcher PID that spawned this CLI dies, so a killed
+ * supervisor (e.g. the desktop shell) cannot orphan a long-lived surface.
+ * Opt-in via `DSH_WATCH_PID`; unset means no watch.
+ * @param shutdown - the exit controller to trigger on parent loss.
+ * @returns a disposer stopping the poll.
+ */
+export function watchParentProcess(shutdown: ProcessShutdown): () => void {
+  const parent = Number(process.env.DSH_WATCH_PID)
+  if (!Number.isInteger(parent) || parent <= 0) return () => {}
+  const timer = setInterval(() => {
+    try {
+      process.kill(parent, 0)
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ESRCH') {
+        // The launcher is gone: exit quietly like a supervisor stop.
+        shutdown.interrupt(0)
+      }
+    }
+  }, PARENT_WATCH_INTERVAL_MS)
+  timer.unref()
+  return () => { clearInterval(timer) }
 }

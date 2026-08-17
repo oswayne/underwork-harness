@@ -36,7 +36,9 @@ const SHIPPED_PRESET_ROOT = fileURLToPath(new URL('../config/agent-presets/', im
 
 import { DSH_LAUNCH_ENVIRONMENT_KEY, type LaunchEnvironmentSnapshot } from '@deepseek-ai/dsh-launch-environment'
 import { provideCmdline } from '@deepseek-ai/dsh-cmdline'
-import { createProcessShutdown, type ProcessShutdown } from './process-shutdown.ts'
+import {
+  createProcessShutdown, watchParentProcess, type ProcessShutdown,
+} from './process-shutdown.ts'
 
 const NAME = 'dsh'
 
@@ -208,6 +210,7 @@ export async function runProfile(options: RunProfileOptions): Promise<{ ctx: Con
   const composed = composeProfile(options.profile, options.patchFiles)
   const app: { current?: Context } = {}
   const shutdown = createProcessShutdown(async () => { await app.current?.fiber.dispose() })
+  watchParentProcess(shutdown)
   const signalShutdown = new AbortController()
   const interrupt = (code: number): void => {
     signalShutdown.abort()
