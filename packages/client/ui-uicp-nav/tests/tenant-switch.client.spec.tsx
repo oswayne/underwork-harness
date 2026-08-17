@@ -47,7 +47,7 @@ describe('TenantSwitch', () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => undefined) } }
     render(<TenantSwitch {...navProps()} />)
     await new Promise(resolve => setTimeout(resolve, 0))
-    expect(screen.queryByRole('combobox')).toBeNull()
+    expect(screen.queryByRole('button')).toBeNull()
   })
 
   it('lists tenants and registers the default tenant app packages as workspaces', async () => {
@@ -70,8 +70,9 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    const select = await screen.findByRole('combobox', { name: '当前租户' })
-    expect(select.querySelectorAll('option').length).toBe(2)
+    fireEvent.click(await screen.findByRole('button', { name: /当前租户/ }))
+    expect(await screen.findByRole('menuitem', { name: '租户A' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: '租户B' })).toBeTruthy()
     await waitFor(() => {
       expect(register).toHaveBeenCalledWith('/root/tenant-a/app-x', '应用')
     })
@@ -97,7 +98,8 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    fireEvent.change(await screen.findByRole('combobox', { name: '当前租户' }), { target: { value: 't2' } })
+    fireEvent.click(await screen.findByRole('button', { name: /当前租户/ }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: '租户B' }))
     await waitFor(() => {
       expect(register).toHaveBeenCalledWith('/root/tenant-b/app-y', '应用B')
     })
@@ -125,18 +127,8 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    await screen.findByRole('combobox', { name: '当前租户' })
+    await screen.findByRole('button', { name: /当前租户/ })
     await new Promise(resolve => setTimeout(resolve, 0))
     expect(register).not.toHaveBeenCalled()
-  })
-
-  it('logs out through the footer action', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
-    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 0, data: [] }))))
-    render(<TenantSwitch {...navProps()} />)
-    fireEvent.click(await screen.findByRole('button', { name: '退出' }))
-    await waitFor(() => {
-      expect(screen.queryByRole('button', { name: '退出' })).toBeNull()
-    })
   })
 })

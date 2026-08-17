@@ -8,7 +8,6 @@ export const zh = {
   'login.submit': '登录',
   'nav.tenant': '当前租户',
   'nav.sessions': '会话',
-  'nav.logout': '退出',
 }
 
 /** English dictionary. */
@@ -22,5 +21,4 @@ export const en: Record<NavKey, string> = {
   'login.submit': 'Sign in',
   'nav.tenant': 'Tenant',
   'nav.sessions': 'Sessions',
-  'nav.logout': 'Sign out',
 }

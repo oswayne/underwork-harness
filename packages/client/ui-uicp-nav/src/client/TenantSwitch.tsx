@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
-import { Button } from '@deepseek-ai/dsh-client-ui-primitives'
+import { IconChevronDownOutline14, Menu } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { API_BASE, authSnapshot, clearToken, refreshAuth, subscribeAuth } from './token.ts'
+import { API_BASE, authSnapshot, refreshAuth, subscribeAuth } from './token.ts'
 import { packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant } from './nav.ts'
 import css from './TenantSwitch.module.css'
 
@@ -55,6 +55,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [tenantId, setTenantId] = useState<string | undefined>(readStoredTenant)
   const [error, setError] = useState<string | undefined>()
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     refreshAuth()
@@ -124,32 +125,30 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   }, [tenants])
 
   if (token === undefined || !wide) return null
+  const current = tenants.find(item => item._id === tenantId)
   return (
     <div className={css.root}>
       {error !== undefined ? <div className={css.error}>{error}</div> : null}
-      <div className={css.row}>
-        <label className={css.label} htmlFor="uicp-tenant">{t('nav.tenant')}</label>
-        <select
-          id="uicp-tenant"
-          className={css.select}
-          value={tenantId ?? ''}
-          onChange={(event) => { choose(event.target.value) }}
-        >
-          {tenants.map(item => (
-            <option key={item._id} value={item._id}>{item.name}</option>
-          ))}
-        </select>
-      </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        className={css.logout}
-        onClick={() => {
-          void clearToken()
+      <Menu
+        open={open}
+        onClose={() => { setOpen(false) }}
+        items={tenants.map(item => ({ id: item._id, label: item.name }))}
+        selectedIds={tenantId === undefined ? [] : [tenantId]}
+        onSelect={(id) => {
+          setOpen(false)
+          choose(id)
         }}
-      >
-        {t('nav.logout')}
-      </Button>
+        portal
+        dense
+        align="start"
+        anchor={(
+          <button type="button" className={css.trigger} onClick={() => { setOpen(v => !v) }}>
+            <span className={css.label}>{t('nav.tenant')}</span>
+            <span className={css.value}>{current?.name ?? t('nav.tenant')}</span>
+            <IconChevronDownOutline14 className={css.chevron} />
+          </button>
+        )}
+      />
     </div>
   )
 }
