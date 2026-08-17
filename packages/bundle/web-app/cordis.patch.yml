@@ -128,6 +128,11 @@
       config:
         upstream: https://api.underwork.cn/uicp
 
+    # M2 preview seam: serves the self-contained eureka preview bundle and
+    # read-only page/fixture data for the app-package workspace preview tab.
+    - id: uicp-preview-backend
+      name: '@deepseek-ai/dsh-uicp-preview-backend'
+
     # Web glue owned by this bundle: resolves the built frontend dist (an
     # assembly fact of dsh-web-app, never user config), mounts the
     # frontend-static fallback owner, registers the web-surface prompt
@@ -233,6 +238,12 @@
 
     - id: ui-uicp-nav
       name: '@deepseek-ai/dsh-client-ui-uicp-nav'
+
+    # M2: app-package product workspace replaces the upstream details seat
+    # (single-slot shadowing via negative priority); preview tab renders the
+    # eureka page with fixture data.
+    - id: ui-apppackage-workspace
+      name: '@deepseek-ai/dsh-client-ui-apppackage-workspace'
 
     # Input triggers: the '/' | '@' pipeline (ui-input-trigger), the command surface over
     # it (ui-commands), and the two reference sources (ui-skill / ui-subagent).
