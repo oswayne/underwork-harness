@@ -42,8 +42,8 @@ describe('AppPackageWorkspace', () => {
     })))
     vi.stubGlobal('fetch', fetchMock)
     render(<AppPackageWorkspace {...props('/root/cszh/dsh-test')} />)
-    expect(screen.getByRole('tab', { name: '渲染预览' })).toBeTruthy()
-    expect(screen.getByRole('tab', { name: '可视化编辑' }).hasAttribute('disabled')).toBe(true)
+    expect(screen.getByRole('tab', { name: '预览' })).toBeTruthy()
+    expect(screen.getByRole('tab', { name: '编辑' }).hasAttribute('disabled')).toBe(true)
     await waitFor(() => {
       expect(mount).toHaveBeenCalled()
     })

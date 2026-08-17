@@ -1,8 +1,8 @@
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
-  'workspace.tab.preview': '渲染预览',
-  'workspace.tab.editor': '可视化编辑',
-  'workspace.tab.json': '原始 JSON',
+  'workspace.tab.preview': '预览',
+  'workspace.tab.editor': '编辑',
+  'workspace.tab.json': 'JSON',
   'workspace.tab.tests': '测试',
   'workspace.tab.versions': '版本',
   'workspace.m3': 'M3 里程碑实现',
@@ -16,7 +16,7 @@ export const zh = {
 export type AppPackageKey = keyof typeof zh
 export const en: Record<AppPackageKey, string> = {
   'workspace.tab.preview': 'Preview',
-  'workspace.tab.editor': 'Editor',
+  'workspace.tab.editor': 'Edit',
   'workspace.tab.json': 'JSON',
   'workspace.tab.tests': 'Tests',
   'workspace.tab.versions': 'Versions',
