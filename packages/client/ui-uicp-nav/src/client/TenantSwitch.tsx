@@ -206,6 +206,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         dense
         align="start"
         side="top"
+        className={css.menuRoot}
         anchor={(
           <button type="button" className={css.trigger} onClick={() => { setOpen(v => !v) }}>
             <span className={css.value}>{current?.name ?? ''}</span>

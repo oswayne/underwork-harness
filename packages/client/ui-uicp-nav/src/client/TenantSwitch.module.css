@@ -9,6 +9,15 @@
   min-width: 0;
 }
 
+/* The Menu wraps its anchor in an inline-flex span that shrink-wraps; widen
+   it so the trigger fills the row like the shell's New Session button. The
+   descendant selector beats the Menu's own `.root` regardless of rule order
+   and survives minification (a doubled class would be collapsed). */
+.root .menuRoot {
+  display: flex;
+  width: 100%;
+}
+
 .trigger {
   display: flex;
   align-items: center;
