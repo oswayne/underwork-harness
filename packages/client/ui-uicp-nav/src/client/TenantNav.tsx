@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
 import {
-  Button, IconFolderClose16, IconFolderOpen16, IconPlusOutline16,
-  IconTriangleRightFill14, StateDot,
+  Button, IconPlusOutline16, IconTriangleRightFill14, StateDot,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
@@ -44,9 +43,6 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
   const [appErrors, setAppErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | undefined>()
   const [context, setContext] = useState<{ tenant: SelectedTenant; app: AppPackage } | undefined>()
-  // Latest tree data for the follow-current effect (runs on session changes only).
-  const followRef = useRef({ tenants, appsByTenant, appsLoading })
-  followRef.current = { tenants, appsByTenant, appsLoading }
 
   useEffect(() => {
     refreshAuth()
@@ -147,33 +143,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
     void createSession(cwd)
   }
 
-  // Reveal the branch holding the active session (folder tint + expansion),
-  // loading the tenant's apps on demand like a manual expand would.
-  useEffect(() => {
-    if (auth.status !== 'authenticated' || list.current === undefined) return
-    const cwd = list.byId[list.current]?.cwd
-    const root = packagesRoot()
-    if (cwd === undefined || root === undefined || !cwd.startsWith(`${root}/`)) return
-    const [tenantId, appId] = cwd.slice(root.length + 1).split('/')
-    if (tenantId === undefined || appId === undefined) return
-    const { tenants: currentTenants, appsByTenant: currentApps, appsLoading: loading } = followRef.current
-    const tenant = currentTenants.find(item => item.identifier === tenantId)
-    if (tenant === undefined) return
-    setExpandedTenants(keys => keys.includes(tenant._id) ? keys : [...keys, tenant._id])
-    if (currentApps[tenant._id] === undefined && loading !== tenant._id) void loadApps(tenant)
-    const app = (currentApps[tenant._id] ?? []).find(item => item.identifier === appId)
-    if (app !== undefined) {
-      const key = `${tenant._id}/${app.identifier}`
-      setExpandedApps(keys => keys.includes(key) ? keys : [...keys, key])
-      setContext(current => current?.tenant._id === tenant._id && current.app.identifier === app.identifier
-        ? current
-        : { tenant, app })
-    }
-  }, [list.current, auth.status, tenants, appsByTenant])
-
   if (token === undefined) return null
-  const root = packagesRoot()
-  const currentCwd = list.current === undefined ? undefined : list.byId[list.current]?.cwd
   return (
     <div className={css.root}>
       <h3 className={css.sectionHeader}>{t('nav.projects')}</h3>
@@ -184,9 +154,6 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
           const apps = appsByTenant[tenant._id] ?? []
           const loading = appsLoading === tenant._id
           const appError = appErrors[tenant._id]
-          const tenantContainsCurrent = root !== undefined
-            && currentCwd !== undefined
-            && currentCwd.startsWith(`${root}/${tenant.identifier}/`)
           return (
             <div key={tenant._id} className={css.group}>
               <div
@@ -195,10 +162,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                 aria-expanded={tenantOpen}
                 onClick={() => { toggleTenant(tenant) }}
               >
-                <span className={[css.slot, css.folder, tenantContainsCurrent && css.folderActive].filter(Boolean).join(' ')}>
-                  {tenantOpen ? <IconFolderOpen16 /> : <IconFolderClose16 />}
-                </span>
-                <span className={[css.slot, css.chevron].join(' ')}>
+                <span className={css.slot}>
                   <IconTriangleRightFill14 className={[css.arrow, tenantOpen && css.arrowOpen].filter(Boolean).join(' ')} />
                 </span>
                 <span className={css.text}>
@@ -222,7 +186,6 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                         .filter(row => row.cwd === cwd)
                     const active = context?.tenant._id === tenant._id
                       && context.app.identifier === app.identifier
-                    const containsCurrent = sessions.some(row => row.id === list.current)
                     return (
                       <div key={key} className={css.group}>
                         <div
@@ -231,10 +194,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                           aria-expanded={appOpen}
                           onClick={() => { toggleApp(tenant, app) }}
                         >
-                          <span className={[css.slot, css.folder, (active || containsCurrent) && css.folderActive].filter(Boolean).join(' ')}>
-                            {appOpen ? <IconFolderOpen16 /> : <IconFolderClose16 />}
-                          </span>
-                          <span className={[css.slot, css.chevron].join(' ')}>
+                          <span className={css.slot}>
                             <IconTriangleRightFill14 className={[css.arrow, appOpen && css.arrowOpen].filter(Boolean).join(' ')} />
                           </span>
                           <span className={css.text}>

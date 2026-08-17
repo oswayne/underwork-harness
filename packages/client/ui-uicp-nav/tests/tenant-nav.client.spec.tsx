@@ -127,7 +127,7 @@ describe('TenantNav', () => {
     expect(screen.queryByRole('treeitem', { name: '会话1' })).toBeNull()
   })
 
-  it('reveals the branch of the active session without manual clicks', async () => {
+  it('starts collapsed and reveals sessions only after expanding both levels', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
@@ -137,6 +137,10 @@ describe('TenantNav', () => {
     }))
     const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }], 's1')
     render(<TenantNav {...navProps(sessions)} />)
+    expect(await screen.findByRole('treeitem', { name: /租户A/ })).toBeTruthy()
+    expect(screen.queryByRole('treeitem', { name: '会话1' })).toBeNull()
+    fireEvent.click(screen.getByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
     expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
     expect(screen.getByRole('treeitem', { name: '会话1' }).getAttribute('aria-selected')).toBe('true')
   })

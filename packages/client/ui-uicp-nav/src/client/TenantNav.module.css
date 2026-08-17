@@ -1,7 +1,8 @@
 /* Tenant/app/session tree filling the sidebar shell's `sidebar.workspaces`
-   hole. Row chrome mirrors the dsh workspace browser (figma 14:3080):
-   project rows 34px with a folder -> chevron hover swap, session rows 32px
-   with the status-dot slot, and a 22px indent step per tree level. */
+   hole. Row metrics and tokens mirror the dsh workspace browser (figma
+   14:3080) — project rows 34px, session rows 32px, 22px indent steps — with
+   an always-visible disclosure chevron per container row so the tree reads
+   as expandable/collapsible at every level. */
 
 .root {
   flex: 1;
@@ -91,29 +92,12 @@
   color: var(--dsw-alias-label-tertiary);
 }
 
-/* Project leading slot: folder by default, expand arrow on row hover. */
-.projectRow .chevron {
-  display: none;
-}
-
-.projectRow:hover .chevron {
-  display: inline-flex;
-}
-
-.projectRow:hover .folder {
-  display: none;
-}
-
 .arrow {
   transition: transform 150ms var(--ds-ease-in-out);
 }
 
 .arrowOpen {
   transform: rotate(90deg);
-}
-
-.folderActive {
-  color: var(--dsw-alias-state-business-primary);
 }
 
 .text {
