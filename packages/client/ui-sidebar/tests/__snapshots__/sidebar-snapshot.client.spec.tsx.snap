@@ -20,6 +20,7 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
         <img
           alt=""
           class="railFish"
+          draggable="false"
           height="24"
           src="/app-icon.svg"
           width="24"
@@ -103,6 +104,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
         >
           <img
             alt=""
+            draggable="false"
             height="24"
             src="/app-icon.svg"
             width="24"
@@ -199,6 +201,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         >
           <img
             alt=""
+            draggable="false"
             height="24"
             src="/app-icon.svg"
             width="24"

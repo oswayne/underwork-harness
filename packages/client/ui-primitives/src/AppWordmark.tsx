@@ -1,4 +1,4 @@
-// Underwork Harness brand wordmark: the fish mark plus the product name,
+// Underwork Harness brand wordmark: the app icon plus the product name,
 // composed at the given cap height. Ink rides currentColor.
 
 import type { IconProps } from './icons/props.ts'

@@ -1,6 +1,6 @@
 // Underwork Harness app icon (desktop/icons/icon.svg, served as
 // /app-icon.svg by the web shell): the rounded brand mark. Rendered square
-// at the requested size; decorative (alt-less) like the wordmark.
+// at the requested size; decorative (empty alt) like the wordmark.
 
 import type { IconProps } from './icons/props.ts'
 
@@ -18,6 +18,7 @@ export function AppLogo({ size = 24, className }: IconProps) {
       height={size}
       className={className}
       alt=""
+      draggable={false}
     />
   )
 }

@@ -7,7 +7,7 @@ import {
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { API_BASE, authSnapshot, refreshAuth, subscribeAuth } from './token.ts'
 import {
-  deleteWorkspace, packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant,
+  deleteWorkspace, packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant, type AppPackage,
 } from './nav.ts'
 import css from './TenantSwitch.module.css'
 
@@ -16,12 +16,6 @@ interface Tenant {
   name: string
   identifier: string
   available?: boolean
-}
-
-interface AppPackage {
-  _id: string
-  name: string
-  identifier: string
 }
 
 /** Platform data responses omit `status` on success; missing means ok (eureka contract). */
@@ -135,6 +129,9 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
       console.warn('uicp-nav: app workspace registration failed', failures)
       throw new Error(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
     }
+    if (failures.length > 0) {
+      console.warn('uicp-nav: some app workspace registrations failed', failures)
+    }
     return registered
   }
 
@@ -145,6 +142,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     setTenantId(id)
     writeStoredTenant(id)
     selectTenant(tenant)
+    setError(undefined)
     setBusy(true)
     void (async () => {
       try {

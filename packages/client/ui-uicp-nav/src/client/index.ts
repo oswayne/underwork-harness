@@ -20,7 +20,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 
 const NS = 'nav'
 
-/** Required services: slots for registration, locale for dictionaries. */
+/** Required services: slots for registration, sessions/workspaces for actions. */
 export const inject = ['slots', 'locale', 'sessions', 'workspaces']
 
 /**

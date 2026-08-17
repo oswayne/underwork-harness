@@ -6,6 +6,7 @@
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::{Child, Command};
 use std::process::Stdio;
@@ -47,6 +48,8 @@ impl Token {
         if let Ok(mut guard) = self.value.lock() {
             *guard = Some(token.clone());
             let _ = fs::write(&self.file, token);
+            // The persisted JWT is a credential: keep it owner-only.
+            let _ = fs::set_permissions(&self.file, std::fs::Permissions::from_mode(0o600));
         }
     }
 
