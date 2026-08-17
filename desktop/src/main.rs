@@ -105,9 +105,9 @@ fn clear_token(state: tauri::State<Token>) {
 }
 
 /// Absolute root of app-package directories. Dev resolution: the nearest
-/// `app-packages` directory walking up from the launch cwd (so launching the
-/// binary from `desktop/` still finds the repo's app-packages), overridable
-/// with `UICP_APP_PACKAGES_ROOT`.
+/// `app-packages` directory walking up from both the launch cwd and the
+/// executable's own directory (Finder launches run with a root cwd, but the
+/// binary lives inside the repo), overridable with `UICP_APP_PACKAGES_ROOT`.
 #[tauri::command]
 fn app_packages_root() -> Result<String, String> {
     if let Ok(env) = std::env::var("UICP_APP_PACKAGES_ROOT") {
@@ -115,13 +115,24 @@ fn app_packages_root() -> Result<String, String> {
             return Ok(env)
         }
     }
-    let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
-    for ancestor in cwd.ancestors() {
-        let candidate = ancestor.join("app-packages");
-        if candidate.is_dir() {
-            return Ok(candidate.to_string_lossy().into_owned())
+    let mut starts = Vec::new();
+    if let Ok(cwd) = std::env::current_dir() {
+        starts.push(cwd)
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(dir) = exe.parent() {
+            starts.push(dir.to_path_buf())
         }
     }
+    for start in starts {
+        for ancestor in start.ancestors() {
+            let candidate = ancestor.join("app-packages");
+            if candidate.is_dir() {
+                return Ok(candidate.to_string_lossy().into_owned())
+            }
+        }
+    }
+    let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
     Ok(cwd.join("app-packages").to_string_lossy().into_owned())
 }
 

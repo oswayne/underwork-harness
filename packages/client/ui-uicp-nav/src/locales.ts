@@ -7,6 +7,7 @@ export const zh = {
   'login.placeholder': '粘贴平台 Token（JWT）',
   'login.submit': '登录',
   'nav.tenant': '当前租户',
+  'nav.rootUnavailable': '应用包目录不可用（{root}）',
   'nav.sessions': '会话',
 }
 
@@ -20,5 +21,6 @@ export const en: Record<NavKey, string> = {
   'login.placeholder': 'Paste platform token (JWT)',
   'login.submit': 'Sign in',
   'nav.tenant': 'Tenant',
+  'nav.rootUnavailable': 'App package directory unavailable ({root})',
   'nav.sessions': 'Sessions',
 }

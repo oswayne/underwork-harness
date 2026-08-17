@@ -26,13 +26,6 @@
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-.label {
-  flex: none;
-  font-size: 12px;
-  line-height: 20px;
-  color: var(--dsw-alias-label-tertiary);
-}
-
 .value {
   flex: 1;
   min-width: 0;

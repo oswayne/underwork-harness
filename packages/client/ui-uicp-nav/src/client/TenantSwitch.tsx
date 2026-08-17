@@ -88,17 +88,28 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
 
   /** Register every app package of one tenant as a dsh Workspace. */
   const registerApps = async (tenant: Tenant): Promise<void> => {
-    const root = packagesRoot()
-    if (root === undefined || token === undefined) return
+    if (token === undefined) return
+    const root = packagesRoot() ?? await resolvePackagesRoot()
+    if (root === undefined) return
     const res = await fetch(`${API_BASE}/app-package/list`, {
       headers: { Authorization: token, Tenant: tenant._id },
     })
     const body = (await res.json()) as { status?: number; data?: AppPackage[]; msg?: string }
     if (!res.ok || !succeeded(body)) throw new Error(body.msg ?? `HTTP ${res.status}`)
-    for (const app of body.data ?? []) {
-      void registerAppWorkspace(`${root}/${tenant.identifier}/${app.identifier}`, app.name)?.catch(() => {
+    const apps = body.data ?? []
+    let registered = 0
+    for (const app of apps) {
+      const pending = registerAppWorkspace(`${root}/${tenant.identifier}/${app.identifier}`, app.name)
+      if (pending === undefined) continue
+      try {
+        await pending
+        registered += 1
+      } catch {
         // Directory not synced yet: the app appears once it exists locally.
-      })
+      }
+    }
+    if (apps.length > 0 && registered === 0) {
+      setError(t('nav.rootUnavailable', { root }))
     }
   }
 
@@ -143,8 +154,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         align="start"
         anchor={(
           <button type="button" className={css.trigger} onClick={() => { setOpen(v => !v) }}>
-            <span className={css.label}>{t('nav.tenant')}</span>
-            <span className={css.value}>{current?.name ?? t('nav.tenant')}</span>
+            <span className={css.value}>{current?.name ?? ''}</span>
             <IconChevronDownOutline14 className={css.chevron} />
           </button>
         )}

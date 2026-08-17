@@ -70,7 +70,7 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    fireEvent.click(await screen.findByRole('button', { name: /当前租户/ }))
+    fireEvent.click(await screen.findByRole('button', { name: '租户A' }))
     expect(await screen.findByRole('menuitem', { name: '租户A' })).toBeTruthy()
     expect(screen.getByRole('menuitem', { name: '租户B' })).toBeTruthy()
     await waitFor(() => {
@@ -98,7 +98,7 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    fireEvent.click(await screen.findByRole('button', { name: /当前租户/ }))
+    fireEvent.click(await screen.findByRole('button', { name: '租户A' }))
     fireEvent.click(await screen.findByRole('menuitem', { name: '租户B' }))
     await waitFor(() => {
       expect(register).toHaveBeenCalledWith('/root/tenant-b/app-y', '应用B')
@@ -127,7 +127,7 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    await screen.findByRole('button', { name: /当前租户/ })
+    await screen.findByRole('button', { name: '租户A' })
     await new Promise(resolve => setTimeout(resolve, 0))
     expect(register).not.toHaveBeenCalled()
   })
