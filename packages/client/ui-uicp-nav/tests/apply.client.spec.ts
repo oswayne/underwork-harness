@@ -18,12 +18,13 @@ async function bench() {
   }))
   const startSession = vi.fn()
   const renameWorkspace = vi.fn(async () => undefined)
+  const createDirectory = vi.fn(async () => undefined)
   ctx.provide('sessions', { open } as never)
-  ctx.provide('workspaces', { create: createWorkspace, startSession, rename: renameWorkspace } as never)
+  ctx.provide('workspaces', { create: createWorkspace, startSession, rename: renameWorkspace, createDirectory } as never)
   const locale = new LocaleRuntime(ctx)
   ctx.provide('locale', locale)
   return {
-    ctx, slots: ctx.get('slots') as SlotRegistry, locale, open, createWorkspace, startSession, renameWorkspace,
+    ctx, slots: ctx.get('slots') as SlotRegistry, locale, open, createWorkspace, startSession, renameWorkspace, createDirectory,
   }
 }
 
@@ -59,7 +60,8 @@ describe('ui-uicp-nav apply', () => {
     expect(b.open).toHaveBeenCalledWith('s1')
     expect(b.createWorkspace).toHaveBeenCalledWith({ path: '/root/t/a' })
     expect(b.startSession).toHaveBeenCalledWith('ws-1')
-    expect(b.createWorkspace).toHaveBeenCalledWith({ path: '/root/t/a' })
     expect(b.renameWorkspace).toHaveBeenCalledWith('ws-1', '应用')
+    expect(b.createDirectory).toHaveBeenCalledWith('/root', 't')
+    expect(b.createDirectory).toHaveBeenCalledWith('/root/t', 'a')
   })
 })

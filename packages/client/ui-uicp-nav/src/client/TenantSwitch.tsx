@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
 import { IconChevronDownOutline14, Menu } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { WorkspaceCreateError } from '@deepseek-ai/dsh-client-runtime/client'
 import { API_BASE, authSnapshot, refreshAuth, subscribeAuth } from './token.ts'
 import { packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant } from './nav.ts'
 import css from './TenantSwitch.module.css'
@@ -103,32 +102,20 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     if (!res.ok || !succeeded(body)) throw new Error(body.msg ?? `HTTP ${res.status}`)
     const apps = body.data ?? []
     let registered = 0
-    let missingDirs = 0
     const failures: string[] = []
     for (const app of apps) {
       const pending = registerAppWorkspace(`${root}/${tenant.identifier}/${app.identifier}`, app.name)
-      if (pending === undefined) {
-        failures.push('nav actions unavailable')
-        continue
-      }
+      if (pending === undefined) continue
       try {
         await pending
         registered += 1
       } catch (reason) {
-        const missing = reason instanceof WorkspaceCreateError
-          ? reason.rpcError.code === 'workspace-invalid-path'
-          : reason instanceof Error && reason.message.includes('ENOENT')
-        if (missing) missingDirs += 1
-        else failures.push(reason instanceof Error ? reason.message : String(reason))
+        failures.push(reason instanceof Error ? reason.message : String(reason))
       }
     }
     if (apps.length > 0 && registered === 0) {
-      if (missingDirs === apps.length) {
-        return 0
-      } else {
-        console.warn('uicp-nav: app workspace registration failed', failures)
-        throw new Error(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
-      }
+      console.warn('uicp-nav: app workspace registration failed', failures)
+      throw new Error(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
     }
     return registered
   }
@@ -139,8 +126,8 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     setTenantId(id)
     writeStoredTenant(id)
     selectTenant(tenant)
-    void registerApps(tenant).then((n) => {
-      setError(n === 0 ? t('nav.notSynced') : undefined)
+    void registerApps(tenant).then(() => {
+      setError(undefined)
     }).catch((reason: unknown) => {
       setError(reason instanceof Error ? reason.message : String(reason))
     })
@@ -151,16 +138,12 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   // and only complain when no tenant has any app package locally.
   useEffect(() => {
     if (tenants.length === 0) return
-    let synced = 0
     let firstSynced: Tenant | undefined
     void (async () => {
       for (const tenant of tenants) {
         try {
           const n = await registerApps(tenant)
-          if (n > 0) {
-            synced += n
-            firstSynced ??= tenant
-          }
+          if (n > 0) firstSynced ??= tenant
         } catch (reason) {
           setError(reason instanceof Error ? reason.message : String(reason))
           return
@@ -175,7 +158,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         }
         selectTenant(effective)
       }
-      setError(synced === 0 ? t('nav.notSynced') : undefined)
+      setError(undefined)
     })()
   }, [tenants])
 
@@ -196,6 +179,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         portal
         dense
         align="start"
+        side="top"
         anchor={(
           <button type="button" className={css.trigger} onClick={() => { setOpen(v => !v) }}>
             <span className={css.value}>{current?.name ?? ''}</span>

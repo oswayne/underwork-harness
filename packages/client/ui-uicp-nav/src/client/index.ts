@@ -51,6 +51,18 @@ export function apply(ctx: ClientContext): void {
     },
     archiveSession: async (id) => { await ctx.workspaces.archiveSession(id) },
     registerAppWorkspace: async (cwd, title) => {
+      // Adopt any platform app package, creating its local directory first
+      // (the from-scratch bridgehead) when it has not been synced yet.
+      const tenantDir = cwd.slice(0, cwd.lastIndexOf('/'))
+      const rootDir = tenantDir.slice(0, tenantDir.lastIndexOf('/'))
+      const tenantName = tenantDir.slice(tenantDir.lastIndexOf('/') + 1)
+      const appName = cwd.slice(cwd.lastIndexOf('/') + 1)
+      await ctx.workspaces.createDirectory(rootDir, tenantName).catch(() => {
+        // Parent or tenant directory already exists.
+      })
+      await ctx.workspaces.createDirectory(tenantDir, appName).catch(() => {
+        // App directory already exists.
+      })
       const workspace = await ctx.workspaces.create({ path: cwd })
       await ctx.workspaces.rename(workspace.workspaceId, title).catch(() => {
         // A title conflict with another workspace keeps the basename title.

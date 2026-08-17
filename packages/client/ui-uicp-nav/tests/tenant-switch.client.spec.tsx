@@ -2,7 +2,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { WorkspaceCreateError } from '@deepseek-ai/dsh-client-runtime/client'
 import { zh } from '../src/locales.ts'
 import { resetNav, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
 import { resetAuth } from '../src/client/token.ts'
@@ -133,13 +132,10 @@ describe('TenantSwitch', () => {
     expect(register).not.toHaveBeenCalled()
   })
 
-  it('skips app packages without local directories and shows a sync hint', async () => {
+  it('surfaces real registration failures with their detail', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const register = vi.fn(async () => {
-      throw new WorkspaceCreateError({
-        code: 'workspace-invalid-path',
-        message: 'ENOENT: no such file or directory',
-      } as never)
+      throw new Error('disk full')
     })
     setNavActions({
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
@@ -157,8 +153,7 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    await screen.findByRole('button', { name: '租户A' })
-    expect(await screen.findByText(/暂无已同步到本地的应用包/)).toBeTruthy()
+    expect(await screen.findByText(/disk full/)).toBeTruthy()
     expect(register).toHaveBeenCalledWith('/root/tenant-a/app-x', '应用')
   })
 })
