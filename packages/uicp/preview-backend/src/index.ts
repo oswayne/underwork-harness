@@ -147,7 +147,7 @@ async function serveFile(res: ServerResponse, path: string, contentType: string)
  * @param ctx - host context with the webserver.
  * @param config - app-packages root override.
  */
-export function apply(ctx: Context, config: Config): void {
+export function apply(ctx: Context, config: Config = {}): void {
   const root = resolveAppPackagesRoot(config)
   ctx.effect(
     () => {

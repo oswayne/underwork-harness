@@ -1285,6 +1285,9 @@ importers:
       '@deepseek-ai/dsh-client-ui-agent-preset':
         specifier: workspace:^
         version: link:../../client/ui-agent-preset
+      '@deepseek-ai/dsh-client-ui-apppackage-workspace':
+        specifier: workspace:^
+        version: link:../../client/ui-apppackage-workspace
       '@deepseek-ai/dsh-client-ui-commands':
         specifier: workspace:^
         version: link:../../client/ui-commands
@@ -1429,6 +1432,9 @@ importers:
       '@deepseek-ai/dsh-uicp-api-proxy':
         specifier: workspace:^
         version: link:../../uicp/api-proxy
+      '@deepseek-ai/dsh-uicp-preview-backend':
+        specifier: workspace:^
+        version: link:../../uicp/preview-backend
       '@deepseek-ai/dsh-web-frontend':
         specifier: workspace:^
         version: link:../../../apps/web
