@@ -13,7 +13,7 @@ export interface PreviewActionInjected {
  * @returns the preview button.
  */
 export function PreviewAction(
-  props: PropsRuntime<'conversation.session.header.actions'>
+  props: PropsRuntime<'conversation.session.header.utilities'>
     & PreviewActionInjected
     & PropsLocale<'apppackage'>,
 ) {

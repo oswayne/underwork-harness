@@ -119,17 +119,22 @@
 }
 
 .previewAction {
-  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 6px 12px;
+  gap: 4px;
   border: 1px solid var(--dsw-alias-border-l2);
-  border-radius: 8px;
-  background: var(--dsw-alias-button-elevated-fill);
-  padding: 4px 10px;
+  border-radius: 18px;
+  background: transparent;
   font-size: 13px;
+  font-weight: 400;
   line-height: 20px;
   color: var(--dsw-alias-label-primary);
   cursor: pointer;
 }
 
 .previewAction:hover {
-  background: var(--dsw-alias-button-floating-hover);
+  background: var(--dsw-alias-interactive-bg-hover);
 }

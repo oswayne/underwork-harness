@@ -40,9 +40,9 @@ export function apply(ctx: ClientContext): void {
     'ui-apppackage-workspace: details workspace',
   )
   ctx.effect(
-    () => ctx.slots.inject('conversation.session.header.actions', () =>
+    () => ctx.slots.inject('conversation.session.header.utilities', () =>
       ctx.slots.register({
-        name: 'conversation.session.header.actions',
+        name: 'conversation.session.header.utilities',
         id: 'uicp.apppackage.preview',
         order: 100,
         locale: NS,

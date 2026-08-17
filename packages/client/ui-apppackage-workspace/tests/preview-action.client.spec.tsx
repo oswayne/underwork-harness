@@ -11,7 +11,7 @@ describe('PreviewAction', () => {
   it('renders a button that opens the details column', () => {
     const openDetails = vi.fn()
     render(<PreviewAction
-      {...{ t, openDetails } as unknown as PropsRuntime<'conversation.session.header.actions'> & PreviewActionInjected & PropsLocale<'apppackage'>}
+      {...{ t, openDetails } as unknown as PropsRuntime<'conversation.session.header.utilities'> & PreviewActionInjected & PropsLocale<'apppackage'>}
     />)
     const button = screen.getByRole('button', { name: '预览' })
     fireEvent.click(button)
