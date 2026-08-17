@@ -112,6 +112,39 @@ describe('TenantSwitch', () => {
     })
   })
 
+  it('shows a loading state while the tenant switch registration is in flight', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    let release: (() => void) | undefined
+    const gate = new Promise<void>((resolve) => { release = resolve })
+    const register = vi.fn(async () => { await gate })
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+      deleteWorkspace: vi.fn(async () => undefined),
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [
+          { _id: 't1', name: '租户A', identifier: 'tenant-a', available: true },
+          { _id: 't2', name: '租户B', identifier: 'tenant-b', available: true },
+        ] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [
+        { _id: 'a2', name: '应用B', identifier: 'app-y' },
+      ] }))
+    }))
+    render(<TenantSwitch {...navProps()} />)
+    fireEvent.click(await screen.findByRole('button', { name: '租户A' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: '租户B' }))
+    const trigger = await screen.findByRole('button', { name: '租户B' })
+    expect(trigger.getAttribute('aria-busy')).toBe('true')
+    release?.()
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: '租户B' }).getAttribute('aria-busy')).toBe('false')
+    })
+  })
+
   it('prunes other tenants app-package workspaces when switching tenants', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const del = vi.fn(async () => undefined)

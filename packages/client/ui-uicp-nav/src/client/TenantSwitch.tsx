@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useSyncExternalStore } from 'react'
-import { IconChevronDownOutline14, Menu } from '@deepseek-ai/dsh-client-ui-primitives'
+import {
+  IconChevronDownOutline14, IconLoadingOutline16, Menu,
+} from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { API_BASE, authSnapshot, refreshAuth, subscribeAuth } from './token.ts'
 import {
@@ -59,6 +61,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const [tenantId, setTenantId] = useState<string | undefined>(readStoredTenant)
   const [error, setError] = useState<string | undefined>()
   const [open, setOpen] = useState(false)
+  const [busy, setBusy] = useState(false)
 
   useEffect(() => {
     refreshAuth()
@@ -125,16 +128,19 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
 
   const choose = (id: string): void => {
     const tenant = tenants.find(item => item._id === id)
-    if (tenant === undefined) return
+    if (tenant === undefined || busy) return
     const root = packagesRoot()
     if (root !== undefined) pruneOtherTenants(root, tenant)
     setTenantId(id)
     writeStoredTenant(id)
     selectTenant(tenant)
+    setBusy(true)
     void registerApps(tenant).then(() => {
       setError(undefined)
     }).catch((reason: unknown) => {
       setError(reason instanceof Error ? reason.message : String(reason))
+    }).finally(() => {
+      setBusy(false)
     })
   }
 
@@ -207,9 +213,17 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         side="top"
         className={css.menuRoot}
         anchor={(
-          <button type="button" className={css.trigger} onClick={() => { setOpen(v => !v) }}>
+          <button
+            type="button"
+            className={css.trigger}
+            onClick={() => { setOpen(v => !v) }}
+            disabled={busy}
+            aria-busy={busy}
+          >
             <span className={css.value}>{current?.name ?? ''}</span>
-            <IconChevronDownOutline14 className={css.chevron} />
+            {busy
+              ? <IconLoadingOutline16 className={css.spinner} />
+              : <IconChevronDownOutline14 className={css.chevron} />}
           </button>
         )}
       />

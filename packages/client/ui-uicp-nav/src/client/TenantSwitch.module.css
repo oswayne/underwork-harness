@@ -63,6 +63,24 @@
   color: var(--dsw-alias-label-tertiary);
 }
 
+.spinner {
+  flex: none;
+  color: var(--dsw-alias-label-tertiary);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.trigger:disabled {
+  cursor: default;
+}
+
+.trigger:disabled:hover {
+  background: var(--dsw-alias-button-elevated-fill);
+}
+
 .error {
   margin-bottom: 4px;
   font-size: 12px;
