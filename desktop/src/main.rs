@@ -3,9 +3,12 @@
 // restart, exit linkage) lands incrementally per IMPLEMENTATION.md 11.2.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::io::{BufRead, BufReader, Read, Write};
+use std::net::TcpStream;
 use std::process::{Child, Command};
+use std::process::Stdio;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
@@ -18,7 +21,30 @@ struct DshProcess {
 struct Token(Mutex<Option<String>>);
 
 fn spawn_dsh() -> std::io::Result<Child> {
-    Command::new("pnpm").args(["dsh", "web"]).spawn()
+    // Port 0 lets the OS assign a free port; the sidecar prints the actual
+    // URL (`dsh web: http://127.0.0.1:<port>`) as its readiness line.
+    Command::new("pnpm")
+        .args(["dsh", "web", "--port", "0"])
+        .stdout(Stdio::piped())
+        .spawn()
+}
+
+/// True when the dsh sidecar accepts HTTP requests at the given URL.
+fn server_ready(url: &tauri::Url) -> bool {
+    let Some(addr) = url.socket_addrs(|| None).ok().and_then(|addrs| addrs.into_iter().next()) else {
+        return false
+    };
+    let Ok(mut stream) = TcpStream::connect_timeout(&addr, Duration::from_millis(500)) else {
+        return false
+    };
+    let _ = stream.set_read_timeout(Some(Duration::from_millis(500)));
+    let request = format!("GET / HTTP/1.1\r\nHost: {}\r\nConnection: close\r\n\r\n", url.authority());
+    if stream.write_all(request.as_bytes()).is_err() {
+        return false
+    }
+    let mut buf = [0u8; 128];
+    let Ok(n) = stream.read(&mut buf) else { return false };
+    String::from_utf8_lossy(&buf[..n]).starts_with("HTTP/1.1 200")
 }
 
 /// Read the stored platform token (keychain lands in a later milestone).
@@ -60,8 +86,20 @@ fn main() {
         .invoke_handler(tauri::generate_handler![get_token, set_token, clear_token, app_packages_root])
         .setup(|app| {
             // Guardian thread: spawn the dsh sidecar, restart on crash with
-            // exponential backoff, and stop on the exit flag.
+            // exponential backoff, navigate the window once the service is
+            // ready, and stop on the exit flag.
             let handle = app.handle().clone();
+            let explicit_url = std::env::var("DSH_WEB_URL").is_ok();
+            let url = std::env::var("DSH_WEB_URL")
+                .unwrap_or_else(|_| "http://127.0.0.1:3080".into());
+            let parsed: tauri::Url = url
+                .parse()
+                .map_err(|e| format!("invalid DSH_WEB_URL {url}: {e}"))?;
+            let discovered = Arc::new(Mutex::new(None::<String>));
+            let _window = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
+                .title("Underwork Harness")
+                .inner_size(1280.0, 800.0)
+                .build()?;
             std::thread::spawn(move || {
                 let state = handle.state::<DshProcess>();
                 let mut backoff: u64 = 500;
@@ -69,19 +107,64 @@ fn main() {
                     if state.shutdown.load(Ordering::SeqCst) {
                         return
                     }
-                    let child = match spawn_dsh() {
+                    let mut child = match spawn_dsh() {
                         Ok(child) => child,
                         Err(_) => {
                             std::thread::sleep(Duration::from_millis(backoff));
                             continue
                         }
                     };
+                    let stdout = child.stdout.take();
                     {
                         let mut guard = match state.child.lock() {
                             Ok(guard) => guard,
                             Err(_) => return,
                         };
                         *guard = Some(child);
+                    }
+                    // Read the sidecar's readiness line to learn the
+                    // OS-assigned port.
+                    if let Some(stdout) = stdout {
+                        let discovered = discovered.clone();
+                        std::thread::spawn(move || {
+                            for line in BufReader::new(stdout).lines().map_while(Result::ok) {
+                                if let Some(url) = line.strip_prefix("dsh web: ") {
+                                    if let Some(host) = url.split_whitespace().next() {
+                                        if let Ok(mut guard) = discovered.lock() {
+                                            *guard = Some(host.to_string());
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    // Wait for the sidecar to accept requests, then point the
+                    // window at it; re-navigate after every restart.
+                    let mut target = parsed.clone();
+                    let mut ready = false;
+                    for _ in 0..240 {
+                        if state.shutdown.load(Ordering::SeqCst) {
+                            return
+                        }
+                        if !explicit_url {
+                            if let Ok(guard) = discovered.lock() {
+                                if let Some(url) = guard.as_ref() {
+                                    if let Ok(actual) = url.parse::<tauri::Url>() {
+                                        target = actual;
+                                    }
+                                }
+                            }
+                        }
+                        if server_ready(&target) {
+                            ready = true;
+                            break
+                        }
+                        std::thread::sleep(Duration::from_millis(500));
+                    }
+                    if ready {
+                        if let Some(window) = handle.get_webview_window("main") {
+                            let _ = window.navigate(target);
+                        }
                     }
                     let status = {
                         let mut guard = match state.child.lock() {
@@ -100,15 +183,6 @@ fn main() {
                     backoff = (backoff * 2).min(16_000);
                 }
             });
-            let url = std::env::var("DSH_WEB_URL")
-                .unwrap_or_else(|_| "http://127.0.0.1:3080".into());
-            let parsed: tauri::Url = url
-                .parse()
-                .map_err(|e| format!("invalid DSH_WEB_URL {url}: {e}"))?;
-            let _window = WebviewWindowBuilder::new(app, "main", WebviewUrl::External(parsed))
-                .title("UICP Desktop")
-                .inner_size(1280.0, 800.0)
-                .build()?;
             Ok(())
         })
         .build(tauri::generate_context!())

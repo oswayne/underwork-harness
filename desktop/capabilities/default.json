@@ -1,5 +1,7 @@
 {
   "identifier": "default",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": [
+    "core:default"
+  ]
 }

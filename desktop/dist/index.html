@@ -2,9 +2,16 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <title>UICP Desktop placeholder</title>
+    <title>Underwork Harness</title>
+    <style>
+      body { margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; background: #0f1115; color: #e6e6e6; font-family: -apple-system, "PingFang SC", sans-serif; }
+      .spinner { width: 28px; height: 28px; margin: 0 auto 16px; border: 3px solid #333; border-top-color: #7aa2f7; border-radius: 50%; animation: spin 0.9s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      p { margin: 0; font-size: 14px; color: #9aa0a6; }
+    </style>
   </head>
   <body>
-    <p>uicp-desktop frontendDist placeholder; the M0 window loads the dsh web UI URL instead.</p>
+    <div class="spinner"></div>
+    <p>正在启动 dsh 本地服务…</p>
   </body>
 </html>
