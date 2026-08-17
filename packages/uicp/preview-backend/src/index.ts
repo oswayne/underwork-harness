@@ -134,11 +134,19 @@ export async function pageHandler(
   const pageFile = pageId === undefined
     ? await firstPageFile(dir)
     : safePageId(pageId) ? join(dir, 'pages', `${pageId}.json`) : undefined
+  const pageDir = join(dir, 'pages')
+  const pageFiles = existsSync(pageDir)
+    ? await readdir(pageDir).catch(() => [] as string[])
+    : []
+  if (pageFiles.length === 0) {
+    json(404, {
+      status: 404,
+      msg: 'the app-package directory has no pages yet',
+      data: { cwd: dir, pageFiles },
+    })
+    return
+  }
   if (pageFile === undefined || !existsSync(pageFile)) {
-    const pageDir = join(dir, 'pages')
-    const pageFiles = existsSync(pageDir)
-      ? await readdir(pageDir).catch(() => [] as string[])
-      : []
     json(404, {
       status: 404,
       msg: 'page not found in the app-package directory',
