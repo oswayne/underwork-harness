@@ -2,7 +2,11 @@
   "identifier": "default",
   "windows": ["main"],
   "permissions": [
-    "core:default"
+    "core:default",
+    "allow-get-token",
+    "allow-set-token",
+    "allow-clear-token",
+    "allow-app-packages-root"
   ],
   "remote": {
     "urls": [
