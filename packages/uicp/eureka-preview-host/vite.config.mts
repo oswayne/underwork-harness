@@ -13,6 +13,11 @@ export default defineConfig({
       'monaco-editor': 'monaco-editor/esm/vs/editor/editor.main.js',
     },
   },
+  define: {
+    // Vite lib mode does not apply its default env defines; without this the
+    // bundle references process.env.NODE_ENV at load and throws in the browser.
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
   build: {
     lib: {
       entry: 'src/index.ts',
@@ -24,6 +29,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: 'uicp-eureka-preview.[ext]',
+        // Residual process.* references (emit/nextTick/versions/browser) come
+        // from bundled libraries; a minimal global shim keeps them inert in
+        // the browser instead of crashing the IIFE at load.
+        banner: [
+          'var process = process || {',
+          '  env: {}, browser: true, platform: "", version: "", versions: {}, type: "",',
+          '  nextTick: function (fn) { fn() }, emit: function () { return true },',
+          '  getBuiltinModule: function () { return undefined }',
+          '};',
+        ].join('\n'),
       },
     },
   },
