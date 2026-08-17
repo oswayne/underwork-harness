@@ -143,6 +143,47 @@ describe('TenantNav', () => {
     expect(screen.queryByRole('treeitem', { name: /会话1/ })).toBeNull()
   })
 
+  it('starts the first session when expanding an app package without sessions', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const createSession = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession,
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined),
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    render(<TenantNav {...navProps(listState([]))} />)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    expect(createSession).toHaveBeenCalledWith('/root/tenant-a/app-x')
+  })
+
+  it('does not auto-start when the app package already has sessions', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const createSession = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession,
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined),
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }])
+    render(<TenantNav {...navProps(sessions)} />)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    expect(createSession).not.toHaveBeenCalled()
+  })
+
   it('archives a session from the row action menu', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const archiveSession = vi.fn(async () => undefined)

@@ -124,6 +124,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
   const [expandedApps, setExpandedApps] = useState<string[]>([])
   const [appsLoading, setAppsLoading] = useState<string | undefined>()
   const [appErrors, setAppErrors] = useState<Record<string, string>>({})
+  const [startErrors, setStartErrors] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | undefined>()
   const [context, setContext] = useState<{ tenant: SelectedTenant; app: AppPackage } | undefined>()
   // Session rename dialog (browser-owned so it outlives row unmounts).
@@ -211,6 +212,32 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
     setContext({ tenant, app })
   }
 
+  /** Sessions bound to one app package's workspace directory. */
+  const sessionsFor = (tenant: Tenant, app: AppPackage) => {
+    const cwd = appCwd(tenant, app)
+    if (cwd === undefined) return []
+    return list.ids
+      .map(id => list.byId[id])
+      .filter((row): row is NonNullable<typeof row> => row !== undefined)
+      .filter(row => row.cwd === cwd)
+  }
+
+  /** Create a session in the app's directory, surfacing failures under its row. */
+  const startSessionInApp = (tenant: Tenant, app: AppPackage): void => {
+    const cwd = appCwd(tenant, app)
+    if (cwd === undefined) return
+    const key = `${tenant._id}/${app.identifier}`
+    const pending = createSession(cwd)
+    if (pending === undefined) return
+    void pending.then(() => {
+      setStartErrors(errors => Object.fromEntries(
+        Object.entries(errors).filter(([entry]) => entry !== key),
+      ))
+    }).catch((reason: unknown) => {
+      setStartErrors(errors => ({ ...errors, [key]: reason instanceof Error ? reason.message : String(reason) }))
+    })
+  }
+
   const toggleTenant = (tenant: Tenant): void => {
     if (expandedTenants.includes(tenant._id)) {
       setExpandedTenants(keys => keys.filter(key => key !== tenant._id))
@@ -223,9 +250,11 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
   const toggleApp = (tenant: Tenant, app: AppPackage): void => {
     select(tenant, app)
     const key = `${tenant._id}/${app.identifier}`
-    setExpandedApps(keys => keys.includes(key)
-      ? keys.filter(item => item !== key)
-      : [...keys, key])
+    const expanded = expandedApps.includes(key)
+    setExpandedApps(keys => expanded ? keys.filter(item => item !== key) : [...keys, key])
+    // Selecting an app with no sessions yet starts its first session, so the
+    // shell's New Session button (current-workspace based) lands in it too.
+    if (!expanded && sessionsFor(tenant, app).length === 0) startSessionInApp(tenant, app)
   }
 
   const open = (id: SessionId): void => {
@@ -250,7 +279,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
     setExpandedApps(keys => keys.includes(`${tenant._id}/${app.identifier}`)
       ? keys
       : [...keys, `${tenant._id}/${app.identifier}`])
-    void createSession(cwd)
+    startSessionInApp(tenant, app)
   }
 
   const onRenameRequest = (id: SessionId, currentTitle: string): void => {
@@ -299,12 +328,8 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                     const key = `${tenant._id}/${app.identifier}`
                     const appOpen = expandedApps.includes(key)
                     const cwd = appCwd(tenant, app)
-                    const sessions = cwd === undefined
-                      ? []
-                      : list.ids
-                        .map(id => list.byId[id])
-                        .filter((row): row is NonNullable<typeof row> => row !== undefined)
-                        .filter(row => row.cwd === cwd)
+                    const sessions = sessionsFor(tenant, app)
+                    const startError = startErrors[key]
                     const active = context?.tenant._id === tenant._id
                       && context.app.identifier === app.identifier
                     const containsCurrent = sessions.some(row => row.id === list.current)
@@ -338,6 +363,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                         </div>
                         {appOpen && (
                           <div role="group" className={css.group}>
+                            {startError !== undefined ? <div className={css.error}>{startError}</div> : null}
                             {sessions.map(row => (
                               <SessionRow
                                 key={row.id}
