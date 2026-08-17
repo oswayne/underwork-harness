@@ -75,6 +75,13 @@ export function apply(ctx: ClientContext): void {
   })
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-uicp-nav: dictionaries')
   ctx.effect(
+    () => ctx.reflect.provide('brand', {
+      logo: '/app-icon.svg',
+      name: 'Underwork Harness',
+    }, undefined),
+    'ui-uicp-nav: application brand',
+  )
+  ctx.effect(
     () => ctx.reflect.provide('managedWorkspaces', {
       isManaged: (path: string) => {
         const root = packagesRoot()

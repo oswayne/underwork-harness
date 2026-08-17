@@ -46,6 +46,7 @@ export function SidebarRoot({
   width,
   startSession,
   toggleSidebar,
+  brand,
   t,
   renderSlot,
 }: SidebarRootComponentProps) {
@@ -137,7 +138,7 @@ export function SidebarRoot({
             aria-label={t('session.new.label')}
             onClick={() => { startSession() }}
           >
-            <AppWordmark />
+            {brand !== undefined && <AppWordmark src={brand.logo} name={brand.name} />}
           </button>
         )}
         {/* Rail resting state is the whale mark; hovering swaps in the panel
@@ -149,7 +150,7 @@ export function SidebarRoot({
             aria-label={collapsed ? t('toggle.open') : t('toggle.collapse')}
             onClick={() => { toggleSidebar() }}
           >
-            {!wide && <AppLogo className={css.railFish} size={24} />}
+            {!wide && brand !== undefined && <AppLogo className={css.railFish} size={24} src={brand.logo} />}
             {/* Rail icons render at 18 (figma rail spec); expanded keeps the glyph-native sizes. */}
             <IconPanelLeftOutline16 className={css.panelIcon} size={wide ? 16 : 18} />
           </button>

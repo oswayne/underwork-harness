@@ -7,7 +7,7 @@ import { SidebarRoot } from './SidebarRoot.tsx'
 import { en, zh, type SidebarKey } from './locales.ts'
 
 export type {
-  SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarRootInjected,
+  Brand, SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarRootInjected,
   SidebarSectionOwnerProps, SidebarSettingsOwnerProps,
 } from './contract/slots.ts'
 export type { SidebarKey } from './locales.ts'
@@ -31,12 +31,16 @@ export const inject = ['slots', 'layout', 'sessions', 'workspaces', 'locale']
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-sidebar: dictionaries')
 
-  const injectProps = (): SidebarRootInjected => ({
-    // The shell's New Session button rides the runtime's shared action
-    // (current Session Workspace, then recent Workspace).
-    startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
-    toggleSidebar: () => { ctx.layout.toggleSidebar() },
-  })
+  const injectProps = (): SidebarRootInjected => {
+    const brand = ctx.get('brand')
+    return {
+      // The shell's New Session button rides the runtime's shared action
+      // (current Session Workspace, then recent Workspace).
+      startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
+      toggleSidebar: () => { ctx.layout.toggleSidebar() },
+      ...(brand === undefined ? {} : { brand }),
+    }
+  }
   ctx.effect(
     () => ctx.slots.register({
       name: 'sidebar',

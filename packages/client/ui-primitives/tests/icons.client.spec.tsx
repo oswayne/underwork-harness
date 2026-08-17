@@ -56,7 +56,7 @@ describe('ic_ds_ icon set', () => {
 
 describe('AppLogo', () => {
   it('renders the app icon image at the requested size', () => {
-    const { container } = render(<primitives.AppLogo />)
+    const { container } = render(<primitives.AppLogo src="/app-icon.svg" />)
     const img = container.querySelector('img')!
     expect(img.getAttribute('src')).toBe('/app-icon.svg')
     expect(img.getAttribute('width')).toBe('24')

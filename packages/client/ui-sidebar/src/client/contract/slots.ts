@@ -13,6 +13,25 @@ import type { PropsLocale, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/d
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 
+/**
+ * The composed application's brand: the logo mark URL and product name.
+ * Absent means the shell renders no brand art (the brand row keeps only the
+ * fold toggle and the hero headline drops its leading mark).
+ */
+export interface Brand {
+  /** Logo mark image URL (web asset path). */
+  logo: string
+  /** Product name shown next to the logo. */
+  name: string
+}
+
+declare module '@deepseek-ai/cordis' {
+  interface Context {
+    /** Optional application brand consumed by the shell's brand row and rail. */
+    brand?: Brand
+  }
+}
+
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
     /**
@@ -76,6 +95,8 @@ export type SidebarRootInjected = {
   startSession: (workspaceId?: WorkspaceId) => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
+  /** The composed application brand; absent renders no brand art. */
+  brand?: Brand
 }
 
 /**

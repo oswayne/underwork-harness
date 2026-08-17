@@ -11,6 +11,9 @@ import type {
   TurnLocation, WorkspaceId,
 } from '@deepseek-ai/dsh-client-runtime/client'
 import type { MarkdownFileMentions } from '@deepseek-ai/dsh-client-ui-primitives'
+// Type-only: pulls ui-sidebar's Brand contract and Context augmentation so
+// this package can consume the composed application brand.
+import type { Brand } from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type { MessageId } from '@deepseek-ai/dsh-client-connection/client'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type { ComposerBlock } from '../input/blocks.ts'
@@ -422,6 +425,8 @@ export interface ConversationInjected {
    * the root renders as the inert composer's placeholder.
    */
   hooks: { composerBlock: ObservableSnapshot<ComposerBlock | undefined> }
+  /** The composed application brand; absent renders no hero logo. */
+  brand?: Brand
 }
 
 /** Business callbacks injected into the strict Session body seat. */
