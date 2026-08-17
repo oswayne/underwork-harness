@@ -9,23 +9,19 @@ const t = ((key: string) => zh[key as keyof typeof zh]) as never
 describe('LoginView', () => {
   afterEach(cleanup)
 
-  it('submits a non-blank token through setToken', async () => {
-    const invoke = vi.fn(async () => undefined)
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
-    render(<LoginView t={t} />)
+  it('submits a non-blank token through onSignIn', () => {
+    const onSignIn = vi.fn()
+    render(<LoginView t={t} onSignIn={onSignIn} />)
     const input = screen.getByLabelText('登录') as HTMLInputElement
     fireEvent.change(input, { target: { value: 'jwt-1' } })
     fireEvent.submit(screen.getByRole('button', { name: '登录' }))
-    await new Promise(resolve => setTimeout(resolve, 0))
-    expect(invoke).toHaveBeenCalledWith('set_token', { token: 'jwt-1' })
+    expect(onSignIn).toHaveBeenCalledWith('jwt-1')
   })
 
-  it('ignores a blank submission', async () => {
-    const invoke = vi.fn()
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
-    render(<LoginView t={t} />)
+  it('ignores a blank submission', () => {
+    const onSignIn = vi.fn()
+    render(<LoginView t={t} onSignIn={onSignIn} />)
     fireEvent.submit(screen.getByRole('button', { name: '登录' }))
-    await new Promise(resolve => setTimeout(resolve, 0))
-    expect(invoke).not.toHaveBeenCalled()
+    expect(onSignIn).not.toHaveBeenCalled()
   })
 })

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { zh } from '../src/locales.ts'
 import { resetNav, selectApp, selectTenant, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
 import { SessionSwitchAction } from '../src/client/SessionSwitchAction.tsx'
@@ -34,7 +35,7 @@ describe('SessionSwitchAction', () => {
       phase: 'ready',
     } as never
     const useSessions = ((sel: (s: unknown) => unknown) => sel(sessions)) as never
-    render(<SessionSwitchAction t={t} useSessions={useSessions} />)
+    render(<SessionSwitchAction {...({ t, useSessions } as unknown as PropsRuntime<'conversation.session.header.actions'> & PropsLocale<'nav'>)} />)
     fireEvent.change(screen.getByLabelText('会话'), { target: { value: 's2' } })
     expect(openSession).toHaveBeenCalledWith('s2')
   })
@@ -49,7 +50,7 @@ describe('SessionSwitchAction', () => {
       phase: 'ready',
     } as never
     const useSessions = ((sel: (s: unknown) => unknown) => sel(sessions)) as never
-    render(<SessionSwitchAction t={t} useSessions={useSessions} />)
+    render(<SessionSwitchAction {...({ t, useSessions } as unknown as PropsRuntime<'conversation.session.header.actions'> & PropsLocale<'nav'>)} />)
     fireEvent.change(screen.getByLabelText('会话'), { target: { value: 's1' } })
     expect(openSession).toHaveBeenCalledWith('s1')
   })

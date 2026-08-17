@@ -1,27 +1,35 @@
 import { useState } from 'react'
+import { Button, Input } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
-import { setToken } from './token.ts'
+import css from './LoginView.module.css'
 
 /** JWT input seat rendered by the tenant browser when no token is stored. */
-export function LoginView({ t }: PropsLocale<'nav'>) {
+export function LoginView({
+  t,
+  onSignIn,
+}: PropsLocale<'nav'> & { onSignIn?: (token: string) => void }) {
   const [value, setValue] = useState('')
   return (
     <form
+      className={css.form}
       onSubmit={(event) => {
         event.preventDefault()
         const trimmed = value.trim()
-        if (trimmed !== '') void setToken(trimmed)
+        if (trimmed !== '' && onSignIn !== undefined) onSignIn(trimmed)
       }}
     >
-      <label htmlFor="uicp-jwt">{t('login.title')}</label>
-      <input
+      <img className={css.logo} src="/uicp-logo.jpg" alt="" />
+      <label className={css.title} htmlFor="uicp-jwt">{t('login.title')}</label>
+      <Input
         id="uicp-jwt"
         type="password"
         value={value}
         onChange={(event) => { setValue(event.target.value) }}
         placeholder={t('login.placeholder')}
       />
-      <button type="submit">{t('login.submit')}</button>
+      <Button type="submit" variant="primary" disabled={value.trim() === ''}>
+        {t('login.submit')}
+      </Button>
     </form>
   )
 }

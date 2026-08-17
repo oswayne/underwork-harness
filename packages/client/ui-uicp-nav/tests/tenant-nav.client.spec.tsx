@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { zh } from '../src/locales.ts'
 import { resetNav, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
 import { TenantNav } from '../src/client/TenantNav.tsx'
@@ -24,6 +25,12 @@ function useSessionsStub(state: unknown) {
   return ((sel: (s: unknown) => unknown) => sel(state)) as never
 }
 
+function navProps(state: unknown) {
+  return {
+    t, useSessions: useSessionsStub(state), wide: true, expandSidebar: () => undefined,
+  } as unknown as PropsRuntime<'sidebar.workspaces'> & PropsLocale<'nav'>
+}
+
 describe('TenantNav', () => {
   beforeEach(() => {
     resetNav()
@@ -39,14 +46,35 @@ describe('TenantNav', () => {
 
   it('shows the login view when no token is stored', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => undefined) } }
-    render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    render(<TenantNav {...navProps(listState([]))} />)
     expect(await screen.findByRole('button', { name: '登录' })).toBeTruthy()
+  })
+
+  it('signs in from the login view and lists tenants', async () => {
+    const invoke = vi.fn(async (cmd: string) => {
+      if (cmd === 'get_token') return undefined
+      if (cmd === 'app_packages_root') return '/root'
+      return undefined
+    })
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        // Platform list responses omit `status` on success.
+        return new Response(JSON.stringify({ data: [{ _id: 't9', name: '租户B', identifier: 'tenant-b', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [] }))
+    }))
+    render(<TenantNav {...navProps(listState([]))} />)
+    fireEvent.change(await screen.findByLabelText('登录'), { target: { value: 'jwt-9' } })
+    fireEvent.submit(screen.getByRole('button', { name: '登录' }))
+    expect(await screen.findByRole('button', { name: '租户B（tenant-b）' })).toBeTruthy()
+    expect(invoke).toHaveBeenCalledWith('set_token', { token: 'jwt-9' })
   })
 
   it('surfaces tenant fetch errors', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 400, msg: 'bad' }))))
-    render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    render(<TenantNav {...navProps(listState([]))} />)
     expect(await screen.findByText('Error: bad')).toBeTruthy()
   })
 
@@ -64,7 +92,7 @@ describe('TenantNav', () => {
       { id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' },
       { id: 's2', cwd: '/other', title: '其它' },
     ])
-    render(<TenantNav t={t} useSessions={useSessionsStub(sessions)} />)
+    render(<TenantNav {...navProps(sessions)} />)
     fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
     fireEvent.click(await screen.findByRole('button', { name: '应用' }))
     expect(await screen.findByRole('button', { name: '会话1' })).toBeTruthy()
@@ -78,7 +106,7 @@ describe('TenantNav', () => {
   it('logs out back to the login view', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 0, data: [] }))))
-    render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    render(<TenantNav {...navProps(listState([]))} />)
     fireEvent.click(await screen.findByRole('button', { name: '退出' }))
     expect(await screen.findByRole('button', { name: '登录' })).toBeTruthy()
   })
@@ -87,7 +115,7 @@ describe('TenantNav', () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     let resolveFetch: (value: Response) => void = () => undefined
     vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) => { resolveFetch = resolve })))
-    const { unmount } = render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    const { unmount } = render(<TenantNav {...navProps(listState([]))} />)
     unmount()
     resolveFetch(new Response(JSON.stringify({ status: 0, data: [] })))
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -101,7 +129,7 @@ describe('TenantNav', () => {
       }
       return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
     }))
-    render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    render(<TenantNav {...navProps(listState([]))} />)
     fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
     fireEvent.click(await screen.findByRole('button', { name: '应用' }))
     expect((await screen.findByRole('button', { name: '应用' })).hasAttribute('disabled')).toBe(true)
@@ -115,7 +143,7 @@ describe('TenantNav', () => {
       }
       return new Response(JSON.stringify({ status: 400, msg: 'apps-bad' }))
     }))
-    render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    render(<TenantNav {...navProps(listState([]))} />)
     fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
     expect(await screen.findByText('Error: apps-bad')).toBeTruthy()
   })
@@ -131,7 +159,7 @@ describe('TenantNav', () => {
       }
       return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
     }))
-    render(<TenantNav t={t} useSessions={useSessionsStub(listState([]))} />)
+    render(<TenantNav {...navProps(listState([]))} />)
     fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
     fireEvent.click(await screen.findByRole('button', { name: '应用' }))
     expect(screen.queryByRole('button', { name: '新建会话' })).toBeNull()

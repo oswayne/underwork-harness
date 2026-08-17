@@ -225,8 +225,15 @@
       name: '@deepseek-ai/dsh-client-ui-deliverables'
 
 
+    # UICP fork: workspace browsing is replaced by the uicp navigation
+    # plugin; the upstream occupant stays unloaded to avoid a single-slot
+    # collision on `sidebar.workspaces`.
     - id: ui-workspace
       name: '@deepseek-ai/dsh-client-ui-workspace'
+      disabled: true
+
+    - id: ui-uicp-nav
+      name: '@deepseek-ai/dsh-client-ui-uicp-nav'
 
     # Input triggers: the '/' | '@' pipeline (ui-input-trigger), the command surface over
     # it (ui-commands), and the two reference sources (ui-skill / ui-subagent).

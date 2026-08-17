@@ -19,7 +19,7 @@ describe('ui-uicp-nav token', () => {
   })
 
   it('prefers the shell bridge and ignores non-string results', async () => {
-    const invoke = vi.fn(async () => 'bridge-token')
+    const invoke = vi.fn(async (): Promise<unknown> => 'bridge-token')
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
     expect(await getToken()).toBe('bridge-token')
     invoke.mockResolvedValueOnce(undefined)
@@ -28,5 +28,13 @@ describe('ui-uicp-nav token', () => {
     expect(invoke).toHaveBeenCalledWith('set_token', { token: 'new' })
     await clearToken()
     expect(invoke).toHaveBeenCalledWith('clear_token')
+  })
+
+  it('keeps the in-memory token when the shell bridge rejects', async () => {
+    const invoke = vi.fn(async () => { throw new Error('not allowed') })
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    await setToken('mem-fallback')
+    expect(await getToken()).toBe('mem-fallback')
   })
 })

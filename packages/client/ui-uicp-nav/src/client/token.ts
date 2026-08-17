@@ -20,21 +20,39 @@ let memoryToken: string | undefined
 export async function getToken(): Promise<string | undefined> {
   const core = window.__TAURI__?.core
   if (core !== undefined) {
-    const stored = await core.invoke('get_token')
-    if (typeof stored === 'string' && stored !== '') return stored
+    try {
+      const stored = await core.invoke('get_token')
+      if (typeof stored === 'string' && stored !== '') return stored
+    } catch (error) {
+      // Shell command not permitted (M0 capability gap): fall through to the
+      // in-memory token so the browser flow stays usable.
+      console.error('uicp-nav: get_token failed', error)
+    }
   }
   return memoryToken
 }
 
 export async function setToken(token: string): Promise<void> {
   const core = window.__TAURI__?.core
-  if (core !== undefined) await core.invoke('set_token', { token })
+  if (core !== undefined) {
+    try {
+      await core.invoke('set_token', { token })
+    } catch (error) {
+      console.error('uicp-nav: set_token failed, keeping in-memory token', error)
+    }
+  }
   memoryToken = token
 }
 
 export async function clearToken(): Promise<void> {
   const core = window.__TAURI__?.core
-  if (core !== undefined) await core.invoke('clear_token')
+  if (core !== undefined) {
+    try {
+      await core.invoke('clear_token')
+    } catch (error) {
+      console.error('uicp-nav: clear_token failed', error)
+    }
+  }
   memoryToken = undefined
 }
 

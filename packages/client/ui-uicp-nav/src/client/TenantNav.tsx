@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Button } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { clearToken, getToken, API_BASE } from './token.ts'
+import { API_BASE, clearToken, getToken, setToken } from './token.ts'
 import { AppPackage, SelectedTenant, appCwd, createSession, openSession, resolvePackagesRoot, selectApp, selectTenant } from './nav.ts'
 import { LoginView } from './LoginView.tsx'
+import css from './TenantNav.module.css'
 
 interface Tenant {
   _id: string
@@ -10,6 +12,9 @@ interface Tenant {
   identifier: string
   available?: boolean
 }
+
+/** Platform data responses omit `status` on success; missing means ok (eureka contract). */
+const succeeded = (body: { status?: number }): boolean => (body.status ?? 0) === 0
 
 /**
  * Tenant/app/session browser occupying the sidebar browsing region: signs in
@@ -41,7 +46,8 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
           headers: { Authorization: token },
         })
         const body = (await res.json()) as { status?: number; data?: Tenant[]; msg?: string }
-        if (body.status !== 0) throw new Error(body.msg ?? `status ${String(body.status)}`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        if (!succeeded(body)) throw new Error(body.msg ?? '平台请求失败')
         if (!cancelled.value) {
           setTenants((body.data ?? []).filter(item => item.available !== false))
           setError(undefined)
@@ -67,7 +73,8 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
         headers: { Authorization: tokenValue, Tenant: tenant._id },
       })
       const body = (await res.json()) as { status?: number; data?: AppPackage[]; msg?: string }
-      if (body.status !== 0) throw new Error(body.msg ?? `status ${String(body.status)}`)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      if (!succeeded(body)) throw new Error(body.msg ?? '平台请求失败')
       setApps(body.data ?? [])
     } catch (err) {
       setError(String(err))
@@ -82,29 +89,42 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
       .filter((row): row is NonNullable<typeof row> => row !== undefined)
       .filter(row => row.cwd === cwd)
 
-  if (token === undefined) return <LoginView t={t} />
+  if (token === undefined) {
+    return (
+      <LoginView
+        t={t}
+        onSignIn={(value) => {
+          void setToken(value)
+            .then(() => { setTok(value) })
+            .catch((error: unknown) => { setError(String(error)) })
+        }}
+      />
+    )
+  }
   return (
-    <div>
-      <h3>{t('nav.tenants')}</h3>
-      {error !== undefined ? <div>{error}</div> : null}
+    <div className={css.root}>
+      <h3 className={css.sectionHeader}>{t('nav.tenants')}</h3>
+      {error !== undefined ? <div className={css.error}>{error}</div> : null}
       {tenant === undefined ? (
-        <ul>
+        <ul className={css.list}>
           {tenants.map(item => (
             <li key={item._id}>
-              <button type="button" onClick={() => void loadApps(item)}>
+              <button type="button" className={css.row} onClick={() => void loadApps(item)}>
                 {item.name}（{item.identifier}）
               </button>
             </li>
           ))}
+          {tenants.length === 0 ? <li className={css.empty}>{t('nav.empty')}</li> : null}
         </ul>
       ) : (
         <>
-          <h4>{t('nav.apps')}</h4>
-          <ul>
+          <h4 className={css.sectionHeader}>{t('nav.apps')}</h4>
+          <ul className={css.list}>
             {apps.map(item => (
               <li key={item._id}>
                 <button
                   type="button"
+                  className={css.row}
                   onClick={() => {
                     selectApp(item)
                     setApp(item)
@@ -115,37 +135,42 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
                 </button>
               </li>
             ))}
+            {apps.length === 0 ? <li className={css.empty}>{t('nav.empty')}</li> : null}
           </ul>
           {app !== undefined ? (
             <>
-              <h4>{t('nav.sessions')}</h4>
+              <h4 className={css.sectionHeader}>{t('nav.sessions')}</h4>
               {cwd !== undefined ? (
-                <button type="button" onClick={() => void createSession(cwd)}>
+                <Button variant="primary" size="sm" className={css.newSession} onClick={() => void createSession(cwd)}>
                   {t('nav.newSession')}
-                </button>
+                </Button>
               ) : null}
-              <ul>
+              <ul className={css.list}>
                 {sessions.map(row => (
                   <li key={row.id}>
-                    <button type="button" onClick={() => { openSession(row.id) }}>
+                    <button type="button" className={css.row} onClick={() => { openSession(row.id) }}>
                       {row.displayTitle}
                     </button>
                   </li>
                 ))}
-                {sessions.length === 0 ? <li>{t('nav.empty')}</li> : null}
+                {sessions.length === 0 ? <li className={css.empty}>{t('nav.empty')}</li> : null}
               </ul>
             </>
           ) : null}
         </>
       )}
-      <button
-        type="button"
-        onClick={() => {
-          void clearToken().then(() => { setTok(undefined) })
-        }}
-      >
-        {t('nav.logout')}
-      </button>
+      <div className={css.footer}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={css.logout}
+          onClick={() => {
+            void clearToken().then(() => { setTok(undefined) })
+          }}
+        >
+          {t('nav.logout')}
+        </Button>
+      </div>
     </div>
   )
 }

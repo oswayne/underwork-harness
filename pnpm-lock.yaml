@@ -1360,6 +1360,9 @@ importers:
       '@deepseek-ai/dsh-client-ui-trajectory':
         specifier: workspace:^
         version: link:../../client/ui-trajectory
+      '@deepseek-ai/dsh-client-ui-uicp-nav':
+        specifier: workspace:^
+        version: link:../../client/ui-uicp-nav
       '@deepseek-ai/dsh-client-ui-user-questions':
         specifier: workspace:^
         version: link:../../client/ui-user-questions
@@ -1423,12 +1426,12 @@ importers:
       '@deepseek-ai/dsh-storage-json':
         specifier: workspace:^
         version: link:../../storage/storage-json
-      '@deepseek-ai/dsh-web-frontend':
-        specifier: workspace:^
-        version: link:../../../apps/web
       '@deepseek-ai/dsh-uicp-api-proxy':
         specifier: workspace:^
         version: link:../../uicp/api-proxy
+      '@deepseek-ai/dsh-web-frontend':
+        specifier: workspace:^
+        version: link:../../../apps/web
       '@deepseek-ai/dsh-workspace':
         specifier: workspace:^
         version: link:../../workspace/workspace
@@ -2955,6 +2958,9 @@ importers:
       '@deepseek-ai/dsh-client-test-runtime':
         specifier: workspace:^
         version: link:../../test-support/client-runtime
+      '@deepseek-ai/dsh-client-ui-primitives':
+        specifier: workspace:^
+        version: link:../ui-primitives
       '@deepseek-ai/dsh-client-ui-slots':
         specifier: workspace:^
         version: link:../ui-slots
@@ -7945,12 +7951,6 @@ importers:
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
 
-  packages/uicp/contract-matrix:
-    devDependencies:
-      '@deepseek-ai/dsh-sandbox-server':
-        specifier: workspace:^
-        version: link:../sandbox-server
-
   packages/uicp/api-proxy:
     devDependencies:
       '@deepseek-ai/cordis':
@@ -7962,6 +7962,15 @@ importers:
       '@deepseek-ai/dsh-invariants':
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
+
+  packages/uicp/contract-matrix:
+    devDependencies:
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+      '@deepseek-ai/dsh-sandbox-server':
+        specifier: workspace:^
+        version: link:../sandbox-server
 
   packages/uicp/eureka-preview-host:
     dependencies:

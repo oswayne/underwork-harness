@@ -1,0 +1,91 @@
+/* Tenant/app/session browsing region filling the sidebar shell's
+   `sidebar.workspaces` hole. Row chrome, section headers, and the empty
+   state reuse the dsh sidebar token families (the same ones ui-workspace
+   rows use), so the uicp browser reads as part of the shell. */
+
+.root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-right: var(--dsh-sidebar-inline-padding, 8px);
+  padding-bottom: 8px;
+  overflow-y: auto;
+}
+
+.sectionHeader {
+  flex: none;
+  margin: 0;
+  padding: 8px 4px 2px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > * + * {
+  margin-top: 2px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.row:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.row:disabled {
+  background: var(--dsw-alias-interactive-bg-hover);
+  cursor: default;
+}
+
+.error {
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.empty {
+  padding: 16px 12px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.newSession {
+  width: 100%;
+  margin: 4px 0;
+}
+
+.footer {
+  flex: none;
+  margin-top: auto;
+  padding: 8px 4px 0;
+}
+
+.logout {
+  width: 100%;
+  color: var(--dsw-alias-label-secondary);
+}
