@@ -9,6 +9,13 @@ const t = ((key: string) => zh[key as keyof typeof zh]) as never
 describe('LoginView', () => {
   afterEach(cleanup)
 
+  it('shows the brand beside the logo without a visible login label', () => {
+    const onSignIn = vi.fn()
+    render(<LoginView t={t} onSignIn={onSignIn} />)
+    expect(screen.getByText('Underwork Harness')).toBeTruthy()
+    expect(document.querySelector('label')).toBeNull()
+  })
+
   it('submits a non-blank token through onSignIn', () => {
     const onSignIn = vi.fn()
     render(<LoginView t={t} onSignIn={onSignIn} />)

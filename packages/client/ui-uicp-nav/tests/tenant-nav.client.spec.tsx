@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { zh } from '../src/locales.ts'
 import { resetNav, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
+import { resetAuth } from '../src/client/token.ts'
 import { TenantNav } from '../src/client/TenantNav.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh]) as never
@@ -34,6 +35,7 @@ function navProps(state: unknown) {
 describe('TenantNav', () => {
   beforeEach(() => {
     resetNav()
+    resetAuth()
     setPackagesRoot('/root')
     setNavActions({ openSession: vi.fn(), createSession: vi.fn(async () => undefined) })
   })
@@ -44,15 +46,16 @@ describe('TenantNav', () => {
     delete (window as { __TAURI__?: unknown }).__TAURI__
   })
 
-  it('shows the login view when no token is stored', async () => {
+  it('renders nothing while no token is stored', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => undefined) } }
     render(<TenantNav {...navProps(listState([]))} />)
-    expect(await screen.findByRole('button', { name: '登录' })).toBeTruthy()
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(screen.queryByRole('button')).toBeNull()
   })
 
-  it('signs in from the login view and lists tenants', async () => {
+  it('lists tenants once a token is stored', async () => {
     const invoke = vi.fn(async (cmd: string) => {
-      if (cmd === 'get_token') return undefined
+      if (cmd === 'get_token') return 'tok'
       if (cmd === 'app_packages_root') return '/root'
       return undefined
     })
@@ -65,10 +68,7 @@ describe('TenantNav', () => {
       return new Response(JSON.stringify({ status: 0, data: [] }))
     }))
     render(<TenantNav {...navProps(listState([]))} />)
-    fireEvent.change(await screen.findByLabelText('登录'), { target: { value: 'jwt-9' } })
-    fireEvent.submit(screen.getByRole('button', { name: '登录' }))
     expect(await screen.findByRole('button', { name: '租户B（tenant-b）' })).toBeTruthy()
-    expect(invoke).toHaveBeenCalledWith('set_token', { token: 'jwt-9' })
   })
 
   it('surfaces tenant fetch errors', async () => {
@@ -103,12 +103,14 @@ describe('TenantNav', () => {
     cleanup()
   })
 
-  it('logs out back to the login view', async () => {
+  it('logs out and clears the browsing tree', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 0, data: [] }))))
     render(<TenantNav {...navProps(listState([]))} />)
     fireEvent.click(await screen.findByRole('button', { name: '退出' }))
-    expect(await screen.findByRole('button', { name: '登录' })).toBeTruthy()
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: '退出' })).toBeNull()
+    })
   })
 
   it('cancels the in-flight tenant request on unmount', async () => {

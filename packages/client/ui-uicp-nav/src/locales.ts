@@ -1,5 +1,6 @@
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
+  'login.brand': 'Underwork Harness',
   'login.title': '登录',
   'login.placeholder': '粘贴平台 Token（JWT）',
   'login.submit': '登录',
@@ -16,6 +17,7 @@ export const zh = {
 /** English dictionary. */
 export type NavKey = keyof typeof zh
 export const en: Record<NavKey, string> = {
+  'login.brand': 'Underwork Harness',
   'login.title': 'Sign in',
   'login.placeholder': 'Paste platform token (JWT)',
   'login.submit': 'Sign in',

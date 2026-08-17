@@ -18,11 +18,14 @@ export function LoginView({
         if (trimmed !== '' && onSignIn !== undefined) onSignIn(trimmed)
       }}
     >
-      <img className={css.logo} src="/uicp-logo.jpg" alt="" />
-      <label className={css.title} htmlFor="uicp-jwt">{t('login.title')}</label>
+      <div className={css.brand}>
+        <img className={css.logo} src="/uicp-logo.jpg" alt="" />
+        <span className={css.title}>{t('login.brand')}</span>
+      </div>
       <Input
         id="uicp-jwt"
         type="password"
+        aria-label={t('login.title')}
         value={value}
         onChange={(event) => { setValue(event.target.value) }}
         placeholder={t('login.placeholder')}

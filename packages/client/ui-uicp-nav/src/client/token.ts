@@ -17,6 +17,45 @@ declare global {
 
 let memoryToken: string | undefined
 
+/** Auth listeners run on every effective-token change (sign-in/logout). */
+type AuthListener = () => void
+
+/** Effective token as known by the UI layer (bridged or in-memory). */
+let currentToken: string | undefined
+const authListeners = new Set<AuthListener>()
+
+/**
+ * Subscribe to effective-token changes. Returns the unsubscribe function.
+ * @param listener - called whenever the effective token changes.
+ */
+export function subscribeAuth(listener: AuthListener): () => void {
+  authListeners.add(listener)
+  return () => {
+    authListeners.delete(listener)
+  }
+}
+
+/** Synchronous snapshot of the effective token for useSyncExternalStore. */
+export function authSnapshot(): string | undefined {
+  return currentToken
+}
+
+function setCurrentToken(token: string | undefined): void {
+  if (currentToken === token) return
+  currentToken = token
+  for (const listener of authListeners) listener()
+}
+
+/** Resolve the stored token into the auth store (idempotent, fire-and-forget). */
+export function refreshAuth(): void {
+  void getToken().then(setCurrentToken)
+}
+
+/** Test hook: reset the auth store between tests. */
+export function resetAuth(): void {
+  currentToken = undefined
+}
+
 export async function getToken(): Promise<string | undefined> {
   const core = window.__TAURI__?.core
   if (core !== undefined) {
@@ -42,6 +81,7 @@ export async function setToken(token: string): Promise<void> {
     }
   }
   memoryToken = token
+  setCurrentToken(token)
 }
 
 export async function clearToken(): Promise<void> {
@@ -54,6 +94,7 @@ export async function clearToken(): Promise<void> {
     }
   }
   memoryToken = undefined
+  setCurrentToken(undefined)
 }
 
 /**

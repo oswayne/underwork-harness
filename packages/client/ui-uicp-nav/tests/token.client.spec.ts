@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { clearToken, getToken, setToken } from '../src/client/token.ts'
+import { authSnapshot, clearToken, getToken, resetAuth, setToken, subscribeAuth } from '../src/client/token.ts'
 
 describe('ui-uicp-nav token', () => {
   beforeEach(() => {
+    resetAuth()
     delete (window as { __TAURI__?: unknown }).__TAURI__
   })
   afterEach(() => {
@@ -36,5 +37,19 @@ describe('ui-uicp-nav token', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     await setToken('mem-fallback')
     expect(await getToken()).toBe('mem-fallback')
+  })
+
+  it('notifies auth subscribers on set and clear', async () => {
+    const listener = vi.fn()
+    const unsubscribe = subscribeAuth(listener)
+    await setToken('a')
+    expect(authSnapshot()).toBe('a')
+    expect(listener).toHaveBeenCalledTimes(1)
+    await clearToken()
+    expect(authSnapshot()).toBeUndefined()
+    expect(listener).toHaveBeenCalledTimes(2)
+    unsubscribe()
+    await setToken('b')
+    expect(listener).toHaveBeenCalledTimes(2)
   })
 })

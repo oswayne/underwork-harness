@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
 import { Button } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { API_BASE, clearToken, getToken, setToken } from './token.ts'
+import { API_BASE, authSnapshot, clearToken, refreshAuth, subscribeAuth } from './token.ts'
 import { AppPackage, SelectedTenant, appCwd, createSession, openSession, resolvePackagesRoot, selectApp, selectTenant } from './nav.ts'
-import { LoginView } from './LoginView.tsx'
 import css from './TenantNav.module.css'
 
 interface Tenant {
@@ -25,7 +25,7 @@ const succeeded = (body: { status?: number }): boolean => (body.status ?? 0) ===
 export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocale<'nav'>) {
   const { t } = props
   const list = props.useSessions(s => s)
-  const [token, setTok] = useState<string | undefined>()
+  const token = useSyncExternalStore(subscribeAuth, authSnapshot)
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [apps, setApps] = useState<AppPackage[]>([])
   const [tenant, setTenant] = useState<SelectedTenant | undefined>()
@@ -33,7 +33,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
   const [error, setError] = useState<string | undefined>()
 
   useEffect(() => {
-    void getToken().then(setTok)
+    refreshAuth()
     void resolvePackagesRoot()
   }, [])
 
@@ -89,18 +89,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
       .filter((row): row is NonNullable<typeof row> => row !== undefined)
       .filter(row => row.cwd === cwd)
 
-  if (token === undefined) {
-    return (
-      <LoginView
-        t={t}
-        onSignIn={(value) => {
-          void setToken(value)
-            .then(() => { setTok(value) })
-            .catch((error: unknown) => { setError(String(error)) })
-        }}
-      />
-    )
-  }
+  if (token === undefined) return null
   return (
     <div className={css.root}>
       <h3 className={css.sectionHeader}>{t('nav.tenants')}</h3>
@@ -165,7 +154,7 @@ export function TenantNav(props: PropsRuntime<'sidebar.workspaces'> & PropsLocal
           size="sm"
           className={css.logout}
           onClick={() => {
-            void clearToken().then(() => { setTok(undefined) })
+            void clearToken()
           }}
         >
           {t('nav.logout')}
