@@ -202,7 +202,6 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
           setOpen(false)
           choose(id)
         }}
-        portal
         dense
         align="start"
         side="top"

@@ -18,6 +18,14 @@
   width: 100%;
 }
 
+/* The dropdown card is positioned inside the wrapper span; widen it to the
+   trigger's full row (Menu's own card defaults to a 218px minimum). */
+.root [role='menu'] {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
 .trigger {
   display: flex;
   align-items: center;
