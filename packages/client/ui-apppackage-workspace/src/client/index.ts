@@ -1,7 +1,9 @@
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
+import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import { AppPackageWorkspace } from './AppPackageWorkspace.tsx'
+import { PreviewAction, type PreviewActionInjected } from './PreviewAction.tsx'
 import { en, zh, type AppPackageKey } from '../locales.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -13,7 +15,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 const NS = 'apppackage'
 
 /** Required services: slots for registration, locale for dictionaries. */
-export const inject = ['slots', 'locale', 'sessions']
+export const inject = ['slots', 'locale', 'sessions', 'layout']
 
 /**
  * App-package product workspace, browser half: replaces the upstream details
@@ -33,5 +35,18 @@ export function apply(ctx: ClientContext): void {
         locale: NS,
       }, AppPackageWorkspace)),
     'ui-apppackage-workspace: details workspace',
+  )
+  ctx.effect(
+    () => ctx.slots.inject('conversation.session.header.actions', () =>
+      ctx.slots.register({
+        name: 'conversation.session.header.actions',
+        id: 'uicp.apppackage.preview',
+        order: 100,
+        locale: NS,
+        inject: (): PreviewActionInjected => ({
+          openDetails: () => { ctx.layout.openDetails() },
+        }),
+      }, PreviewAction)),
+    'ui-apppackage-workspace: preview header action',
   )
 }
