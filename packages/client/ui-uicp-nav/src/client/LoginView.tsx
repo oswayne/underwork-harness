@@ -7,7 +7,7 @@ import css from './LoginView.module.css'
 export function LoginBrand({ t }: PropsLocale<'nav'>) {
   return (
     <div className={css.brand}>
-      <img className={css.logo} src="/uicp-logo.png" alt="" />
+      <img className={css.logo} src="/app-icon.svg" alt="" />
       <span className={css.title}>{t('login.brand')}</span>
     </div>
   )

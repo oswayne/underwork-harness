@@ -7,9 +7,9 @@
   "display": "fullscreen",
   "icons": [
     {
-      "src": "/uicp-logo.png",
-      "sizes": "1024x1032",
-      "type": "image/png",
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ]

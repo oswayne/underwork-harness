@@ -18,15 +18,15 @@ it('ships install metadata with the built web application', async () => {
     scope: '/',
     display: 'fullscreen',
     icons: [{
-      src: '/uicp-logo.png',
-      sizes: '1024x1032',
-      type: 'image/png',
+      src: '/app-icon.svg',
+      sizes: 'any',
+      type: 'image/svg+xml',
       purpose: 'any',
     }],
   })
 })
 
-it('ships the Underwork Harness logo as the browser icon', async () => {
-  const logo = await readFile(join(DIST_ROOT, 'uicp-logo.png'))
-  expect(logo.subarray(0, 4).toString('latin1')).toBe('\u0089PNG')
+it('ships the Underwork Harness app icon as the browser icon', async () => {
+  const icon = await readFile(join(DIST_ROOT, 'app-icon.svg'), 'utf8')
+  expect(icon).toContain('<svg')
 })

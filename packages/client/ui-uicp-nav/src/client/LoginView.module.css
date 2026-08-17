@@ -15,14 +15,11 @@
 }
 
 .logo {
-  /* dsh logo style: flat monochrome mark, borderless, theme-adaptive ink. */
+  /* The app icon is a self-contained rounded mark (white plate), so it needs
+     no theme inversion and renders square. */
+  width: 40px;
   height: 40px;
-  width: auto;
   border: none;
-}
-
-body[data-ds-dark-theme] .logo {
-  filter: invert(1);
 }
 
 .title {
