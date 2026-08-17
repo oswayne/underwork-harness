@@ -87,14 +87,15 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     }
   }, [token])
 
-  /** Register every app package of one tenant as a dsh Workspace. */
-  const registerApps = async (tenant: Tenant): Promise<void> => {
-    if (token === undefined) return
+  /**
+   * Register every app package of one tenant as a dsh Workspace.
+   * @returns how many app packages were registered (missing local dirs skip).
+   * @throws when the root is unavailable or a real registration error occurs.
+   */
+  const registerApps = async (tenant: Tenant): Promise<number> => {
+    if (token === undefined) return 0
     const root = packagesRoot() ?? await resolvePackagesRoot()
-    if (root === undefined) {
-      setError(t('nav.rootMissing'))
-      return
-    }
+    if (root === undefined) throw new Error(t('nav.rootMissing'))
     const res = await fetch(`${API_BASE}/app-package/list`, {
       headers: { Authorization: token, Tenant: tenant._id },
     })
@@ -123,12 +124,13 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     }
     if (apps.length > 0 && registered === 0) {
       if (missingDirs === apps.length) {
-        setError(t('nav.notSynced'))
+        return 0
       } else {
         console.warn('uicp-nav: app workspace registration failed', failures)
-        setError(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
+        throw new Error(`${t('nav.rootUnavailable', { root })}：${failures[0] ?? ''}`)
       }
     }
+    return registered
   }
 
   const choose = (id: string): void => {
@@ -137,20 +139,44 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     setTenantId(id)
     writeStoredTenant(id)
     selectTenant(tenant)
-    void registerApps(tenant).catch((reason: unknown) => { setError(String(reason)) })
+    void registerApps(tenant).then((n) => {
+      setError(n === 0 ? t('nav.notSynced') : undefined)
+    }).catch((reason: unknown) => {
+      setError(reason instanceof Error ? reason.message : String(reason))
+    })
   }
 
-  // Initial selection: the stored tenant, else the first available one.
+  // Initial pass: register every tenant's synced app packages, land the
+  // selection on a tenant with synced apps (stored choice wins when valid),
+  // and only complain when no tenant has any app package locally.
   useEffect(() => {
     if (tenants.length === 0) return
-    const tenant = tenants.find(item => item._id === tenantId) ?? tenants[0]
-    if (tenant === undefined) return
-    if (tenantId !== tenant._id) {
-      setTenantId(tenant._id)
-      writeStoredTenant(tenant._id)
-    }
-    selectTenant(tenant)
-    void registerApps(tenant).catch((reason: unknown) => { setError(String(reason)) })
+    let synced = 0
+    let firstSynced: Tenant | undefined
+    void (async () => {
+      for (const tenant of tenants) {
+        try {
+          const n = await registerApps(tenant)
+          if (n > 0) {
+            synced += n
+            firstSynced ??= tenant
+          }
+        } catch (reason) {
+          setError(reason instanceof Error ? reason.message : String(reason))
+          return
+        }
+      }
+      const fallback = firstSynced ?? tenants[0]
+      const effective = tenants.find(item => item._id === tenantId) ?? fallback
+      if (effective !== undefined) {
+        if (tenantId === undefined || !tenants.some(item => item._id === tenantId)) {
+          setTenantId(effective._id)
+          writeStoredTenant(effective._id)
+        }
+        selectTenant(effective)
+      }
+      setError(synced === 0 ? t('nav.notSynced') : undefined)
+    })()
   }, [tenants])
 
   if (token === undefined || !wide) return null

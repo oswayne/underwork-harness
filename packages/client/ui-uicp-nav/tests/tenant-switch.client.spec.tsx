@@ -128,7 +128,7 @@ describe('TenantSwitch', () => {
       ] }))
     }))
     render(<TenantSwitch {...navProps()} />)
-    await screen.findByRole('button', { name: '租户A' })
+    await screen.findByText('无法获取应用包根目录')
     await new Promise(resolve => setTimeout(resolve, 0))
     expect(register).not.toHaveBeenCalled()
   })
