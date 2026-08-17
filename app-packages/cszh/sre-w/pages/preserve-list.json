@@ -1,0 +1,1265 @@
+{
+  "type": "page",
+  "id": "u:7ec8ca061bb6",
+  "title": "保养单",
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body"
+  ],
+  "body": [
+    {
+      "type": "crud",
+      "mode": "table",
+      "id": "u:5e569fa15629",
+      "filter": {
+        "title": "",
+        "body": [
+          {
+            "type": "input-text",
+            "name": "equ_name.like",
+            "label": "设备名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:4aa172126ab5",
+            "size": "full"
+          },
+          {
+            "type": "select",
+            "name": "result",
+            "label": "保养结果",
+            "options": [
+              {
+                "label": "已完成",
+                "value": "0"
+              },
+              {
+                "label": "未完成",
+                "value": "1"
+              }
+            ],
+            "clearable": true,
+            "id": "u:44beb56a79c8",
+            "size": "full",
+            "multiple": false
+          }
+        ],
+        "id": "u:40ff924fa844",
+        "actions": [
+          {
+            "type": "reset",
+            "label": "重置",
+            "primary": true,
+            "id": "u:22e232bce478",
+            "level": "default",
+            "size": "default"
+          },
+          {
+            "type": "submit",
+            "label": "搜索",
+            "primary": true,
+            "id": "u:8bef36841f6c"
+          }
+        ],
+        "feat": "Insert",
+        "columnCount": 3
+      },
+      "headerToolbar": [
+        {
+          "type": "bulkActions",
+          "align": "left",
+          "id": "u:2a3b98a318e3"
+        },
+        {
+          "type": "columns-toggler",
+          "align": "left",
+          "id": "u:95baf0817033"
+        },
+        {
+          "type": "button",
+          "align": "left",
+          "id": "u:62e3d543bd69",
+          "tpl": "内容",
+          "wrapperComponent": "",
+          "label": "新增",
+          "disabledOnAction": false,
+          "level": "primary",
+          "onEvent": {
+            "click": {
+              "weight": 0,
+              "actions": [
+                {
+                  "ignoreError": false,
+                  "actionType": "dialog",
+                  "dialog": {
+                    "$ref": "modal-ref-1"
+                  }
+                }
+              ]
+            }
+          },
+          "icon": "fa fa-plus",
+          "size": "sm"
+        }
+      ],
+      "footerToolbar": [
+        "statistics",
+        "switch-per-page",
+        "pagination"
+      ],
+      "bulkActions": [],
+      "primaryField": "id",
+      "api": {
+        "method": "get",
+        "url": "/app-package/entity/sre-assets-maintaining-bill/page",
+        "forceAppendDataToQuery": false,
+        "messages": {},
+        "requestAdaptor": "",
+        "adaptor": ""
+      },
+      "quickSaveApi": {
+        "method": "get",
+        "url": "",
+        "data": {
+          "items": "${rows}"
+        }
+      },
+      "quickSaveItemApi": "",
+      "columns": [
+        {
+          "type": "input-number",
+          "name": "id",
+          "label": "ID",
+          "searchable": {
+            "type": "input-number",
+            "name": "id",
+            "label": "ID",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:6b4b49efc4f1"
+          },
+          "static": true,
+          "id": "u:41a43b740922"
+        },
+        {
+          "type": "text",
+          "name": "plan_no",
+          "label": "保养计划编码",
+          "searchable": {
+            "type": "input-text",
+            "name": "plan_no",
+            "label": "保养计划编码",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:3279b04238d9"
+          },
+          "id": "u:bf7b67f937d4"
+        },
+        {
+          "type": "input-text",
+          "name": "sheet_no",
+          "label": "保养单号",
+          "searchable": {
+            "type": "input-text",
+            "name": "sheet_no",
+            "label": "保养单号",
+            "clearable": true,
+            "id": "u:37ae29c973a3"
+          },
+          "static": true,
+          "id": "u:df1e32d66f73",
+          "placeholder": "-"
+        },
+        {
+          "type": "select",
+          "name": "equ_id",
+          "label": "设备名称",
+          "searchable": true,
+          "id": "u:6a3946657f41",
+          "placeholder": "-",
+          "multiple": false,
+          "source": {
+            "method": "get",
+            "url": "/app-package/entity/sre-assets-device-rack/list",
+            "requestAdaptor": "",
+            "adaptor": "",
+            "messages": {}
+          },
+          "labelField": "name",
+          "valueField": "_id",
+          "size": "sm",
+          "static": true
+        },
+        {
+          "type": "input-number",
+          "name": "frequency",
+          "label": "保养频次（天/次）",
+          "searchable": {
+            "type": "input-number",
+            "name": "frequency",
+            "label": "保养频次（天/次）",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:1d515c10ddab"
+          },
+          "id": "u:960b82ca38c2",
+          "static": true,
+          "kilobitSeparator": false,
+          "suffix": ""
+        },
+        {
+          "type": "input-datetime",
+          "name": "last_maintenance_time",
+          "label": "上次保养时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "last_maintenance_time",
+            "label": "上次保养时间",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:d6dcccfaaa0e",
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ]
+          },
+          "static": true,
+          "id": "u:56599cafb93f",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss"
+        },
+        {
+          "type": "text",
+          "name": "equ_no",
+          "label": "设备编码",
+          "searchable": {
+            "type": "input-text",
+            "name": "equ_no",
+            "label": "设备编码",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:064dd15ebb15",
+            "placeholder": "请输入"
+          },
+          "id": "u:44b99c2a4897"
+        },
+        {
+          "type": "input-datetime",
+          "name": "maintenance_time",
+          "label": "本次保养时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "maintenance_time",
+            "label": "本次保养时间",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:d6dcccfaaa0e",
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ]
+          },
+          "id": "u:5d16e3447f03",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss",
+          "static": true
+        },
+        {
+          "type": "select",
+          "name": "maintenance_person",
+          "label": "保养人",
+          "searchable": true,
+          "static": true,
+          "id": "u:5e000ae23d33",
+          "placeholder": "-",
+          "multiple": false,
+          "source": {
+            "method": "get",
+            "url": "/systemctl/user/list",
+            "requestAdaptor": "",
+            "adaptor": "",
+            "messages": {}
+          },
+          "labelField": "name",
+          "valueField": "_id",
+          "size": "sm"
+        },
+        {
+          "type": "text",
+          "name": "maintenance_project",
+          "label": "保养项",
+          "searchable": {
+            "type": "input-text",
+            "name": "maintenance_project",
+            "label": "保养项",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:fa893858a909"
+          },
+          "id": "u:515e7f65f979"
+        },
+        {
+          "type": "text",
+          "name": "maintenance_content",
+          "label": "保养内容及要求",
+          "searchable": {
+            "type": "input-text",
+            "name": "maintenance_content",
+            "label": "保养内容及要求",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:c295a7091dc8"
+          },
+          "id": "u:7743e4642068"
+        },
+        {
+          "type": "input-number",
+          "name": "maintenance_required_time",
+          "label": "保养时长",
+          "searchable": {
+            "type": "input-number",
+            "name": "maintenance_required_time",
+            "label": "保养时长",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:a0e06ce53076",
+            "precision": 4
+          },
+          "id": "u:4a81b940f7a8",
+          "precision": 4,
+          "kilobitSeparator": false,
+          "suffix": "",
+          "static": true
+        },
+        {
+          "type": "mapping",
+          "name": "fault_phenomenon",
+          "label": "故障现象",
+          "searchable": {
+            "type": "select",
+            "name": "fault_phenomenon",
+            "label": "故障现象",
+            "clearable": true,
+            "id": "u:c528143f694b",
+            "options": [],
+            "source": "app://dictionary/running/list?level=2&encoded=fault_phenomenon"
+          },
+          "id": "u:db313fcaa65a",
+          "map": {},
+          "source": "app://dictionary/running/list?level=2&encoded=fault_phenomenon"
+        },
+        {
+          "type": "mapping",
+          "name": "result",
+          "label": "保养结果",
+          "searchable": {
+            "type": "select",
+            "name": "result",
+            "label": "保养结果",
+            "options": [
+              {
+                "label": "已完成",
+                "value": "0"
+              },
+              {
+                "label": "未完成",
+                "value": "1"
+              }
+            ],
+            "clearable": true,
+            "id": "u:2fbacc392099"
+          },
+          "map": {
+            "0": "已完成",
+            "1": "未完成"
+          },
+          "id": "u:f924e3b1791d"
+        },
+        {
+          "type": "static-tpl",
+          "name": "remark",
+          "label": "备注",
+          "searchable": {
+            "type": "input-text",
+            "name": "remark",
+            "label": "备注",
+            "clearable": true,
+            "id": "u:829708610bc3"
+          },
+          "id": "u:b52fc7ca2088",
+          "tpl": "${remark}"
+        },
+        {
+          "type": "operation",
+          "label": "操作",
+          "id": "u:2db0e6716944",
+          "buttons": [
+            {
+              "type": "button",
+              "label": "详情",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "dialog",
+                      "dialog": {
+                        "type": "dialog",
+                        "size": "md",
+                        "title": "详情",
+                        "body": [
+                          {
+                            "type": "form",
+                            "data": {},
+                            "mode": "horizontal",
+                            "title": "详情",
+                            "body": [
+                              {
+                                "type": "static",
+                                "name": "plan_no",
+                                "label": "保养计划编码",
+                                "id": "u:6fe4aa491bce"
+                              },
+                              {
+                                "type": "input-text",
+                                "name": "sheet_no",
+                                "label": "保养单号",
+                                "static": true,
+                                "id": "u:dccc13e8d24c"
+                              },
+                              {
+                                "type": "select",
+                                "name": "equ_id",
+                                "label": "设备名称",
+                                "id": "u:6a3946657f41",
+                                "searchable": true,
+                                "placeholder": "-",
+                                "multiple": false,
+                                "source": {
+                                  "method": "get",
+                                  "url": "/app-package/entity/sre-assets-device-rack/list",
+                                  "requestAdaptor": "",
+                                  "adaptor": "",
+                                  "messages": {}
+                                },
+                                "labelField": "name",
+                                "valueField": "_id",
+                                "size": "sm",
+                                "static": true
+                              },
+                              {
+                                "type": "input-number",
+                                "name": "frequency",
+                                "label": "保养频次（天/次）",
+                                "static": true,
+                                "kilobitSeparator": false,
+                                "suffix": "",
+                                "id": "u:a3b0cd1102c7"
+                              },
+                              {
+                                "type": "input-time",
+                                "name": "last_maintenance_time",
+                                "label": "上次保养时间",
+                                "format": "HH:mm:ss",
+                                "inputFormat": "HH:mm:ss",
+                                "static": true,
+                                "id": "u:241af6fe0c64"
+                              },
+                              {
+                                "type": "static",
+                                "name": "equ_no",
+                                "label": "设备编码",
+                                "id": "u:c24e9efa7b25"
+                              },
+                              {
+                                "type": "input-datetime",
+                                "name": "maintenance_time",
+                                "label": "本次保养时间",
+                                "format": "YYYY-MM-DD HH:mm:ss",
+                                "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                "static": true,
+                                "id": "u:7f5368c655b0"
+                              },
+                              {
+                                "type": "select",
+                                "name": "maintenance_person",
+                                "label": "保养人",
+                                "id": "u:5e000ae23d33",
+                                "searchable": true,
+                                "placeholder": "-",
+                                "multiple": false,
+                                "source": {
+                                  "method": "get",
+                                  "url": "/systemctl/user/list",
+                                  "requestAdaptor": "",
+                                  "adaptor": "",
+                                  "messages": {}
+                                },
+                                "labelField": "name",
+                                "valueField": "_id",
+                                "size": "sm",
+                                "static": true
+                              },
+                              {
+                                "type": "static",
+                                "name": "maintenance_project",
+                                "label": "保养项",
+                                "id": "u:9d0ccd7c62c6"
+                              },
+                              {
+                                "type": "static",
+                                "name": "maintenance_content",
+                                "label": "保养内容及要求",
+                                "id": "u:193c8dde394e"
+                              },
+                              {
+                                "type": "input-number",
+                                "name": "maintenance_required_time",
+                                "label": "保养时长",
+                                "precision": 4,
+                                "kilobitSeparator": false,
+                                "suffix": "",
+                                "static": true,
+                                "id": "u:ec86bf22c9ba"
+                              },
+                              {
+                                "type": "static-mapping",
+                                "name": "status",
+                                "label": "设备运行状态",
+                                "map": {
+                                  "0": "正常",
+                                  "1": "故障",
+                                  "2": "带病运行",
+                                  "3": "维修",
+                                  "4": "未启用"
+                                },
+                                "id": "u:3b872db02c03"
+                              },
+                              {
+                                "type": "static-mapping",
+                                "name": "fault_phenomenon",
+                                "label": "故障现象",
+                                "map": {},
+                                "source": "app://dictionary/running/list?level=2&encoded=fault_phenomenon",
+                                "id": "u:0ba70390c498"
+                              },
+                              {
+                                "type": "static-mapping",
+                                "name": "result",
+                                "label": "保养结果",
+                                "map": {
+                                  "0": "已完成",
+                                  "1": "未完成"
+                                },
+                                "id": "u:b6047e34126b"
+                              },
+                              {
+                                "type": "static-tpl",
+                                "name": "remark",
+                                "label": "备注",
+                                "tpl": "${remark}",
+                                "id": "u:0d3d9630d5f0"
+                              }
+                            ],
+                            "initApi": {
+                              "method": "get",
+                              "url": "/app-package/entity/sre-assets-maintaining-bill/${_id}",
+                              "data": {},
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "wrapWithPanel": false,
+                            "id": "u:7755ceecb5d3",
+                            "labelAlign": "left",
+                            "loadingConfig": {
+                              "show": false
+                            },
+                            "feat": "View",
+                            "dsType": "api"
+                          }
+                        ],
+                        "actionType": "dialog",
+                        "id": "u:b56f0cb68010",
+                        "actions": [
+                          {
+                            "type": "button",
+                            "actionType": "cancel",
+                            "label": "取消",
+                            "id": "u:a17e418bcdd2"
+                          },
+                          {
+                            "type": "button",
+                            "actionType": "confirm",
+                            "label": "确定",
+                            "primary": true,
+                            "id": "u:8987b4a61de5"
+                          }
+                        ],
+                        "showCloseButton": true,
+                        "closeOnOutside": false,
+                        "closeOnEsc": false,
+                        "showErrorMsg": true,
+                        "showLoading": true,
+                        "draggable": false
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:ac24d2548747",
+              "icon": "fa fa-ellipsis-h"
+            },
+            {
+              "type": "button",
+              "label": "删除",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确定要删除？",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "ajax",
+                      "api": {
+                        "method": "delete",
+                        "url": "/app-package/entity/sre-assets-maintaining-bill/${_id}",
+                        "requestAdaptor": "",
+                        "adaptor": "",
+                        "messages": {}
+                      },
+                      "outputVar": "responseResult",
+                      "options": {}
+                    },
+                    {
+                      "actionType": "reload",
+                      "componentId": "u:5e569fa15629",
+                      "expression": "${event.data.responseResult.responseStatus === 0}"
+                    }
+                  ]
+                }
+              },
+              "id": "u:742b627d77d3",
+              "icon": "fa fa-trash-alt",
+              "disabledOnAction": false
+            }
+          ],
+          "width": 150
+        }
+      ],
+      "perPageAvailable": [
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "messages": {}
+    }
+  ],
+  "config": {
+    "inputParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    },
+    "pageParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    }
+  },
+  "wrapperCustomStyle": {
+    "root": {
+      "overflow": "auto"
+    }
+  },
+  "definitions": {
+    "modal-ref-1": {
+      "type": "dialog",
+      "body": [
+        {
+          "id": "u:8b9e1ff405c4",
+          "type": "form",
+          "title": "表单",
+          "mode": "flex",
+          "labelAlign": "top",
+          "dsType": "api",
+          "feat": "Insert",
+          "body": [
+            {
+              "type": "fieldset",
+              "title": "设备信息",
+              "collapsable": true,
+              "body": [
+                {
+                  "type": "input-text",
+                  "name": "sheet_no",
+                  "label": "保养单号",
+                  "required": false,
+                  "placeholder": "自动生成，无需填写",
+                  "disabled": false,
+                  "id": "u:9e3bcd741d93",
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "select",
+                  "label": "选择设备",
+                  "name": "equ_id",
+                  "id": "u:caa0476e233e",
+                  "multiple": false,
+                  "source": {
+                    "method": "get",
+                    "url": "/app-package/entity/sre-assets-device-rack/list",
+                    "requestAdaptor": "",
+                    "adaptor": "",
+                    "messages": {}
+                  },
+                  "labelField": "name",
+                  "valueField": "_id",
+                  "autoFill": {
+                    "equ_name": "${equ_name}",
+                    "last_maintenance_time": "${last_maintenance_time}",
+                    "equ_no": "${equ_no}",
+                    "fault_phenomenon": "${fault_phenomenon}",
+                    "status": "${status}"
+                  },
+                  "onEvent": {
+                    "change": {
+                      "weight": 0,
+                      "actions": [
+                        {
+                          "componentId": "u:2b28a05a9980",
+                          "ignoreError": false,
+                          "actionType": "setValue",
+                          "args": {
+                            "value": "${last_maintenance_time}"
+                          }
+                        },
+                        {
+                          "componentId": "u:c77bbf9ed999",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "required": true,
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "input-datetime",
+                  "name": "last_maintenance_time",
+                  "label": "上次保养时间",
+                  "required": false,
+                  "timeFormat": "YYYY-MM-DD HH:mm:ss",
+                  "format": "YYYY-MM-DD HH:mm:ss",
+                  "valueFormat": "YYYY-MM-DD HH:mm:ss",
+                  "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                  "shortcuts": [
+                    "thismonth",
+                    "thisweek",
+                    "yesterday",
+                    "today",
+                    "now",
+                    "tomorrow",
+                    "endofthisweek",
+                    "endofthismonth"
+                  ],
+                  "validations": {},
+                  "validationErrors": {},
+                  "id": "u:2b28a05a9980",
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal",
+                  "disabled": true
+                },
+                {
+                  "type": "input-text",
+                  "name": "equ_no",
+                  "label": "设备编码",
+                  "required": false,
+                  "placeholder": "请输入",
+                  "validations": {},
+                  "validationErrors": {
+                    "maxLength": "长度超出限制"
+                  },
+                  "id": "u:adb3d85f125e",
+                  "disabled": true,
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "input-datetime",
+                  "name": "maintenance_time",
+                  "label": "本次保养时间",
+                  "required": false,
+                  "timeFormat": "YYYY-MM-DD HH:mm:ss",
+                  "format": "YYYY-MM-DD HH:mm:ss",
+                  "valueFormat": "YYYY-MM-DD HH:mm:ss",
+                  "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                  "shortcuts": [
+                    "thismonth",
+                    "thisweek",
+                    "yesterday",
+                    "today",
+                    "now",
+                    "tomorrow",
+                    "endofthisweek",
+                    "endofthismonth"
+                  ],
+                  "validations": {},
+                  "validationErrors": {},
+                  "id": "u:fb20cba0a0d6",
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal",
+                  "value": "${DATETOSTR(NOW(),'YYYY-MM-DD HH:mm:ss')}",
+                  "disabled": true
+                }
+              ],
+              "id": "u:d672b3b04afe",
+              "themeCss": {
+                "labelClassName": {
+                  "font:default": {
+                    "fontWeight": "var(--fonts-weight-3)",
+                    "color": "var(--colors-neutral-text-2)"
+                  }
+                }
+              },
+              "size": "sm",
+              "mode": "normal"
+            },
+            {
+              "type": "fieldset",
+              "title": "保养内容",
+              "collapsable": true,
+              "body": [
+                {
+                  "type": "select",
+                  "label": "保养计划",
+                  "name": "plans",
+                  "id": "u:c77bbf9ed999",
+                  "source": {
+                    "method": "get",
+                    "url": "/app-package/entity/sre-assets-maintaining-plan/list",
+                    "requestAdaptor": "",
+                    "adaptor": "",
+                    "messages": {}
+                  },
+                  "labelField": "name",
+                  "valueField": "_id",
+                  "autoFill": {
+                    "frequency": "${frequency}",
+                    "plan_no": "${plan_no}"
+                  },
+                  "multiple": false,
+                  "onEvent": {
+                    "change": {
+                      "weight": 0,
+                      "actions": [
+                        {
+                          "componentId": "u:4f1dac642074",
+                          "ignoreError": false,
+                          "actionType": "setValue",
+                          "args": {
+                            "value": "${frequency}"
+                          }
+                        },
+                        {
+                          "componentId": "u:e3888ef9b34c",
+                          "ignoreError": false,
+                          "actionType": "reload"
+                        }
+                      ]
+                    }
+                  },
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "input-number",
+                  "name": "frequency",
+                  "label": "保养频次（天/次）",
+                  "required": false,
+                  "placeholder": "请输入",
+                  "validations": {},
+                  "validationErrors": {},
+                  "id": "u:4f1dac642074",
+                  "disabled": true,
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal",
+                  "keyboard": true,
+                  "showSteps": true,
+                  "step": 1
+                },
+                {
+                  "type": "select",
+                  "label": "保养项",
+                  "name": "maintenance_project",
+                  "id": "u:e3888ef9b34c",
+                  "multiple": false,
+                  "source": {
+                    "method": "get",
+                    "url": "",
+                    "data": {
+                      "id": "${project_use}"
+                    }
+                  },
+                  "labelField": "label",
+                  "valueField": "value",
+                  "autoFill": {
+                    "maintenance_content": "${content}",
+                    "maintenance_required_time": "${required_time}"
+                  },
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "select",
+                  "label": "保养人",
+                  "name": "maintenance_person",
+                  "id": "u:583f59ed65ba",
+                  "multiple": false,
+                  "source": {
+                    "method": "get",
+                    "url": "/systemctl/user/list",
+                    "data": {
+                      "id": "${project_use}"
+                    },
+                    "requestAdaptor": "",
+                    "adaptor": "",
+                    "messages": {}
+                  },
+                  "labelField": "name",
+                  "valueField": "_id",
+                  "autoFill": {
+                    "maintenance_content": "${content}",
+                    "maintenance_required_time": "${required_time}"
+                  },
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "input-text",
+                  "name": "maintenance_content",
+                  "label": "保养内容及要求",
+                  "required": false,
+                  "placeholder": "请输入",
+                  "id": "u:09dfd4ed1a64",
+                  "validations": {},
+                  "validationErrors": {
+                    "maxLength": "长度超出限制"
+                  },
+                  "disabled": true,
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "input-number",
+                  "name": "maintenance_required_time",
+                  "label": "保养时长",
+                  "required": false,
+                  "placeholder": "请输入",
+                  "validations": {},
+                  "validationErrors": {},
+                  "id": "u:395a66a2d8b3",
+                  "precision": 4,
+                  "disabled": true,
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "select",
+                  "name": "fault_phenomenon",
+                  "label": "故障现象",
+                  "required": false,
+                  "id": "u:de724f8ca376",
+                  "source": {
+                    "method": "get",
+                    "url": "/app-package/entity/sre-dictionary-value/list?identifier=gzxx",
+                    "requestAdaptor": "",
+                    "adaptor": "",
+                    "messages": {}
+                  },
+                  "multiple": false,
+                  "hiddenOn": "${status!='1'}",
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal",
+                  "labelField": "label",
+                  "valueField": "value"
+                },
+                {
+                  "type": "select",
+                  "name": "result",
+                  "label": "保养结果",
+                  "required": false,
+                  "id": "u:8b05a9d43146",
+                  "options": [
+                    {
+                      "label": "已完成",
+                      "value": "0"
+                    },
+                    {
+                      "label": "未完成",
+                      "value": "1"
+                    }
+                  ],
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                },
+                {
+                  "type": "textarea",
+                  "name": "remark",
+                  "label": "备注",
+                  "required": false,
+                  "placeholder": "请输入",
+                  "validations": {},
+                  "validationErrors": {},
+                  "id": "u:9e5a33a0d303",
+                  "themeCss": {
+                    "labelClassName": {
+                      "font:default": {
+                        "fontWeight": "var(--fonts-weight-3)",
+                        "color": "var(--colors-neutral-text-2)"
+                      }
+                    }
+                  },
+                  "size": "lg",
+                  "mode": "normal"
+                }
+              ],
+              "id": "u:7082fbde95d5",
+              "themeCss": {
+                "labelClassName": {
+                  "font:default": {
+                    "fontWeight": "var(--fonts-weight-3)",
+                    "color": "var(--colors-neutral-text-2)"
+                  }
+                }
+              },
+              "size": "sm",
+              "mode": "normal"
+            }
+          ],
+          "actions": [
+            {
+              "type": "button",
+              "label": "提交",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "submit",
+                      "componentId": "u:8b9e1ff405c4"
+                    }
+                  ]
+                }
+              },
+              "level": "primary"
+            }
+          ],
+          "resetAfterSubmit": true,
+          "api": {
+            "method": "post",
+            "url": "/app-package/entity/sre-assets-maintaining-bill",
+            "requestAdaptor": "api.data = context\r\nreturn api",
+            "adaptor": "",
+            "messages": {}
+          },
+          "onEvent": {
+            "submitSucc": {
+              "weight": 0,
+              "actions": [
+                {
+                  "componentId": "u:5e569fa15629",
+                  "ignoreError": false,
+                  "actionType": "reload"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "title": "新增保养单",
+      "id": "u:c8ca362a6b93",
+      "actions": [
+        {
+          "type": "button",
+          "actionType": "cancel",
+          "label": "取消",
+          "id": "u:fd387c1b8e1a"
+        },
+        {
+          "type": "button",
+          "actionType": "confirm",
+          "label": "确定",
+          "primary": true,
+          "id": "u:7128f6d43e8b"
+        }
+      ],
+      "showCloseButton": true,
+      "closeOnOutside": false,
+      "closeOnEsc": false,
+      "showErrorMsg": true,
+      "showLoading": true,
+      "draggable": false,
+      "editorSetting": {
+        "displayName": "新增保养单"
+      },
+      "size": "md"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "运维软件-工人端",
+  "identifier": "sre-w",
+  "description": "",
+  "version": "1.0.0",
+  "available": true,
+  "hidden": false,
+  "type": "官方",
+  "url": "",
+  "portable": true,
+  "category": "基础",
+  "runtime": "混合",
+  "requireRoles": "",
+  "requirePermissions": ""
+}

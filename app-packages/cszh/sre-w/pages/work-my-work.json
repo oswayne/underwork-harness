@@ -1,0 +1,876 @@
+{
+  "type": "page",
+  "id": "u:b61ab3c8d91d",
+  "title": "我的工单",
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body",
+    "toolbar"
+  ],
+  "body": [
+    {
+      "type": "crud",
+      "syncLocation": false,
+      "api": {
+        "method": "get",
+        "url": "/app-package/entity/sre-work-work-order/page?status!==待分配",
+        "messages": {},
+        "requestAdaptor": "api.query.work_person_id = JSON.parse(localStorage.getItem(\"User\"))?._id\r\nreturn api",
+        "adaptor": ""
+      },
+      "columns": [
+        {
+          "name": "id",
+          "label": "ID",
+          "type": "input-number",
+          "id": "u:636b1adeea7c",
+          "searchable": {
+            "type": "input-number",
+            "name": "id",
+            "label": "ID",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true
+          },
+          "static": true
+        },
+        {
+          "name": "work_no",
+          "label": "工单号",
+          "type": "input-text",
+          "id": "u:a67f9907f820",
+          "searchable": {
+            "type": "input-text",
+            "name": "work_no",
+            "label": "工单号",
+            "clearable": true
+          },
+          "static": true
+        },
+        {
+          "type": "mapping",
+          "name": "type",
+          "label": "类型",
+          "searchable": {
+            "type": "select",
+            "name": "type",
+            "label": "类型",
+            "options": [
+              {
+                "label": "内部",
+                "value": "0"
+              },
+              {
+                "label": "客户",
+                "value": "1"
+              }
+            ],
+            "clearable": true
+          },
+          "map": {
+            "0": "内部",
+            "1": "客户"
+          },
+          "id": "u:5a08ad73489f"
+        },
+        {
+          "type": "text",
+          "name": "equ_name",
+          "label": "设备名称",
+          "searchable": {
+            "type": "input-text",
+            "name": "equ_name",
+            "label": "设备名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:5facdd6535e7"
+        },
+        {
+          "type": "text",
+          "name": "equ_type",
+          "label": "设备类型",
+          "searchable": {
+            "type": "input-text",
+            "name": "equ_type",
+            "label": "设备类型",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:a5617daabfb7"
+        },
+        {
+          "type": "text",
+          "name": "equ_addr",
+          "label": "位置",
+          "searchable": {
+            "type": "input-text",
+            "name": "equ_addr",
+            "label": "位置",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:2ce6ee547a31",
+          "inline": true,
+          "hidden": true
+        },
+        {
+          "type": "text",
+          "name": "report_person",
+          "label": "上报人",
+          "searchable": {
+            "type": "input-text",
+            "name": "report_person",
+            "label": "上报人",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:1452e1652bb2"
+        },
+        {
+          "type": "text",
+          "name": "report_person_phone",
+          "label": "上报人电话",
+          "searchable": {
+            "type": "input-text",
+            "name": "report_person_phone",
+            "label": "上报人电话",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:97b639cff7ca"
+        },
+        {
+          "type": "mapping",
+          "name": "app_type",
+          "label": "申请类型",
+          "searchable": {
+            "type": "select",
+            "name": "app_type",
+            "label": "申请类型",
+            "options": [
+              {
+                "label": "报修",
+                "value": "0"
+              },
+              {
+                "label": "更换",
+                "value": "1"
+              },
+              {
+                "label": "其他",
+                "value": "2"
+              }
+            ],
+            "clearable": true
+          },
+          "map": {
+            "0": "报修",
+            "1": "更换",
+            "2": "其他"
+          },
+          "id": "u:7e0ec32e03a2"
+        },
+        {
+          "type": "static-tpl",
+          "name": "dispatch_notes",
+          "label": "派单备注",
+          "searchable": {
+            "type": "input-text",
+            "name": "dispatch_notes",
+            "label": "派单备注",
+            "clearable": true
+          },
+          "tpl": "${dispatch_notes}",
+          "id": "u:c91c2bd328ac"
+        },
+        {
+          "type": "mapping",
+          "name": "urgency",
+          "label": "紧急程度",
+          "searchable": {
+            "type": "select",
+            "name": "urgency",
+            "label": "紧急程度",
+            "options": [
+              {
+                "label": "一般",
+                "value": "0"
+              },
+              {
+                "label": "加急",
+                "value": "1"
+              },
+              {
+                "label": "特急",
+                "value": "2"
+              }
+            ],
+            "clearable": true
+          },
+          "map": {
+            "0": "一般",
+            "1": "加急",
+            "2": "特急"
+          },
+          "id": "u:10ea1f0f165a"
+        },
+        {
+          "type": "input-datetime",
+          "name": "report_time",
+          "label": "上报时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "report_time",
+            "label": "上报时间",
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ],
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true
+          },
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss",
+          "static": true,
+          "id": "u:bcc21659cbce"
+        },
+        {
+          "type": "input-datetime",
+          "name": "dispatch_time",
+          "label": "派单时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "dispatch_time",
+            "label": "派单时间",
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ],
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true
+          },
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss",
+          "static": true,
+          "id": "u:714380b229b5"
+        },
+        {
+          "type": "text",
+          "name": "status",
+          "label": "工单状态",
+          "searchable": {
+            "type": "select",
+            "name": "status",
+            "label": "工单状态",
+            "clearable": true
+          },
+          "id": "u:f99d71c94639",
+          "placeholder": "-"
+        },
+        {
+          "type": "operation",
+          "label": "操作",
+          "buttons": [
+            {
+              "type": "button",
+              "label": "详情",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "dialog",
+                      "dialog": {
+                        "size": "md",
+                        "title": "详情",
+                        "body": [
+                          {
+                            "type": "form",
+                            "data": {},
+                            "mode": "horizontal",
+                            "title": "详情",
+                            "body": [
+                              {
+                                "type": "input-text",
+                                "name": "work_no",
+                                "label": "工单号",
+                                "static": true,
+                                "id": "u:cd03f325c24c"
+                              },
+                              {
+                                "type": "static-mapping",
+                                "name": "type",
+                                "label": "类型",
+                                "map": {
+                                  "0": "内部",
+                                  "1": "客户"
+                                },
+                                "id": "u:6e2740c57a55",
+                                "hidden": true
+                              },
+                              {
+                                "type": "select",
+                                "name": "equ_id",
+                                "label": "设备名称",
+                                "id": "u:6a3946657f41",
+                                "multiple": false,
+                                "source": {
+                                  "method": "get",
+                                  "url": "/app-package/entity/sre-assets-device-rack/list",
+                                  "requestAdaptor": "",
+                                  "adaptor": "",
+                                  "messages": {}
+                                },
+                                "labelField": "name",
+                                "valueField": "_id",
+                                "size": "sm",
+                                "searchable": true,
+                                "placeholder": "-",
+                                "static": true
+                              },
+                              {
+                                "type": "static",
+                                "name": "equ_type",
+                                "label": "设备类型",
+                                "id": "u:f9ecfa2d849c"
+                              },
+                              {
+                                "type": "static",
+                                "name": "equ_addr",
+                                "label": "位置",
+                                "id": "u:a98689ecc34d"
+                              },
+                              {
+                                "type": "static",
+                                "name": "report_person",
+                                "label": "上报人",
+                                "id": "u:c7560006fe3a"
+                              },
+                              {
+                                "type": "static",
+                                "name": "report_person_phone",
+                                "label": "上报人电话",
+                                "id": "u:5003b0974bfa"
+                              },
+                              {
+                                "type": "static-mapping",
+                                "name": "app_type",
+                                "label": "申请类型",
+                                "map": {
+                                  "0": "报修",
+                                  "1": "更换",
+                                  "2": "其他"
+                                },
+                                "id": "u:b0af99232386"
+                              },
+                              {
+                                "type": "static-tpl",
+                                "name": "dispatch_notes",
+                                "label": "派单备注",
+                                "tpl": "${dispatch_notes}",
+                                "id": "u:534631cd2900"
+                              },
+                              {
+                                "type": "static-mapping",
+                                "name": "urgency",
+                                "label": "紧急程度",
+                                "map": {
+                                  "0": "一般",
+                                  "1": "加急",
+                                  "2": "特急"
+                                },
+                                "id": "u:40a0056699f2"
+                              },
+                              {
+                                "type": "input-datetime",
+                                "name": "report_time",
+                                "label": "上报时间",
+                                "format": "YYYY-MM-DD HH:mm:ss",
+                                "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                "static": true,
+                                "id": "u:a57e43cb7cb3"
+                              },
+                              {
+                                "type": "input-datetime",
+                                "name": "dispatch_time",
+                                "label": "派单时间",
+                                "format": "YYYY-MM-DD HH:mm:ss",
+                                "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                "static": true,
+                                "id": "u:4b805ed3b8b4"
+                              },
+                              {
+                                "type": "input-datetime",
+                                "name": "complete_time",
+                                "label": "工单完成时间",
+                                "format": "YYYY-MM-DD HH:mm:ss",
+                                "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                "static": true,
+                                "id": "u:64b226d0f9e7"
+                              },
+                              {
+                                "type": "select",
+                                "name": "work_person_id",
+                                "label": "工人姓名",
+                                "id": "u:b6a77a202829",
+                                "multiple": false,
+                                "source": {
+                                  "method": "get",
+                                  "url": "/systemctl/user/list",
+                                  "requestAdaptor": "",
+                                  "adaptor": "",
+                                  "messages": {}
+                                },
+                                "labelField": "name",
+                                "valueField": "_id",
+                                "size": "sm",
+                                "searchable": true,
+                                "placeholder": "-",
+                                "static": true
+                              },
+                              {
+                                "type": "static",
+                                "name": "worker_phone",
+                                "label": "工人电话",
+                                "id": "u:269068a93020"
+                              },
+                              {
+                                "type": "static",
+                                "name": "worker_email",
+                                "label": "工人邮箱",
+                                "id": "u:837e7d480a1f"
+                              },
+                              {
+                                "type": "static-tpl",
+                                "name": "worker_remark",
+                                "label": "工人备注",
+                                "tpl": "${worker_remark}",
+                                "id": "u:595ed4064fad"
+                              },
+                              {
+                                "type": "input-number",
+                                "name": "working_hours",
+                                "label": "工时",
+                                "precision": 4,
+                                "kilobitSeparator": false,
+                                "suffix": "",
+                                "static": true,
+                                "id": "u:5d8671cad9fa"
+                              },
+                              {
+                                "type": "static-tpl",
+                                "name": "status",
+                                "label": "工单状态",
+                                "id": "u:8abe1eaba32d"
+                              }
+                            ],
+                            "initApi": {
+                              "method": "get",
+                              "url": "/app-package/entity/sre-work-work-order/${_id}",
+                              "data": {},
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "wrapWithPanel": false,
+                            "id": "u:686bddfc93c9",
+                            "labelAlign": "left",
+                            "feat": "View",
+                            "dsType": "api",
+                            "loadingConfig": {
+                              "show": false
+                            }
+                          }
+                        ],
+                        "type": "dialog",
+                        "actionType": "dialog",
+                        "id": "u:be876b6944b8",
+                        "actions": [
+                          {
+                            "type": "button",
+                            "actionType": "cancel",
+                            "label": "取消",
+                            "id": "u:d86612b28e6a"
+                          },
+                          {
+                            "type": "button",
+                            "actionType": "confirm",
+                            "label": "确定",
+                            "primary": true,
+                            "id": "u:535888b62f79"
+                          }
+                        ],
+                        "showCloseButton": true,
+                        "closeOnOutside": true,
+                        "closeOnEsc": true,
+                        "showErrorMsg": true,
+                        "showLoading": true,
+                        "draggable": false
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:6b951da7f656",
+              "icon": "fa fa-ellipsis-h"
+            },
+            {
+              "type": "button",
+              "label": "接受",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "ignoreError": false,
+                      "outputVar": "responseResult",
+                      "actionType": "ajax",
+                      "options": {},
+                      "api": {
+                        "url": "/app-package/entity/sre-work-work-order/${_id}",
+                        "method": "patch",
+                        "adaptor": "",
+                        "messages": {
+                          "success": "接受成功"
+                        },
+                        "requestAdaptor": "api.data = context\r\napi.data.status = \"已接受\"\r\nreturn api"
+                      }
+                    },
+                    {
+                      "componentId": "u:a3f8cdbd01d7",
+                      "ignoreError": false,
+                      "actionType": "reload",
+                      "args": {
+                        "resetPage": true
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:b79be33920af",
+              "size": "sm",
+              "confirmText": "确定要接受？",
+              "icon": "fa fa-user-check",
+              "hiddenOn": "${status!='待接受'}",
+              "disabledOnAction": false
+            },
+            {
+              "type": "button",
+              "label": "拒绝",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确定要拒绝？",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "ignoreError": false,
+                      "actionType": "dialog",
+                      "dialog": {
+                        "type": "dialog",
+                        "title": "拒绝原因",
+                        "body": [
+                          {
+                            "id": "u:d1732b7da37e",
+                            "type": "form",
+                            "title": "表单",
+                            "mode": "horizontal",
+                            "dsType": "api",
+                            "feat": "Insert",
+                            "body": [
+                              {
+                                "type": "textarea",
+                                "label": "拒绝原因",
+                                "name": "worker_remark1",
+                                "id": "u:4b63f936ac44",
+                                "minRows": 3,
+                                "maxRows": 20,
+                                "required": true
+                              }
+                            ],
+                            "api": {
+                              "method": "patch",
+                              "url": "/app-package/entity/sre-work-work-order/${_id}",
+                              "adaptor": "",
+                              "messages": {},
+                              "requestAdaptor": "api.data = context\r\napi.data.status = \"已拒绝\"\r\nreturn api"
+                            },
+                            "actions": [
+                              {
+                                "type": "button",
+                                "label": "取消",
+                                "onEvent": {
+                                  "click": {
+                                    "actions": [
+                                      {
+                                        "actionType": "cancel",
+                                        "componentId": "u:d1732b7da37e"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "level": "default"
+                              },
+                              {
+                                "type": "button",
+                                "label": "提交",
+                                "onEvent": {
+                                  "click": {
+                                    "actions": [
+                                      {
+                                        "actionType": "submit",
+                                        "componentId": "u:d1732b7da37e"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "level": "primary"
+                              }
+                            ],
+                            "resetAfterSubmit": true,
+                            "onEvent": {
+                              "submitSucc": {
+                                "weight": 0,
+                                "actions": [
+                                  {
+                                    "componentId": "u:a3f8cdbd01d7",
+                                    "ignoreError": false,
+                                    "actionType": "reload",
+                                    "args": {
+                                      "resetPage": true
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "labelAlign": "left"
+                          }
+                        ],
+                        "showCloseButton": true,
+                        "showErrorMsg": true,
+                        "showLoading": true,
+                        "className": "app-popover :AMISCSSWrapper",
+                        "actions": [
+                          {
+                            "type": "button",
+                            "actionType": "cancel",
+                            "label": "取消",
+                            "id": "u:217bb56c64f3"
+                          },
+                          {
+                            "type": "button",
+                            "actionType": "confirm",
+                            "label": "确认",
+                            "primary": true,
+                            "id": "u:116103e179ff"
+                          }
+                        ],
+                        "id": "u:a75a30ab64a8",
+                        "actionType": "dialog",
+                        "closeOnOutside": true,
+                        "closeOnEsc": true,
+                        "draggable": false
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:c6c0442f3ba7",
+              "size": "sm",
+              "icon": "fa fa-user-times",
+              "hiddenOn": "${status!='待接受'}",
+              "disabledOnAction": false
+            }
+          ],
+          "width": 150,
+          "id": "u:d3ef69700adf"
+        }
+      ],
+      "bulkActions": [],
+      "itemActions": [],
+      "id": "u:a3f8cdbd01d7",
+      "perPageAvailable": [
+        10
+      ],
+      "messages": {},
+      "filter": {
+        "title": "查询条件",
+        "body": [
+          {
+            "type": "input-text",
+            "name": "equ_name",
+            "label": "设备名称",
+            "id": "u:001dec3a0740",
+            "placeholder": "请输入",
+            "size": "full"
+          },
+          {
+            "type": "select",
+            "label": "申请类型",
+            "name": "app_type",
+            "options": [
+              {
+                "label": "报修",
+                "value": "0"
+              },
+              {
+                "label": "更换",
+                "value": "1"
+              },
+              {
+                "label": "其他",
+                "value": "2"
+              }
+            ],
+            "clearable": true,
+            "id": "u:eda7ecac9829",
+            "size": "full"
+          },
+          {
+            "type": "select",
+            "label": "紧急程度",
+            "name": "urgency",
+            "options": [
+              {
+                "label": "一般",
+                "value": "0"
+              },
+              {
+                "label": "加急",
+                "value": "1"
+              },
+              {
+                "label": "特急",
+                "value": "2"
+              }
+            ],
+            "clearable": true,
+            "id": "u:86cdb98e18f6",
+            "size": "full"
+          },
+          {
+            "type": "button-toolbar",
+            "id": "u:9d1bca89794b",
+            "label": "",
+            "buttons": [
+              {
+                "type": "button",
+                "label": "搜索",
+                "onEvent": {
+                  "click": {
+                    "actions": [
+                      {
+                        "componentId": "u:ad1825958cef",
+                        "ignoreError": false,
+                        "outputVar": "submitResult",
+                        "actionType": "submit"
+                      }
+                    ]
+                  }
+                },
+                "id": "u:46bc4f06553e",
+                "level": "primary",
+                "size": "default",
+                "icon": {
+                  "name": "搜索",
+                  "id": "svg-vxMcHn8Psm6frkpTjP98Ly",
+                  "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"7.5\" cy=\"7.5\" r=\"6\"/><path d=\"m11.879 11.879 2.828 2.828\"/></g></svg>'"
+                }
+              },
+              {
+                "type": "button",
+                "label": "重置",
+                "onEvent": {
+                  "click": {
+                    "actions": [
+                      {
+                        "componentId": "u:ad1825958cef",
+                        "ignoreError": false,
+                        "actionType": "reset"
+                      }
+                    ]
+                  }
+                },
+                "id": "u:c6b0f9cf5efd",
+                "level": "default",
+                "size": "default",
+                "icon": "fa fa-redo-alt"
+              }
+            ]
+          }
+        ],
+        "id": "u:ad1825958cef",
+        "actions": [
+          {
+            "type": "submit",
+            "label": "搜索",
+            "primary": true,
+            "id": "u:16c93f9f8b85"
+          }
+        ],
+        "feat": "Insert",
+        "wrapWithPanel": false,
+        "columnCount": 4
+      }
+    }
+  ],
+  "config": {
+    "inputParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    },
+    "pageParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    }
+  },
+  "definitions": {}
+}

@@ -1,0 +1,1129 @@
+{
+  "type": "page",
+  "id": "u:a18602a0114a",
+  "title": "设备巡检单",
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body"
+  ],
+  "body": [
+    {
+      "type": "crud",
+      "mode": "table",
+      "id": "u:1351fa9602e2",
+      "filter": {
+        "title": "",
+        "body": [
+          {
+            "type": "input-text",
+            "name": "equ_name.like",
+            "label": "设备名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:93143e7a6c32",
+            "size": "full"
+          },
+          {
+            "type": "input-datetime",
+            "name": "time",
+            "label": "巡检时间",
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ],
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:9881f09011ec",
+            "size": "full"
+          },
+          {
+            "type": "input-text",
+            "name": "plan_name.like",
+            "label": "巡检计划名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:5abc1c0b3950",
+            "size": "full"
+          },
+          {
+            "type": "input-text",
+            "name": "content_name.like",
+            "label": "巡检内容名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:e3513453a4a4",
+            "size": "full"
+          },
+          {
+            "type": "input-text",
+            "name": "time_plan_name.like",
+            "label": "巡检时间方案内容",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:00addccf0cfe",
+            "size": "full"
+          },
+          {
+            "type": "select",
+            "name": "result",
+            "label": "巡检结果",
+            "options": [
+              {
+                "label": "正常",
+                "value": "0"
+              },
+              {
+                "label": "异常",
+                "value": "1"
+              }
+            ],
+            "clearable": true,
+            "id": "u:a3cb2063aec9",
+            "size": "full",
+            "multiple": false
+          }
+        ],
+        "id": "u:8386d72c9553",
+        "actions": [
+          {
+            "type": "reset",
+            "label": "重置",
+            "primary": true,
+            "id": "u:4964cf8c61b9",
+            "level": "default",
+            "size": "default"
+          },
+          {
+            "type": "submit",
+            "label": "搜索",
+            "primary": true,
+            "id": "u:0e7e9521c3bb"
+          }
+        ],
+        "feat": "Insert",
+        "columnCount": 3,
+        "labelAlign": "left"
+      },
+      "headerToolbar": [
+        {
+          "type": "bulkActions",
+          "align": "left",
+          "id": "u:b939c4faa62f"
+        },
+        {
+          "type": "columns-toggler",
+          "align": "right",
+          "id": "u:b62737d0d491"
+        }
+      ],
+      "footerToolbar": [
+        "statistics",
+        "switch-per-page",
+        "pagination"
+      ],
+      "bulkActions": [],
+      "primaryField": "id",
+      "api": {
+        "method": "get",
+        "url": "/app-package/entity/sre-inspection-device-bill/page",
+        "forceAppendDataToQuery": false,
+        "messages": {},
+        "requestAdaptor": "",
+        "adaptor": ""
+      },
+      "quickSaveApi": {
+        "method": "get",
+        "url": "",
+        "data": {
+          "items": "${rows}"
+        }
+      },
+      "quickSaveItemApi": "",
+      "columns": [
+        {
+          "type": "input-text",
+          "name": "no",
+          "label": "巡检单号",
+          "searchable": {
+            "type": "input-text",
+            "name": "no",
+            "label": "巡检单号",
+            "clearable": true,
+            "id": "u:2c91c1d9cdce"
+          },
+          "static": true,
+          "id": "u:2e7eb532cbf7"
+        },
+        {
+          "type": "text",
+          "name": "name",
+          "label": "巡检单名称",
+          "searchable": {
+            "type": "input-text",
+            "name": "name",
+            "label": "巡检单名称",
+            "clearable": true,
+            "id": "u:180baa5d7568",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            }
+          },
+          "id": "u:b28688c11d37",
+          "placeholder": "-"
+        },
+        {
+          "type": "select",
+          "name": "equ_id",
+          "label": "设备名称",
+          "searchable": true,
+          "id": "u:6a3946657f41",
+          "placeholder": "-",
+          "multiple": false,
+          "source": {
+            "method": "get",
+            "url": "/app-package/entity/sre-assets-device-rack/list",
+            "requestAdaptor": "",
+            "adaptor": "",
+            "messages": {}
+          },
+          "labelField": "name",
+          "valueField": "_id",
+          "size": "sm",
+          "static": true
+        },
+        {
+          "type": "select",
+          "name": "executor",
+          "label": "巡检员",
+          "searchable": true,
+          "id": "u:a71ff888f00c",
+          "placeholder": "-",
+          "multiple": false,
+          "source": {
+            "method": "get",
+            "url": "/systemctl/user/list",
+            "requestAdaptor": "",
+            "adaptor": "",
+            "messages": {}
+          },
+          "labelField": "name",
+          "valueField": "_id",
+          "size": "sm",
+          "static": true
+        },
+        {
+          "type": "input-datetime",
+          "name": "time",
+          "label": "巡检时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "time",
+            "label": "巡检时间",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:5fc1eb9d06bc",
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ]
+          },
+          "id": "u:00f7623bdc0b",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss",
+          "static": true,
+          "placeholder": "-",
+          "width": 150
+        },
+        {
+          "type": "text",
+          "name": "plan_name",
+          "label": "巡检计划名称",
+          "searchable": {
+            "type": "input-text",
+            "name": "plan_name",
+            "label": "巡检计划名称",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:512bf854d9ec",
+            "placeholder": "请输入"
+          },
+          "id": "u:23d7c9ed333d",
+          "placeholder": "-"
+        },
+        {
+          "type": "text",
+          "name": "time_plan_name",
+          "label": "巡检时间方案名称",
+          "searchable": {
+            "type": "input-text",
+            "name": "time_plan_name",
+            "label": "巡检时间方案名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:136b902d1016"
+          },
+          "id": "u:abe4a39dc0e4",
+          "placeholder": "-"
+        },
+        {
+          "type": "text",
+          "name": "content_name",
+          "label": "巡检内容名称",
+          "searchable": {
+            "type": "input-text",
+            "name": "content_name",
+            "label": "巡检内容名称",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:3a879bbf43ee"
+          },
+          "id": "u:57a60209d033",
+          "placeholder": "-"
+        },
+        {
+          "type": "input-number",
+          "name": "inspection_times",
+          "label": "巡检规定次数",
+          "searchable": {
+            "type": "input-number",
+            "name": "inspection_times",
+            "label": "巡检规定次数",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:609327433968"
+          },
+          "id": "u:892deba07e4d",
+          "static": true,
+          "kilobitSeparator": false,
+          "suffix": ""
+        },
+        {
+          "type": "input-number",
+          "name": "inspection_times_done",
+          "label": "已巡检次数",
+          "id": "u:2bfbcb63e0d4",
+          "searchable": {
+            "type": "input-number",
+            "name": "inspection_times_done",
+            "label": "已巡检次数",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "id": "u:c026fefbce39"
+          },
+          "static": true,
+          "kilobitSeparator": false,
+          "suffix": ""
+        },
+        {
+          "type": "static-tpl",
+          "name": "remark",
+          "label": "备注",
+          "searchable": {
+            "type": "input-text",
+            "name": "remark",
+            "label": "备注",
+            "clearable": true,
+            "id": "u:584d44c9e551"
+          },
+          "id": "u:d1930f211ff5",
+          "tpl": "${remark}"
+        },
+        {
+          "type": "mapping",
+          "name": "result",
+          "label": "巡检结果",
+          "searchable": {
+            "type": "select",
+            "name": "result",
+            "label": "巡检结果",
+            "clearable": true,
+            "id": "u:ed5a451eec74",
+            "options": [
+              {
+                "label": "正常",
+                "value": "0"
+              },
+              {
+                "label": "异常",
+                "value": "1"
+              }
+            ]
+          },
+          "id": "u:e9e08e4ad985",
+          "map": {
+            "0": "正常",
+            "1": "异常"
+          },
+          "placeholder": "-"
+        },
+        {
+          "type": "service",
+          "label": "巡检任务情况",
+          "id": "u:ea690d0d96b4",
+          "body": [
+            {
+              "type": "select",
+              "label": "",
+              "name": "task_status",
+              "options": [
+                {
+                  "label": "通过",
+                  "value": "0"
+                },
+                {
+                  "label": "未完成",
+                  "value": "1"
+                },
+                {
+                  "label": "漏检",
+                  "value": "2"
+                }
+              ],
+              "id": "u:99c36516302c",
+              "multiple": false,
+              "static": true,
+              "classNameExpr": "<%= data.task_status == '0' ? 'text-success' : 'text-danger' %>"
+            }
+          ],
+          "dsType": "apicenter",
+          "api": {
+            "method": "post",
+            "url": "",
+            "data": {
+              "id": "${id}",
+              "plan_id": "${plan_id}",
+              "time_plan_id": "${time_plan_id}"
+            },
+            "responseData": {
+              "task_status": "${task_status}"
+            }
+          }
+        },
+        {
+          "type": "mapping",
+          "name": "task_status",
+          "label": "巡检任务情况",
+          "searchable": {
+            "type": "select",
+            "name": "task_status",
+            "label": "巡检任务情况",
+            "clearable": true,
+            "id": "u:c2e7ac98b7f3",
+            "options": [
+              {
+                "label": "通过",
+                "value": "0"
+              },
+              {
+                "label": "未完成",
+                "value": "1"
+              },
+              {
+                "label": "漏检",
+                "value": "2"
+              }
+            ]
+          },
+          "id": "u:fbfd523623ea",
+          "map": {
+            "0": "通过",
+            "1": "未完成",
+            "2": "漏检"
+          },
+          "hidden": true
+        },
+        {
+          "type": "operation",
+          "id": "u:fb11606747e9",
+          "label": "操作",
+          "buttons": [
+            {
+              "type": "button",
+              "label": "详情",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "actions": []
+                }
+              },
+              "id": "u:6817594e27cd",
+              "size": "sm",
+              "disabledOnAction": false,
+              "hidden": true
+            },
+            {
+              "type": "button",
+              "label": "编辑",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "dialog",
+                      "dialog": {
+                        "type": "dialog",
+                        "size": "md",
+                        "title": "编辑",
+                        "body": [
+                          {
+                            "type": "form",
+                            "data": {},
+                            "mode": "horizontal",
+                            "title": "编辑",
+                            "body": [
+                              {
+                                "type": "input-text",
+                                "id": "u:a49e2ed8ea87",
+                                "name": "no",
+                                "label": "巡检单号",
+                                "disabled": true,
+                                "required": false,
+                                "placeholder": "自动生成，无需填写"
+                              },
+                              {
+                                "type": "input-text",
+                                "id": "u:9e31b9ef25d0",
+                                "name": "name",
+                                "label": "巡检单名称",
+                                "disabled": true,
+                                "required": false,
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {
+                                  "maxLength": "长度超出限制"
+                                }
+                              },
+                              {
+                                "type": "input-text",
+                                "name": "equ_name",
+                                "label": "设备名称",
+                                "id": "u:4cbab413fea2",
+                                "disabled": true,
+                                "required": false,
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {
+                                  "maxLength": "长度超出限制"
+                                }
+                              },
+                              {
+                                "type": "select",
+                                "id": "u:4756388a1266",
+                                "name": "equ_bianma",
+                                "label": "设备编码",
+                                "disabled": true,
+                                "multiple": false,
+                                "source": {
+                                  "conditions": [
+                                    {
+                                      "key": "id",
+                                      "itemValue": "${equ_id}"
+                                    }
+                                  ],
+                                  "labelKey": "${equ_no}",
+                                  "labelValue": "id",
+                                  "sourceType": "model-entity",
+                                  "entity": {
+                                    "value": "IDC_SYSTEM.equipment",
+                                    "label": "IDC运维软件系统 / 设备",
+                                    "dsId": "kXZeVnqoMK",
+                                    "dsKey": "IDC_SYSTEM",
+                                    "dsLabel": "IDC运维软件系统",
+                                    "mId": "vnZdAVJo4X",
+                                    "mKey": "equipment",
+                                    "mLabel": "设备"
+                                  },
+                                  "action": "view",
+                                  "scene": "options"
+                                },
+                                "menuTpl": "<div>${equ_no}</div>",
+                                "value": "${equ_id}",
+                                "labelField": "equ_no",
+                                "valueField": "id"
+                              },
+                              {
+                                "type": "select",
+                                "label": "安装地点",
+                                "name": "equ_address",
+                                "id": "u:fd289781e252",
+                                "multiple": false,
+                                "source": {
+                                  "conditions": [
+                                    {
+                                      "key": "id",
+                                      "itemValue": "${equ_id}"
+                                    }
+                                  ],
+                                  "labelKey": "${address}",
+                                  "labelValue": "id",
+                                  "sourceType": "model-entity",
+                                  "entity": {
+                                    "value": "IDC_SYSTEM.equipment",
+                                    "label": "IDC运维软件系统 / 设备",
+                                    "dsId": "kXZeVnqoMK",
+                                    "dsKey": "IDC_SYSTEM",
+                                    "dsLabel": "IDC运维软件系统",
+                                    "mId": "vnZdAVJo4X",
+                                    "mKey": "equipment",
+                                    "mLabel": "设备"
+                                  },
+                                  "action": "view",
+                                  "scene": "options"
+                                },
+                                "menuTpl": "<div>${address}</div>",
+                                "value": "${equ_id}",
+                                "labelField": "address",
+                                "valueField": "id",
+                                "disabled": true
+                              },
+                              {
+                                "type": "input-text",
+                                "label": "巡检员",
+                                "name": "executor",
+                                "id": "u:060940bcfb0e",
+                                "disabled": true,
+                                "required": false,
+                                "validations": {},
+                                "validationErrors": {
+                                  "maxLength": "长度超出限制"
+                                },
+                                "placeholder": "请输入"
+                              },
+                              {
+                                "type": "input-datetime",
+                                "name": "time",
+                                "label": "本次巡检时间",
+                                "required": false,
+                                "validations": {},
+                                "validationErrors": {},
+                                "id": "u:6c2ea7349f33",
+                                "disabled": true,
+                                "timeFormat": "YYYY-MM-DD HH:mm:ss",
+                                "format": "YYYY-MM-DD HH:mm:ss",
+                                "valueFormat": "YYYY-MM-DD HH:mm:ss",
+                                "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                "shortcuts": [
+                                  "thismonth",
+                                  "thisweek",
+                                  "yesterday",
+                                  "today",
+                                  "now",
+                                  "tomorrow",
+                                  "endofthisweek",
+                                  "endofthismonth"
+                                ],
+                                "value": "${DATETOSTR(NOW(),'YYYY-MM-DD HH:mm:ss')}"
+                              },
+                              {
+                                "type": "input-text",
+                                "name": "plan_name",
+                                "label": "巡检计划名称",
+                                "required": false,
+                                "validations": {},
+                                "validationErrors": {
+                                  "maxLength": "长度超出限制"
+                                },
+                                "id": "u:d68133e450e8",
+                                "disabled": true,
+                                "placeholder": "请输入"
+                              },
+                              {
+                                "type": "input-text",
+                                "name": "content_name",
+                                "label": "巡检内容名称",
+                                "required": false,
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {
+                                  "maxLength": "长度超出限制"
+                                },
+                                "id": "u:ae2187608f6b",
+                                "disabled": true
+                              },
+                              {
+                                "type": "input-text",
+                                "name": "time_plan_name",
+                                "label": "巡检时间方案",
+                                "required": false,
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {
+                                  "maxLength": "长度超出限制"
+                                },
+                                "id": "u:e8b7bd9787db",
+                                "disabled": true
+                              },
+                              {
+                                "type": "input-number",
+                                "name": "inspection_times",
+                                "label": "巡检规定次数",
+                                "required": false,
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {},
+                                "id": "u:69aa38964c04",
+                                "disabled": true
+                              },
+                              {
+                                "type": "input-number",
+                                "name": "inspection_times_now",
+                                "label": "本次巡检次数",
+                                "required": false,
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {},
+                                "id": "u:53c67716eb06",
+                                "disabled": true,
+                                "value": "${inspection_times_done + 1}"
+                              },
+                              {
+                                "type": "select",
+                                "name": "equ_status",
+                                "label": "设备运行状态",
+                                "required": false,
+                                "id": "u:fe8e3db4a7ef",
+                                "options": [
+                                  {
+                                    "label": "正常",
+                                    "value": "0"
+                                  },
+                                  {
+                                    "label": "故障",
+                                    "value": "1"
+                                  },
+                                  {
+                                    "label": "带病运行",
+                                    "value": "2"
+                                  },
+                                  {
+                                    "label": "维修",
+                                    "value": "3"
+                                  },
+                                  {
+                                    "label": "未启用",
+                                    "value": "4"
+                                  }
+                                ],
+                                "multiple": false
+                              },
+                              {
+                                "type": "select",
+                                "name": "result1",
+                                "label": "巡检结果",
+                                "required": false,
+                                "options": [
+                                  {
+                                    "label": "正常",
+                                    "value": "0"
+                                  },
+                                  {
+                                    "label": "异常",
+                                    "value": "1"
+                                  }
+                                ],
+                                "id": "u:40a809caf2ec",
+                                "multiple": false,
+                                "value": "${IFS(ARRAYSOME(details_resultss,item=>item.res===null),null,ARRAYSOME(details_resultss,item=>item.res==='1'),'1','0')}",
+                                "disabled": true
+                              },
+                              {
+                                "type": "service",
+                                "id": "u:42245ae12ca1",
+                                "body": [
+                                  {
+                                    "type": "combo",
+                                    "name": "details_resultss",
+                                    "label": "巡检项目内容",
+                                    "items": [
+                                      {
+                                        "type": "input-text",
+                                        "name": "content_id",
+                                        "label": "巡检内容方案id",
+                                        "required": false,
+                                        "placeholder": "请输入",
+                                        "validations": {},
+                                        "validationErrors": {
+                                          "maxLength": "长度超出限制"
+                                        },
+                                        "id": "u:8eb76a911309",
+                                        "hidden": true
+                                      },
+                                      {
+                                        "type": "input-text",
+                                        "name": "project",
+                                        "label": "巡检明细项目",
+                                        "required": false,
+                                        "placeholder": "请输入",
+                                        "validations": {},
+                                        "validationErrors": {
+                                          "maxLength": "长度超出限制"
+                                        },
+                                        "id": "u:61806f30ad6e",
+                                        "disabled": true
+                                      },
+                                      {
+                                        "type": "input-text",
+                                        "name": "method",
+                                        "label": "项目巡检方法",
+                                        "required": false,
+                                        "placeholder": "请输入",
+                                        "validations": {},
+                                        "validationErrors": {
+                                          "maxLength": "长度超出限制"
+                                        },
+                                        "id": "u:9b3de3e39230",
+                                        "disabled": true
+                                      },
+                                      {
+                                        "type": "select",
+                                        "name": "res",
+                                        "label": "巡检结果",
+                                        "required": true,
+                                        "options": [
+                                          {
+                                            "label": "正常",
+                                            "value": "0"
+                                          },
+                                          {
+                                            "label": "异常",
+                                            "value": "1"
+                                          }
+                                        ],
+                                        "id": "u:51e7d238c015",
+                                        "multiple": false,
+                                        "onEvent": {}
+                                      },
+                                      {
+                                        "type": "input-text",
+                                        "name": "times",
+                                        "label": "第几次巡检",
+                                        "required": false,
+                                        "placeholder": "请输入",
+                                        "validations": {},
+                                        "validationErrors": {
+                                          "maxLength": "长度超出限制"
+                                        },
+                                        "id": "u:2849c976e803",
+                                        "value": "${inspection_times_now}",
+                                        "disabled": true
+                                      },
+                                      {
+                                        "type": "input-text",
+                                        "name": "remarks",
+                                        "label": "备注",
+                                        "required": false,
+                                        "placeholder": "请输入",
+                                        "validations": {},
+                                        "validationErrors": {
+                                          "maxLength": "长度超出限制"
+                                        },
+                                        "id": "u:51d8e948f74c"
+                                      }
+                                    ],
+                                    "multiple": true,
+                                    "multiLine": true,
+                                    "addable": false,
+                                    "removable": false,
+                                    "editable": true,
+                                    "id": "u:c97555d6a247",
+                                    "strictMode": true,
+                                    "syncFields": [],
+                                    "tabsMode": true,
+                                    "tabsLabelTpl": "明细${index+1}"
+                                  }
+                                ],
+                                "dsType": "api",
+                                "api": {
+                                  "url": "/app-package/entity/sre-inspection-content-plan/${content_id}",
+                                  "method": "get",
+                                  "requestAdaptor": "",
+                                  "adaptor": "return {\r\n  data: {\r\n    details_resultss: response.data.data.inspection_contentplans_detailss\r\n  }\r\n}",
+                                  "messages": {}
+                                },
+                                "className": "p-b-lg"
+                              },
+                              {
+                                "type": "select",
+                                "id": "u:d4c083f1fd6d",
+                                "name": "fault_phenomenon",
+                                "label": "故障现象",
+                                "required": false,
+                                "source": "/app-package/entity/sre-dictionary-value/list?identifier=gzxx",
+                                "hiddenOn": "${equ_status!='1'}",
+                                "multiple": false,
+                                "labelField": "label",
+                                "valueField": "value"
+                              },
+                              {
+                                "type": "textarea",
+                                "name": "remark",
+                                "label": "备注",
+                                "required": false,
+                                "id": "u:bad29d011c54",
+                                "placeholder": "请输入",
+                                "validations": {},
+                                "validationErrors": {}
+                              },
+                              {
+                                "type": "service",
+                                "id": "u:f35732e0466a",
+                                "body": [
+                                  {
+                                    "type": "input-number",
+                                    "name": "hours_spent",
+                                    "label": "巡检花费工时",
+                                    "required": false,
+                                    "placeholder": "请输入",
+                                    "precision": 4,
+                                    "validations": {},
+                                    "validationErrors": {},
+                                    "id": "u:1a9d68cf9b96",
+                                    "disabled": true
+                                  }
+                                ],
+                                "dsType": "apicenter",
+                                "api": {
+                                  "method": "post",
+                                  "url": "",
+                                  "data": {
+                                    "content_id": "${content_id}",
+                                    "inspection_times_now": "${inspection_times_now}"
+                                  }
+                                }
+                              }
+                            ],
+                            "initApi": {
+                              "method": "get",
+                              "url": "/app-package/entity/sre-inspection-device-bill/${_id}",
+                              "data": {},
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "api": {
+                              "method": "patch",
+                              "url": "/app-package/entity/sre-inspection-device-bill/${_id}",
+                              "requestAdaptor": "api.data = context\r\nreturn api",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "wrapWithPanel": false,
+                            "onEvent": {
+                              "submitSucc": {
+                                "actions": [
+                                  {
+                                    "actionType": "reload",
+                                    "componentId": "u:1351fa9602e2"
+                                  },
+                                  {
+                                    "actionType": "reload",
+                                    "componentId": "u:ea690d0d96b4"
+                                  },
+                                  {
+                                    "ignoreError": false,
+                                    "actionType": "refresh"
+                                  }
+                                ]
+                              },
+                              "inited": {
+                                "weight": 0,
+                                "actions": [
+                                  {
+                                    "componentId": "u:6cd4cd97ed13",
+                                    "ignoreError": false,
+                                    "actionType": "setValue",
+                                    "args": {
+                                      "value": {
+                                        "time": "${DATETOSTR(NOW(),'YYYY-MM-DD HH:mm:ss')}"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "id": "u:6cd4cd97ed13",
+                            "debug": false,
+                            "labelAlign": "left",
+                            "feat": "Edit",
+                            "dsType": "api",
+                            "loadingConfig": {
+                              "show": false
+                            }
+                          }
+                        ],
+                        "id": "u:f01a28c2bf84",
+                        "actions": [
+                          {
+                            "type": "button",
+                            "actionType": "cancel",
+                            "label": "取消",
+                            "id": "u:c7eaa1840a3b"
+                          },
+                          {
+                            "type": "button",
+                            "label": "确定",
+                            "primary": true,
+                            "id": "u:61dc27f6adf8",
+                            "level": "primary",
+                            "size": "default",
+                            "onEvent": {
+                              "click": {
+                                "weight": 0,
+                                "actions": [
+                                  {
+                                    "componentId": "u:6cd4cd97ed13",
+                                    "ignoreError": false,
+                                    "actionType": "setValue",
+                                    "args": {
+                                      "value": {
+                                        "inspection_times_done": "${inspection_times_now}",
+                                        "result": "${result1}"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "componentId": "u:6cd4cd97ed13",
+                                    "ignoreError": false,
+                                    "outputVar": "submitResult",
+                                    "actionType": "submit"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        ],
+                        "actionType": "dialog",
+                        "showCloseButton": true,
+                        "closeOnOutside": true,
+                        "closeOnEsc": true,
+                        "showErrorMsg": true,
+                        "showLoading": true,
+                        "draggable": false
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:7ebd0963b448",
+              "size": "sm",
+              "disabledOn": "${result!==''}",
+              "disabledTip": "已有巡检结果",
+              "disabledOnAction": false
+            },
+            {
+              "type": "button",
+              "label": "删除",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确定要删除？",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "ajax",
+                      "api": {
+                        "method": "delete",
+                        "url": "/app-package/entity/sre-inspection-device-bill/${_id}",
+                        "requestAdaptor": "",
+                        "adaptor": "",
+                        "messages": {}
+                      },
+                      "outputVar": "responseResult",
+                      "options": {}
+                    },
+                    {
+                      "actionType": "reload",
+                      "componentId": "u:1351fa9602e2",
+                      "expression": "${event.data.responseResult.responseStatus === 0}"
+                    }
+                  ]
+                }
+              },
+              "id": "u:96fae982472a",
+              "disabledOnAction": false
+            }
+          ],
+          "width": 150
+        }
+      ],
+      "perPageAvailable": [
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "messages": {}
+    }
+  ],
+  "config": {
+    "inputParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    },
+    "pageParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    }
+  },
+  "definitions": {}
+}

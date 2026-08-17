@@ -1,0 +1,1926 @@
+{
+  "type": "page",
+  "id": "u:2df73c5dc269",
+  "title": "我发起的审批",
+  "pullRefresh": {
+    "disabled": true
+  },
+  "regions": [
+    "body",
+    "toolbar"
+  ],
+  "body": [
+    {
+      "type": "crud",
+      "mode": "table",
+      "id": "u:b5a62393c8df",
+      "filter": {
+        "title": "条件查询",
+        "body": [
+          {
+            "type": "select",
+            "name": "type",
+            "label": "审批单类型",
+            "options": [
+              {
+                "label": "资金",
+                "value": "0"
+              },
+              {
+                "label": "材料",
+                "value": "1"
+              }
+            ],
+            "clearable": true,
+            "id": "u:cea8ed08b02e",
+            "size": "full"
+          },
+          {
+            "type": "input-text",
+            "name": "app_person.like",
+            "label": "申请人姓名",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true,
+            "id": "u:6f154588e48d",
+            "size": "full"
+          },
+          {
+            "type": "select",
+            "name": "status",
+            "label": "状态",
+            "options": [
+              {
+                "label": "待审批",
+                "value": "0"
+              },
+              {
+                "label": "已通过",
+                "value": "1"
+              },
+              {
+                "label": "已拒绝",
+                "value": "2"
+              },
+              {
+                "label": "已撤销",
+                "value": "3"
+              }
+            ],
+            "clearable": true,
+            "id": "u:53c3d2b88067",
+            "size": "full"
+          },
+          {
+            "type": "button-toolbar",
+            "id": "u:9d1bca89794b",
+            "label": "",
+            "buttons": [
+              {
+                "type": "button",
+                "label": "搜索",
+                "onEvent": {
+                  "click": {
+                    "actions": [
+                      {
+                        "componentId": "u:0cd2e226aad2",
+                        "ignoreError": false,
+                        "outputVar": "submitResult",
+                        "actionType": "submit"
+                      }
+                    ]
+                  }
+                },
+                "id": "u:46bc4f06553e",
+                "level": "primary",
+                "size": "default",
+                "icon": {
+                  "name": "搜索",
+                  "id": "svg-vxMcHn8Psm6frkpTjP98Ly",
+                  "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"7.5\" cy=\"7.5\" r=\"6\"/><path d=\"m11.879 11.879 2.828 2.828\"/></g></svg>'"
+                }
+              },
+              {
+                "type": "button",
+                "label": "重置",
+                "onEvent": {
+                  "click": {
+                    "actions": [
+                      {
+                        "componentId": "u:0cd2e226aad2",
+                        "ignoreError": false,
+                        "actionType": "reset"
+                      }
+                    ]
+                  }
+                },
+                "id": "u:c6b0f9cf5efd",
+                "level": "default",
+                "size": "default",
+                "icon": "fa fa-redo-alt"
+              }
+            ]
+          }
+        ],
+        "id": "u:0cd2e226aad2",
+        "actions": [
+          {
+            "type": "submit",
+            "label": "搜索",
+            "primary": true,
+            "id": "u:b09c65c68466"
+          }
+        ],
+        "feat": "Insert",
+        "wrapWithPanel": false,
+        "columnCount": 4
+      },
+      "headerToolbar": [
+        {
+          "type": "button",
+          "label": "新增",
+          "size": "sm",
+          "align": "left",
+          "level": "primary",
+          "onEvent": {
+            "click": {
+              "actions": [
+                {
+                  "actionType": "dialog",
+                  "dialog": {
+                    "type": "dialog",
+                    "data": {},
+                    "size": "md",
+                    "title": "新增",
+                    "body": [
+                      {
+                        "type": "form",
+                        "data": {},
+                        "mode": "horizontal",
+                        "title": "新增",
+                        "body": [
+                          {
+                            "type": "input-text",
+                            "name": "approve_no",
+                            "label": "审批单号",
+                            "required": false,
+                            "placeholder": "自动生成，无需填写",
+                            "disabled": true,
+                            "id": "u:84d26e4801c3"
+                          },
+                          {
+                            "type": "select",
+                            "name": "type",
+                            "label": "审批单类型",
+                            "required": false,
+                            "options": [
+                              {
+                                "label": "资金",
+                                "value": "0"
+                              },
+                              {
+                                "label": "材料",
+                                "value": "1"
+                              }
+                            ],
+                            "id": "u:a483e42f27cf"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "work_no",
+                            "label": "涉及工单号",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:b34dc5961491"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "app_person",
+                            "label": "申请人姓名",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:f368fab3ddb7"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "app_email",
+                            "label": "申请人邮箱",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:75de80bb46d4"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "amt",
+                            "label": "金额（元）",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:d8c8de43313a"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "amt_info",
+                            "label": "费用说明",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:c4ac24caee61"
+                          },
+                          {
+                            "type": "input-date",
+                            "name": "amt_time",
+                            "label": "费用发生日期",
+                            "required": false,
+                            "timeFormat": "",
+                            "format": "YYYY-MM-DD",
+                            "valueFormat": "YYYY-MM-DD",
+                            "inputFormat": "YYYY-MM-DD",
+                            "shortcuts": [
+                              "thismonth",
+                              "thisweek",
+                              "yesterday",
+                              "today",
+                              "tomorrow",
+                              "endofthisweek",
+                              "endofthismonth"
+                            ],
+                            "validations": {},
+                            "validationErrors": {},
+                            "id": "u:a1a796c259b6"
+                          },
+                          {
+                            "type": "select",
+                            "name": "amt_type",
+                            "label": "费用类型",
+                            "required": false,
+                            "source": {
+                              "method": "get",
+                              "url": "/app-package/entity/sre-dictionary-value/list?identifier=spjl-fylx",
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "id": "u:56db44cb774f",
+                            "multiple": false,
+                            "labelField": "label",
+                            "valueField": "value"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "material",
+                            "label": "材料名称",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:28d05a961f5e"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "material_info",
+                            "label": "材料说明",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:f963e899002a"
+                          },
+                          {
+                            "type": "input-file",
+                            "name": "material_file",
+                            "label": "附件",
+                            "required": false,
+                            "joinValues": false,
+                            "accept": "",
+                            "maxSize": 10485760,
+                            "receiver": {
+                              "url": "/common/file",
+                              "method": "post",
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "id": "u:f5025a96a3e8",
+                            "btnLabel": "文件上传",
+                            "multiple": false,
+                            "uploadType": "fileReceptor",
+                            "proxy": true,
+                            "autoUpload": true,
+                            "useChunk": false,
+                            "drag": false
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "approved_persson",
+                            "label": "审批人姓名",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:72d302cc73c8"
+                          },
+                          {
+                            "type": "input-text",
+                            "name": "approved_email",
+                            "label": "审批人邮箱",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {
+                              "maxLength": "长度超出限制"
+                            },
+                            "id": "u:5fb5006e9c1c"
+                          },
+                          {
+                            "type": "input-datetime",
+                            "name": "app_time",
+                            "label": "申请时间",
+                            "required": false,
+                            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+                            "format": "YYYY-MM-DD HH:mm:ss",
+                            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+                            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                            "shortcuts": [
+                              "thismonth",
+                              "thisweek",
+                              "yesterday",
+                              "today",
+                              "now",
+                              "tomorrow",
+                              "endofthisweek",
+                              "endofthismonth"
+                            ],
+                            "validations": {},
+                            "validationErrors": {},
+                            "id": "u:9dd8cf011ded"
+                          },
+                          {
+                            "type": "input-datetime",
+                            "name": "approved_time",
+                            "label": "审批时间",
+                            "required": false,
+                            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+                            "format": "YYYY-MM-DD HH:mm:ss",
+                            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+                            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                            "shortcuts": [
+                              "thismonth",
+                              "thisweek",
+                              "yesterday",
+                              "today",
+                              "now",
+                              "tomorrow",
+                              "endofthisweek",
+                              "endofthismonth"
+                            ],
+                            "validations": {},
+                            "validationErrors": {},
+                            "id": "u:711b6fe5a6e3"
+                          },
+                          {
+                            "type": "select",
+                            "name": "status",
+                            "label": "状态",
+                            "required": false,
+                            "id": "u:f71aeef50cb0",
+                            "multiple": false,
+                            "source": {
+                              "method": "get",
+                              "url": "/app-package/entity/sre-dictionary-value/list?identifier=spzt",
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "labelField": "label",
+                            "valueField": "value"
+                          },
+                          {
+                            "type": "textarea",
+                            "name": "opinion",
+                            "label": "处理人意见",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {},
+                            "id": "u:f04bc71de905"
+                          },
+                          {
+                            "type": "textarea",
+                            "name": "remark",
+                            "label": "备注",
+                            "required": false,
+                            "placeholder": "请输入",
+                            "validations": {},
+                            "validationErrors": {},
+                            "id": "u:ede2502f9340"
+                          }
+                        ],
+                        "api": {
+                          "method": "post",
+                          "url": "/app-package/entity/sre-service-audit",
+                          "requestAdaptor": "api.data = context\r\napi.data.status = \"待审批\"\r\napi.data.createdBy = JSON.parse(localStorage.getItem(\"User\"))?._id\r\nreturn api",
+                          "adaptor": "",
+                          "messages": {},
+                          "data": {}
+                        },
+                        "resetAfterSubmit": true,
+                        "wrapWithPanel": false,
+                        "onEvent": {
+                          "submitSucc": {
+                            "actions": [
+                              {
+                                "actionType": "reload",
+                                "componentId": "u:b5a62393c8df"
+                              }
+                            ]
+                          }
+                        },
+                        "id": "u:7b594cf5ab77",
+                        "feat": "Insert",
+                        "dsType": "api",
+                        "labelAlign": "left"
+                      }
+                    ],
+                    "actionType": "dialog",
+                    "id": "u:f3b15a55864e",
+                    "actions": [
+                      {
+                        "type": "button",
+                        "actionType": "cancel",
+                        "label": "取消",
+                        "id": "u:a8ffccc3f6e6"
+                      },
+                      {
+                        "type": "button",
+                        "actionType": "confirm",
+                        "label": "确定",
+                        "primary": true,
+                        "id": "u:4178c3865d2b"
+                      }
+                    ],
+                    "showCloseButton": true,
+                    "closeOnOutside": true,
+                    "closeOnEsc": true,
+                    "showErrorMsg": true,
+                    "showLoading": true,
+                    "draggable": false
+                  }
+                }
+              ]
+            }
+          },
+          "id": "u:5de775cfdc02",
+          "icon": "fa fa-plus",
+          "hidden": false,
+          "disabledOnAction": false
+        },
+        {
+          "type": "bulkActions",
+          "align": "left"
+        },
+        {
+          "type": "columns-toggler",
+          "align": "right"
+        }
+      ],
+      "footerToolbar": [
+        "statistics",
+        "switch-per-page",
+        "pagination"
+      ],
+      "bulkActions": [],
+      "primaryField": "id",
+      "quickSaveApi": {
+        "method": "post",
+        "url": "model://IDC_SYSTEM.tb_approve/bulkUpdate",
+        "data": {
+          "items": "${rows}"
+        }
+      },
+      "quickSaveItemApi": "post:model://IDC_SYSTEM.tb_approve/${id}",
+      "columns": [
+        {
+          "type": "input-number",
+          "name": "id",
+          "label": "ID",
+          "searchable": {
+            "type": "input-number",
+            "name": "id",
+            "label": "ID",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true
+          },
+          "static": true,
+          "id": "u:bbc11d8133b0"
+        },
+        {
+          "type": "input-text",
+          "name": "approve_no",
+          "label": "审批单号",
+          "searchable": {
+            "type": "input-text",
+            "name": "approve_no",
+            "label": "审批单号",
+            "clearable": true
+          },
+          "static": true,
+          "id": "u:8aa25b57f968"
+        },
+        {
+          "type": "mapping",
+          "name": "type",
+          "label": "审批单类型",
+          "searchable": {
+            "type": "select",
+            "name": "type",
+            "label": "审批单类型",
+            "options": [
+              {
+                "label": "资金",
+                "value": "0"
+              },
+              {
+                "label": "材料",
+                "value": "1"
+              }
+            ],
+            "clearable": true
+          },
+          "map": {
+            "0": "资金",
+            "1": "材料"
+          },
+          "id": "u:9a968d1c6ca9"
+        },
+        {
+          "type": "text",
+          "name": "work_no",
+          "label": "涉及工单号",
+          "searchable": {
+            "type": "input-text",
+            "name": "work_no",
+            "label": "涉及工单号",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:bb0b4d195f2f"
+        },
+        {
+          "type": "text",
+          "name": "app_person",
+          "label": "申请人姓名",
+          "searchable": {
+            "type": "input-text",
+            "name": "app_person",
+            "label": "申请人姓名",
+            "placeholder": "请输入",
+            "validations": {},
+            "validationErrors": {
+              "maxLength": "长度超出限制"
+            },
+            "clearable": true
+          },
+          "id": "u:a50954954730"
+        },
+        {
+          "type": "input-datetime",
+          "name": "app_time",
+          "label": "申请时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "app_time",
+            "label": "申请时间",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ]
+          },
+          "id": "u:b54c31014661",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss",
+          "static": true
+        },
+        {
+          "type": "input-datetime",
+          "name": "approved_time",
+          "label": "审批时间",
+          "searchable": {
+            "type": "input-datetime",
+            "name": "approved_time",
+            "label": "审批时间",
+            "validations": {},
+            "validationErrors": {},
+            "clearable": true,
+            "timeFormat": "YYYY-MM-DD HH:mm:ss",
+            "format": "YYYY-MM-DD HH:mm:ss",
+            "valueFormat": "YYYY-MM-DD HH:mm:ss",
+            "inputFormat": "YYYY-MM-DD HH:mm:ss",
+            "shortcuts": [
+              "thismonth",
+              "thisweek",
+              "yesterday",
+              "today",
+              "now",
+              "tomorrow",
+              "endofthisweek",
+              "endofthismonth"
+            ]
+          },
+          "id": "u:ef2757f15704",
+          "format": "YYYY-MM-DD HH:mm:ss",
+          "inputFormat": "YYYY-MM-DD HH:mm:ss",
+          "static": true
+        },
+        {
+          "type": "text",
+          "name": "status",
+          "label": "状态",
+          "id": "u:1112011537dd",
+          "placeholder": "-"
+        },
+        {
+          "type": "static-tpl",
+          "name": "opinion",
+          "label": "处理人意见",
+          "searchable": {
+            "type": "input-text",
+            "name": "opinion",
+            "label": "处理人意见",
+            "clearable": true
+          },
+          "id": "u:c0bf7766b770",
+          "tpl": "${opinion}"
+        },
+        {
+          "type": "operation",
+          "label": "操作",
+          "id": "u:90b751c6dfad",
+          "buttons": [
+            {
+              "type": "button",
+              "label": "详情",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "dialog",
+                      "dialog": {
+                        "size": "md",
+                        "title": "详情",
+                        "body": [
+                          {
+                            "type": "form",
+                            "data": {},
+                            "mode": "horizontal",
+                            "title": "详情",
+                            "body": [
+                              {
+                                "type": "grid",
+                                "id": "u:4084cbf0bb70",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "input-text",
+                                        "name": "approve_no",
+                                        "label": "审批单号",
+                                        "static": true,
+                                        "id": "u:a47d0ea07eb1",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:4130a2ba8e34"
+                                  },
+                                  {
+                                    "id": "u:5572e6e261ec",
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "work_no",
+                                        "label": "涉及工单号",
+                                        "id": "u:f0c2d13ad6c1",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "className": "m-b"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static-mapping",
+                                        "name": "type",
+                                        "label": "审批单类型",
+                                        "id": "u:1498a913ae9f",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        },
+                                        "map": {
+                                          "0": "资金",
+                                          "1": "材料"
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:ddc498365e3f"
+                                  },
+                                  {
+                                    "id": "u:4114999b01e8",
+                                    "body": [
+                                      {
+                                        "type": "static-tpl",
+                                        "name": "status",
+                                        "label": "状态",
+                                        "id": "u:797cc869f7cc",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ],
+                                "id": "u:6e79ba3d9ab0",
+                                "className": "m-b"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "app_person",
+                                        "label": "申请人姓名",
+                                        "id": "u:d992b31e8632",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:6acc27df5458"
+                                  },
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "app_email",
+                                        "label": "申请人邮箱",
+                                        "id": "u:ae412f05c374",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:abe2c9925eff"
+                                  }
+                                ],
+                                "id": "u:dde37eed2476",
+                                "className": "m-b"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "amt",
+                                        "label": "金额（元）",
+                                        "id": "u:d080e273f048",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:328fa5d61a9b"
+                                  },
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "amt_info",
+                                        "label": "费用说明",
+                                        "id": "u:19875fc2abab",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:f66b6b28cd74"
+                                  }
+                                ],
+                                "id": "u:63ae693b9c1d",
+                                "className": "m-b",
+                                "hiddenOn": "${type!='0'}"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "input-date",
+                                        "name": "amt_time",
+                                        "label": "费用发生日期",
+                                        "id": "u:6b4b003fefb5",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        },
+                                        "format": "YYYY-MM-DD",
+                                        "inputFormat": "YYYY-MM-DD",
+                                        "static": true
+                                      }
+                                    ],
+                                    "id": "u:7a4eab12a7e3"
+                                  },
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static-mapping",
+                                        "name": "amt_type",
+                                        "label": "费用类型",
+                                        "id": "u:6d72496d7ebc",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        },
+                                        "map": {},
+                                        "source": "app://dictionary/running/list?level=2&encoded=amt_type"
+                                      }
+                                    ],
+                                    "id": "u:21527f499226"
+                                  }
+                                ],
+                                "id": "u:e176933aa5c8",
+                                "hiddenOn": "${type!='0'}"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "material",
+                                        "label": "材料名称",
+                                        "id": "u:3e665522aa35",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:8da7b4659681"
+                                  },
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "material_info",
+                                        "label": "材料说明",
+                                        "id": "u:1e43d424a22e"
+                                      }
+                                    ],
+                                    "id": "u:17a36d86e9f8"
+                                  }
+                                ],
+                                "id": "u:51949b0c9481",
+                                "hiddenOn": "${type!='1'}",
+                                "className": "m-b"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static-tpl",
+                                        "name": "material_file",
+                                        "label": "附件",
+                                        "id": "u:ae13eb63b5b8",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        },
+                                        "tpl": "<% let value = data && data['material_file'];%><% if (value) { %>\n        <%\n          let file = value;\n          try {\n            file = typeof file === 'string' ? JSON.parse(file) : file;\n          } catch {\n            file = {}\n          }\n          let url = file.url;\n          let a = document.createElement('a');\n          a.href = url;\n        %>\n          <a target=\"_blank\" href=\"<%= url %>\" download><%- file.name %></a>\n        <% } else {%>\n          -\n        <% }%>\n        "
+                                      }
+                                    ],
+                                    "id": "u:4672c3a6125b"
+                                  },
+                                  {
+                                    "body": [],
+                                    "id": "u:5fc1f12b2a1c"
+                                  }
+                                ],
+                                "id": "u:82a6fa95264a",
+                                "className": "m-b",
+                                "hiddenOn": "${type!='1'}"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "approved_persson",
+                                        "label": "审批人姓名",
+                                        "id": "u:926ce40ee923"
+                                      }
+                                    ],
+                                    "id": "u:19ab3a790dd6"
+                                  },
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static",
+                                        "name": "approved_email",
+                                        "label": "审批人邮箱",
+                                        "id": "u:d9255ef4a554"
+                                      }
+                                    ],
+                                    "id": "u:a8221336ca2c"
+                                  }
+                                ],
+                                "id": "u:96530b2bedd7",
+                                "className": "m-b",
+                                "hidden": true
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "input-datetime",
+                                        "name": "app_time",
+                                        "label": "申请时间",
+                                        "id": "u:58bee437d8c6",
+                                        "format": "YYYY-MM-DD HH:mm:ss",
+                                        "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                        "static": true,
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:1b6a076f91a3"
+                                  },
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "input-datetime",
+                                        "name": "approved_time",
+                                        "label": "审批时间",
+                                        "id": "u:d401c9ede8c5",
+                                        "format": "YYYY-MM-DD HH:mm:ss",
+                                        "inputFormat": "YYYY-MM-DD HH:mm:ss",
+                                        "static": true,
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": "u:64c184fd21f8"
+                                  }
+                                ],
+                                "id": "u:0adcc7f6ea14",
+                                "className": "m-b"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "body": [
+                                      {
+                                        "type": "static-tpl",
+                                        "name": "remark",
+                                        "label": "备注",
+                                        "id": "u:db8e1dc9198a",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        },
+                                        "tpl": "${remark}"
+                                      }
+                                    ],
+                                    "id": "u:f5814e3e8622"
+                                  },
+                                  {
+                                    "body": [],
+                                    "id": "u:b0758bd6fe42"
+                                  }
+                                ],
+                                "id": "u:386a2234a272",
+                                "className": "m-b"
+                              },
+                              {
+                                "type": "grid",
+                                "columns": [
+                                  {
+                                    "id": "u:128e7ea2c4d8",
+                                    "body": [
+                                      {
+                                        "type": "static-tpl",
+                                        "name": "opinion",
+                                        "label": "处理人意见",
+                                        "tpl": "${opinion}",
+                                        "id": "u:ecfed9ebc611",
+                                        "mode": "normal",
+                                        "size": "lg",
+                                        "themeCss": {
+                                          "labelClassName": {
+                                            "font:default": {
+                                              "fontWeight": "var(--fonts-weight-3)"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "body": [],
+                                    "id": "u:fc77c69045fe"
+                                  }
+                                ],
+                                "id": "u:42795c3f90c8",
+                                "className": "m-b",
+                                "hiddenOn": "${AND(status!='1',status!='2')}"
+                              },
+                              {
+                                "type": "flex",
+                                "id": "u:2d146116fe9a",
+                                "className": "",
+                                "items": [
+                                  {
+                                    "type": "container",
+                                    "body": [
+                                      {
+                                        "type": "button",
+                                        "label": "取消",
+                                        "onEvent": {
+                                          "click": {
+                                            "actions": [
+                                              {
+                                                "ignoreError": false,
+                                                "actionType": "closeDialog"
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "id": "u:e61d3b34bba2",
+                                        "level": "default",
+                                        "size": "default",
+                                        "icon": {
+                                          "name": "关闭",
+                                          "id": "svg-6ikcdoA8boAZPmg3gVnkMy",
+                                          "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m3.05 3.05 9.9 9.9M12.95 3.05l-9.9 9.9\"/></g></svg>'"
+                                        },
+                                        "themeCss": {
+                                          "className": {
+                                            "radius:default": {
+                                              "top-left-border-radius": "var(--borders-radius-3)",
+                                              "top-right-border-radius": "var(--borders-radius-3)",
+                                              "bottom-left-border-radius": "var(--borders-radius-3)",
+                                              "bottom-right-border-radius": "var(--borders-radius-3)"
+                                            }
+                                          }
+                                        },
+                                        "className": "mr-2"
+                                      },
+                                      {
+                                        "type": "button",
+                                        "label": "同意",
+                                        "onEvent": {
+                                          "click": {
+                                            "actions": [
+                                              {
+                                                "ignoreError": false,
+                                                "actionType": "dialog",
+                                                "dialog": {
+                                                  "type": "dialog",
+                                                  "title": "同意",
+                                                  "body": [
+                                                    {
+                                                      "type": "form",
+                                                      "id": "u:78325169aadd",
+                                                      "title": "表单",
+                                                      "mode": "horizontal",
+                                                      "dsType": "api",
+                                                      "feat": "Insert",
+                                                      "body": [
+                                                        {
+                                                          "type": "textarea",
+                                                          "label": "处理人意见",
+                                                          "name": "opinion",
+                                                          "id": "u:ea25e000aadb",
+                                                          "minRows": 3,
+                                                          "maxRows": 20,
+                                                          "required": true
+                                                        }
+                                                      ],
+                                                      "actions": [
+                                                        {
+                                                          "type": "button",
+                                                          "label": "取消",
+                                                          "onEvent": {
+                                                            "click": {
+                                                              "actions": [
+                                                                {
+                                                                  "actionType": "cancel",
+                                                                  "componentId": "u:78325169aadd"
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          "level": "default"
+                                                        },
+                                                        {
+                                                          "type": "button",
+                                                          "label": "提交",
+                                                          "onEvent": {
+                                                            "click": {
+                                                              "actions": [
+                                                                {
+                                                                  "actionType": "submit",
+                                                                  "componentId": "u:78325169aadd"
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          "level": "primary"
+                                                        }
+                                                      ],
+                                                      "resetAfterSubmit": true,
+                                                      "onEvent": {
+                                                        "submitSucc": {
+                                                          "weight": 0,
+                                                          "actions": [
+                                                            {
+                                                              "componentId": "u:4564ce82f50e",
+                                                              "ignoreError": false,
+                                                              "actionType": "closeDialog"
+                                                            },
+                                                            {
+                                                              "ignoreError": false,
+                                                              "actionType": "reload",
+                                                              "componentId": "u:b5a62393c8df",
+                                                              "args": {
+                                                                "resetPage": true
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      "labelAlign": "left",
+                                                      "api": {
+                                                        "url": "/app-package/entity/sre-service-audit/${_id}",
+                                                        "method": "patch",
+                                                        "requestAdaptor": "api.data = context\r\napi.data.status = \"已通过\"\r\nreturn api",
+                                                        "adaptor": "",
+                                                        "messages": {}
+                                                      }
+                                                    }
+                                                  ],
+                                                  "showCloseButton": true,
+                                                  "showErrorMsg": true,
+                                                  "showLoading": true,
+                                                  "className": "app-popover :AMISCSSWrapper",
+                                                  "actions": [
+                                                    {
+                                                      "type": "button",
+                                                      "actionType": "cancel",
+                                                      "label": "取消",
+                                                      "id": "u:2fe23122783e"
+                                                    },
+                                                    {
+                                                      "type": "button",
+                                                      "actionType": "confirm",
+                                                      "label": "确认",
+                                                      "primary": true,
+                                                      "id": "u:7757c4a350c9"
+                                                    }
+                                                  ],
+                                                  "id": "u:88ccad6ba992",
+                                                  "actionType": "dialog",
+                                                  "closeOnOutside": true,
+                                                  "closeOnEsc": true,
+                                                  "draggable": false
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "id": "u:84c268fdad30",
+                                        "level": "primary",
+                                        "size": "default",
+                                        "icon": {
+                                          "name": "选择正确",
+                                          "id": "svg-sT8aUTr3KQ1Pgv6YynfdYt",
+                                          "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 14.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z\"/><path d=\"m11.512 5.975-4.537 4.537L4.5 8.037\"/></g></svg>'"
+                                        },
+                                        "themeCss": {
+                                          "className": {
+                                            "radius:default": {
+                                              "top-left-border-radius": "var(--borders-radius-3)",
+                                              "top-right-border-radius": "var(--borders-radius-3)",
+                                              "bottom-left-border-radius": "var(--borders-radius-3)",
+                                              "bottom-right-border-radius": "var(--borders-radius-3)"
+                                            }
+                                          }
+                                        },
+                                        "className": "mx-2",
+                                        "hiddenOn": "${status!='待审批'}",
+                                        "disabledOnAction": false
+                                      },
+                                      {
+                                        "type": "button",
+                                        "label": "拒绝",
+                                        "onEvent": {
+                                          "click": {
+                                            "actions": [
+                                              {
+                                                "ignoreError": false,
+                                                "actionType": "dialog",
+                                                "dialog": {
+                                                  "type": "dialog",
+                                                  "title": "拒绝",
+                                                  "body": [
+                                                    {
+                                                      "type": "form",
+                                                      "id": "u:d27dbe85eeee",
+                                                      "title": "表单",
+                                                      "mode": "horizontal",
+                                                      "dsType": "api",
+                                                      "feat": "Insert",
+                                                      "body": [
+                                                        {
+                                                          "type": "textarea",
+                                                          "label": "处理人意见",
+                                                          "name": "opinion",
+                                                          "id": "u:28931600a57f",
+                                                          "minRows": 3,
+                                                          "maxRows": 20,
+                                                          "required": true
+                                                        }
+                                                      ],
+                                                      "actions": [
+                                                        {
+                                                          "type": "button",
+                                                          "label": "取消",
+                                                          "onEvent": {
+                                                            "click": {
+                                                              "actions": [
+                                                                {
+                                                                  "actionType": "cancel",
+                                                                  "componentId": "u:d27dbe85eeee"
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          "level": "default"
+                                                        },
+                                                        {
+                                                          "type": "button",
+                                                          "label": "提交",
+                                                          "onEvent": {
+                                                            "click": {
+                                                              "actions": [
+                                                                {
+                                                                  "actionType": "submit",
+                                                                  "componentId": "u:d27dbe85eeee"
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          "level": "primary"
+                                                        }
+                                                      ],
+                                                      "resetAfterSubmit": true,
+                                                      "onEvent": {
+                                                        "submitSucc": {
+                                                          "weight": 0,
+                                                          "actions": [
+                                                            {
+                                                              "componentId": "u:4564ce82f50e",
+                                                              "ignoreError": false,
+                                                              "actionType": "closeDialog"
+                                                            },
+                                                            {
+                                                              "componentId": "u:b5a62393c8df",
+                                                              "ignoreError": false,
+                                                              "actionType": "reload",
+                                                              "args": {
+                                                                "resetPage": true
+                                                              }
+                                                            }
+                                                          ]
+                                                        }
+                                                      },
+                                                      "labelAlign": "left",
+                                                      "api": {
+                                                        "url": "/app-package/entity/sre-service-audit/${_id}",
+                                                        "method": "patch",
+                                                        "requestAdaptor": "api.data = context\r\napi.data.status = \"已拒绝\"\r\nreturn api",
+                                                        "adaptor": "",
+                                                        "messages": {}
+                                                      }
+                                                    }
+                                                  ],
+                                                  "showCloseButton": true,
+                                                  "showErrorMsg": true,
+                                                  "showLoading": true,
+                                                  "className": "app-popover :AMISCSSWrapper",
+                                                  "actions": [
+                                                    {
+                                                      "type": "button",
+                                                      "actionType": "cancel",
+                                                      "label": "取消",
+                                                      "id": "u:354f392bb693"
+                                                    },
+                                                    {
+                                                      "type": "button",
+                                                      "actionType": "confirm",
+                                                      "label": "确认",
+                                                      "primary": true,
+                                                      "id": "u:cf9f7a2cf39c"
+                                                    }
+                                                  ],
+                                                  "id": "u:c0b7db5720ca",
+                                                  "actionType": "dialog",
+                                                  "closeOnOutside": true,
+                                                  "closeOnEsc": true,
+                                                  "draggable": false
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        "id": "u:bb02b2b10a7c",
+                                        "level": "danger",
+                                        "size": "default",
+                                        "icon": {
+                                          "name": "关闭圆形",
+                                          "id": "svg-9gRwaXjv5Y2e7FiHUPQ84b",
+                                          "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 14.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13ZM5.25 5.25l5.5 5.5M10.75 5.25l-5.5 5.5\"/></g></svg>'"
+                                        },
+                                        "themeCss": {
+                                          "className": {
+                                            "radius:default": {
+                                              "top-left-border-radius": "var(--borders-radius-3)",
+                                              "top-right-border-radius": "var(--borders-radius-3)",
+                                              "bottom-left-border-radius": "var(--borders-radius-3)",
+                                              "bottom-right-border-radius": "var(--borders-radius-3)"
+                                            }
+                                          }
+                                        },
+                                        "className": "mx-2",
+                                        "visible": true,
+                                        "hiddenOn": "${status!='待审批'}",
+                                        "disabledOnAction": false
+                                      }
+                                    ],
+                                    "size": "xs",
+                                    "style": {
+                                      "position": "static",
+                                      "display": "flex",
+                                      "flex": "1 1 auto",
+                                      "flexGrow": 1,
+                                      "flexBasis": "auto",
+                                      "flexWrap": "nowrap",
+                                      "justifyContent": "flex-start"
+                                    },
+                                    "wrapperBody": false,
+                                    "isFixedHeight": false,
+                                    "isFixedWidth": false,
+                                    "id": "u:b5c5be02448d"
+                                  },
+                                  {
+                                    "type": "container",
+                                    "size": "xs",
+                                    "style": {
+                                      "position": "static",
+                                      "display": "flex",
+                                      "flex": "1 1 auto",
+                                      "flexGrow": 1,
+                                      "flexBasis": "auto",
+                                      "flexWrap": "nowrap",
+                                      "justifyContent": "center"
+                                    },
+                                    "wrapperBody": false,
+                                    "isFixedHeight": false,
+                                    "isFixedWidth": false,
+                                    "id": "u:0b30c9e246bb"
+                                  }
+                                ],
+                                "style": {
+                                  "position": "relative"
+                                }
+                              }
+                            ],
+                            "initApi": {
+                              "method": "get",
+                              "url": "/app-package/entity/sre-service-audit/${_id}",
+                              "data": {},
+                              "requestAdaptor": "",
+                              "adaptor": "",
+                              "messages": {}
+                            },
+                            "wrapWithPanel": false,
+                            "id": "u:16aa745d0c78",
+                            "labelAlign": "left",
+                            "loadingConfig": {
+                              "show": false
+                            },
+                            "feat": "View"
+                          }
+                        ],
+                        "id": "u:4564ce82f50e",
+                        "actions": [],
+                        "type": "dialog",
+                        "actionType": "dialog",
+                        "showCloseButton": true,
+                        "closeOnOutside": true,
+                        "closeOnEsc": true,
+                        "showErrorMsg": true,
+                        "showLoading": true,
+                        "draggable": false
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:9875a93108ea",
+              "icon": "fa fa-ellipsis-h",
+              "size": "sm"
+            },
+            {
+              "type": "button",
+              "label": "同意",
+              "level": "link",
+              "onEvent": {
+                "click": {
+                  "weight": 0,
+                  "actions": [
+                    {
+                      "ignoreError": false,
+                      "actionType": "dialog",
+                      "dialog": {
+                        "type": "dialog",
+                        "title": "同意",
+                        "body": [
+                          {
+                            "id": "u:cb51905dd113",
+                            "type": "form",
+                            "title": "表单",
+                            "mode": "horizontal",
+                            "dsType": "api",
+                            "feat": "Insert",
+                            "body": [
+                              {
+                                "type": "textarea",
+                                "label": "处理人意见",
+                                "name": "opinion",
+                                "id": "u:aa9ec256fe2a",
+                                "minRows": 3,
+                                "maxRows": 20,
+                                "required": true
+                              }
+                            ],
+                            "actions": [
+                              {
+                                "type": "button",
+                                "label": "取消",
+                                "onEvent": {
+                                  "click": {
+                                    "actions": [
+                                      {
+                                        "actionType": "cancel",
+                                        "componentId": "u:cb51905dd113"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "level": "default"
+                              },
+                              {
+                                "type": "button",
+                                "label": "提交",
+                                "onEvent": {
+                                  "click": {
+                                    "actions": [
+                                      {
+                                        "actionType": "submit",
+                                        "componentId": "u:cb51905dd113"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "level": "primary"
+                              }
+                            ],
+                            "resetAfterSubmit": true,
+                            "onEvent": {
+                              "submitSucc": {
+                                "weight": 0,
+                                "actions": [
+                                  {
+                                    "componentId": "u:b5a62393c8df",
+                                    "ignoreError": false,
+                                    "actionType": "reload",
+                                    "args": {
+                                      "resetPage": true
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "labelAlign": "left",
+                            "api": {
+                              "url": "/app-package/entity/sre-service-audit/${_id}",
+                              "method": "patch",
+                              "requestAdaptor": "api.data = context\r\napi.data.status = \"已通过\"\r\nreturn api",
+                              "adaptor": "",
+                              "messages": {}
+                            }
+                          }
+                        ],
+                        "className": "app-popover :AMISCSSWrapper",
+                        "actions": [
+                          {
+                            "type": "button",
+                            "actionType": "cancel",
+                            "label": "取消",
+                            "id": "u:be695c10092a"
+                          },
+                          {
+                            "type": "button",
+                            "actionType": "confirm",
+                            "label": "确认",
+                            "primary": true,
+                            "id": "u:d9203fdb35aa"
+                          }
+                        ],
+                        "id": "u:bb27cb315ccf",
+                        "resizable": false,
+                        "actionType": "dialog",
+                        "showCloseButton": true,
+                        "showErrorMsg": true,
+                        "draggable": false,
+                        "closeOnOutside": true,
+                        "closeOnEsc": true,
+                        "showLoading": true
+                      }
+                    }
+                  ]
+                }
+              },
+              "id": "u:9d56616e99cb",
+              "icon": {
+                "name": "选择正确",
+                "id": "svg-sT8aUTr3KQ1Pgv6YynfdYt",
+                "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 14.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z\"/><path d=\"m11.512 5.975-4.537 4.537L4.5 8.037\"/></g></svg>'"
+              },
+              "size": "sm",
+              "disabledOnAction": false,
+              "hidden": true
+            },
+            {
+              "type": "button",
+              "label": "拒绝",
+              "level": "link",
+              "className": "text-danger",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "dialog",
+                      "ignoreError": false,
+                      "dialog": {
+                        "type": "dialog",
+                        "title": "拒绝",
+                        "body": [
+                          {
+                            "id": "u:7100f1aa7eba",
+                            "type": "form",
+                            "title": "表单",
+                            "mode": "horizontal",
+                            "dsType": "api",
+                            "feat": "Insert",
+                            "body": [
+                              {
+                                "type": "textarea",
+                                "label": "处理人意见",
+                                "name": "opinion",
+                                "id": "u:f8f0938a02c1",
+                                "minRows": 3,
+                                "maxRows": 20,
+                                "required": true
+                              }
+                            ],
+                            "actions": [
+                              {
+                                "type": "button",
+                                "label": "取消",
+                                "onEvent": {
+                                  "click": {
+                                    "actions": [
+                                      {
+                                        "actionType": "cancel",
+                                        "componentId": "u:7100f1aa7eba"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "level": "default"
+                              },
+                              {
+                                "type": "button",
+                                "label": "提交",
+                                "onEvent": {
+                                  "click": {
+                                    "actions": [
+                                      {
+                                        "actionType": "submit",
+                                        "componentId": "u:7100f1aa7eba"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "level": "primary"
+                              }
+                            ],
+                            "resetAfterSubmit": true,
+                            "onEvent": {
+                              "submitSucc": {
+                                "weight": 0,
+                                "actions": [
+                                  {
+                                    "componentId": "u:b5a62393c8df",
+                                    "ignoreError": false,
+                                    "actionType": "reload",
+                                    "args": {
+                                      "resetPage": true
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "labelAlign": "left",
+                            "api": {
+                              "url": "/app-package/entity/sre-service-audit/${_id}",
+                              "method": "patch",
+                              "requestAdaptor": "api.data = context\r\napi.data.status = \"已拒绝\"\r\nreturn api",
+                              "adaptor": "",
+                              "messages": {}
+                            }
+                          }
+                        ],
+                        "className": "app-popover :AMISCSSWrapper",
+                        "actions": [
+                          {
+                            "type": "button",
+                            "actionType": "cancel",
+                            "label": "取消",
+                            "id": "u:3d614fb2c9ee"
+                          },
+                          {
+                            "type": "button",
+                            "actionType": "confirm",
+                            "label": "确认",
+                            "primary": true,
+                            "id": "u:b558e17c96ef"
+                          }
+                        ],
+                        "id": "u:52fb421fc0c7",
+                        "resizable": false,
+                        "actionType": "dialog",
+                        "showCloseButton": true,
+                        "showErrorMsg": true,
+                        "draggable": false,
+                        "closeOnOutside": true,
+                        "closeOnEsc": true,
+                        "showLoading": true
+                      }
+                    }
+                  ],
+                  "weight": 0
+                }
+              },
+              "id": "u:c5d449f546d4",
+              "icon": {
+                "name": "关闭圆形",
+                "id": "svg-9gRwaXjv5Y2e7FiHUPQ84b",
+                "svg": "'<svg width=\"24\" height=\"24\" viewBox=\"0 0 16 16\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" fill-rule=\"evenodd\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M8 14.5a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13ZM5.25 5.25l5.5 5.5M10.75 5.25l-5.5 5.5\"/></g></svg>'"
+              },
+              "size": "sm",
+              "disabledOnAction": false,
+              "hidden": true
+            },
+            {
+              "type": "button",
+              "label": "删除",
+              "level": "link",
+              "className": "text-danger",
+              "confirmText": "确定要删除？",
+              "onEvent": {
+                "click": {
+                  "actions": [
+                    {
+                      "actionType": "ajax",
+                      "api": {
+                        "method": "delete",
+                        "url": "/app-package/entity/sre-service-audit/${_id}",
+                        "requestAdaptor": "",
+                        "adaptor": "",
+                        "messages": {}
+                      },
+                      "outputVar": "responseResult",
+                      "options": {}
+                    },
+                    {
+                      "actionType": "reload",
+                      "componentId": "u:b5a62393c8df",
+                      "expression": "${event.data.responseResult.responseStatus === 0}"
+                    }
+                  ]
+                }
+              },
+              "id": "u:c623ba2cf6e7",
+              "icon": "fa fa-trash-alt",
+              "size": "sm",
+              "hidden": true,
+              "disabledOnAction": false
+            }
+          ],
+          "width": 150
+        }
+      ],
+      "perPageAvailable": [
+        10
+      ],
+      "messages": {},
+      "api": {
+        "method": "get",
+        "url": "/app-package/entity/sre-service-audit/page",
+        "messages": {},
+        "requestAdaptor": "api.query.createdBy = JSON.parse(localStorage.getItem(\"User\"))?._id\r\nreturn api",
+        "adaptor": ""
+      }
+    }
+  ],
+  "config": {
+    "inputParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    },
+    "pageParams": {
+      "type": "object",
+      "required": [],
+      "properties": {}
+    }
+  },
+  "definitions": {}
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "name": "新增审核",
+    "group": "一站式服务台",
+    "path": "/sre/worker/audit/create",
+    "icon": "icon-file",
+    "sort": 1,
+    "hidden": true,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "audit-create"
+  },
+  {
+    "name": "我发起的审批",
+    "group": "一站式服务台",
+    "path": "/sre/worker/audit/my-audit",
+    "icon": "icon-file",
+    "sort": 1,
+    "hidden": false,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "audit-my-audit"
+  },
+  {
+    "name": "保养列表",
+    "group": "保养管理",
+    "path": "/sre/worker/preserve/list",
+    "icon": "icon-file",
+    "sort": 1,
+    "hidden": false,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "preserve-list"
+  },
+  {
+    "name": "我的工单",
+    "group": "移动工单",
+    "path": "/sre/worker/work/my-work",
+    "icon": "icon-file",
+    "sort": 1,
+    "hidden": false,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "work-my-work"
+  },
+  {
+    "name": "待处理工单",
+    "group": "移动工单",
+    "path": "/sre/worker/work/tb-bo-handle",
+    "icon": "icon-file",
+    "sort": 1,
+    "hidden": false,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "work-tb-bo-handle"
+  },
+  {
+    "name": "设备巡检单",
+    "group": "设备管理",
+    "path": "/sre/worker/device/device-inspection",
+    "icon": "icon-file",
+    "sort": 1,
+    "hidden": false,
+    "requireRoles": "",
+    "requirePermissions": "",
+    "page": "device-inspection"
+  }
+]
