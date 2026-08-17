@@ -158,6 +158,16 @@ describe('WorkspaceBrowser', () => {
     expect(b.store.getSnapshot().groupBy).toBe('workspace')
   })
 
+  it('hides the delete affordance for managed workspaces', () => {
+    mount({
+      useWorkspaces: hook(workspaceState([workspace('alpha', [])])),
+      canDeleteWorkspace: () => false,
+    })
+    fireEvent.click(screen.getByRole('button', { name: '工作区“alpha”的操作' }))
+    expect(screen.getByRole('menuitem', { name: '重命名' })).toBeTruthy()
+    expect(screen.queryByRole('menuitem', { name: '删除工作区' })).toBeNull()
+  })
+
   it('persists flat-list drag order locally and applies Last updated within that account', async () => {
     const insertSessionBefore = vi.fn(async () => {})
     const sessions = sessionState([summary('one', 3), summary('two', 2), summary('three', 1)])

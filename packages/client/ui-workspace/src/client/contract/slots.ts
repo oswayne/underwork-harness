@@ -27,10 +27,13 @@ import type { HostObservable, PropsLocale, PropsRenderSlots, PropsRuntime, Props
 // runtime shares below.
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+// Type-only: pull the optional managed-workspaces Context augmentation.
+import type {} from './managed.ts'
 import type {
   SessionId, SessionSearchResultItem, WorkspaceId, WorkspaceView,
 } from '@deepseek-ai/dsh-client-runtime/client'
 import type { createWorkspaceViewStore } from '../stores.ts'
+export type { ManagedWorkspaces } from './managed.ts'
 
 /**
  * Owner share of the directory-flow holes: the complete conversation between
@@ -116,6 +119,11 @@ export type WorkspaceBrowserInjected = DirectoryPickingInjected & {
   renameWorkspace: (workspaceId: WorkspaceId, title: string) => Promise<void>
   /** Delete only a Host Workspace registration; directory and Session logs remain. */
   deleteWorkspace: (workspaceId: WorkspaceId) => Promise<void>
+  /**
+   * Whether the workspace at this path may be deleted by the user. Absent
+   * means every workspace is deletable; false hides the delete affordance.
+   */
+  canDeleteWorkspace?: (path: string) => boolean
   /**
    * Reorder a Workspace in the durable registry display order.
    * Omitted anchor appends to the end.

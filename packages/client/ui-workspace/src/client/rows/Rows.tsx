@@ -112,7 +112,7 @@ export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: 
   onToggle: () => void
   onCreate: () => void
   /** Real-Workspace actions; absent for the ungrouped bucket (no menu shown). */
-  actions?: { rename: () => void; delete: () => void } | undefined
+  actions?: { rename: () => void; delete?: () => void } | undefined
   /** Present only for real Workspace rows in the grouped view. */
   drag?: WorkspaceRowDragProps | undefined
   t: RowTranslate
@@ -124,7 +124,9 @@ export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: 
   const [menuOpen, setMenuOpen] = useState(false)
   const workspaceMenuItems = [
     { id: 'rename', label: t('rename'), icon: <IconEditOutline16 /> },
-    { id: 'delete', label: t('delete.workspace'), icon: <IconTrashOutline16 />, danger: true },
+    ...(actions?.delete === undefined
+      ? []
+      : [{ id: 'delete', label: t('delete.workspace'), icon: <IconTrashOutline16 />, danger: true }]),
   ]
   const ownRow = (
     <div
@@ -164,7 +166,7 @@ export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: 
               /* v8 ignore next -- workspaceMenuItems carries exactly these two rows today. */
               if (id !== 'rename' && id !== 'delete') return
               if (id === 'rename') actions.rename()
-              else actions.delete()
+              else if (actions.delete !== undefined) actions.delete()
             }}
             portal
             closeOnPointerLeave

@@ -3,11 +3,14 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+// Type-only: pull the ui-workspace Context augmentation (managedWorkspaces)
+// so the guard service below typechecks against the cordis Context.
+import type {} from '@deepseek-ai/dsh-client-ui-workspace/client'
 import { en, zh, type NavKey } from '../locales.ts'
 import { TenantSwitch } from './TenantSwitch.tsx'
 import { LoginPage } from './LoginPage.tsx'
 import { SessionSwitchAction } from './SessionSwitchAction.tsx'
-import { setNavActions } from './nav.ts'
+import { packagesRoot, setNavActions } from './nav.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
@@ -71,6 +74,15 @@ export function apply(ctx: ClientContext): void {
     deleteWorkspace: async (workspaceId) => { await ctx.workspaces.delete(workspaceId) },
   })
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-uicp-nav: dictionaries')
+  ctx.effect(
+    () => ctx.reflect.provide('managedWorkspaces', {
+      isManaged: (path: string) => {
+        const root = packagesRoot()
+        return root !== undefined && path.startsWith(`${root}/`)
+      },
+    }, undefined),
+    'ui-uicp-nav: app-package workspace guard',
+  )
   ctx.effect(
     () => ctx.slots.inject('shell.overlay', () =>
       ctx.slots.register({
