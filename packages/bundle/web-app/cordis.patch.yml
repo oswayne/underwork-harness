@@ -84,11 +84,11 @@
     - id: session-stats
       name: '@deepseek-ai/dsh-session-stats'
 
-    # Resolve bind host, SSH launch, and display once at boot, then mount the
-    # matching dual-face directory picker. Mount -native or -browse directly in
-    # an overlay to pin the interaction.
+    # UICP M0: the browse backend (Node stdlib) is pinned so the uicp tenant
+    # switch can programmatically create app-package directories before
+    # adopting them as Workspaces (the native dialog backend cannot).
     - id: directory-picker
-      name: '@deepseek-ai/dsh-host-directory-picker-auto'
+      name: '@deepseek-ai/dsh-host-directory-picker-browse'
 
     # Read-only projection of current Loader entries for trusted client RPCs.
     - id: plugin-inventory
