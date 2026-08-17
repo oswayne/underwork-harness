@@ -31,7 +31,7 @@ function declare(slots: SlotRegistry, entries: Array<[string, 'single' | 'list',
 
 describe('ui-uicp-nav apply', () => {
   it('declares the services it drives', () => {
-    expect(inject).toEqual(['slots', 'locale'])
+    expect(inject).toEqual(['slots', 'locale', 'sessions', 'workspaces'])
   })
 
   it('registers the browser and header action with dictionaries', async () => {

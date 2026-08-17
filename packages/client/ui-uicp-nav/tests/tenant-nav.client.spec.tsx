@@ -7,7 +7,10 @@ import { resetNav, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
 import { resetAuth } from '../src/client/token.ts'
 import { TenantNav } from '../src/client/TenantNav.tsx'
 
-const t = ((key: string) => zh[key as keyof typeof zh]) as never
+const t = ((key: string, params?: Record<string, unknown>) => {
+  const text = zh[key as keyof typeof zh]
+  return params === undefined ? text : text.replace(/\{(\w+)\}/g, (_, name: string) => String(params[name]))
+}) as never
 
 function listState(sessions: Array<{ id: string; cwd?: string; title: string }>, current?: string) {
   const byId = Object.fromEntries(sessions.map(s => [s.id, {
@@ -40,7 +43,13 @@ describe('TenantNav', () => {
     resetAuth()
     window.localStorage.clear()
     setPackagesRoot('/root')
-    setNavActions({ openSession: vi.fn(), createSession: vi.fn(async () => undefined) })
+    setNavActions({
+      openSession: vi.fn(),
+      createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined),
+      forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined),
+    })
   })
   afterEach(() => {
     cleanup()
@@ -88,7 +97,12 @@ describe('TenantNav', () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const openSession = vi.fn()
     const createSession = vi.fn(async () => undefined)
-    setNavActions({ openSession, createSession })
+    setNavActions({
+      openSession, createSession,
+      renameSession: vi.fn(async () => undefined),
+      forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined),
+    })
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
         return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
@@ -127,6 +141,75 @@ describe('TenantNav', () => {
     expect(await screen.findByRole('treeitem', { name: /会话1/ })).toBeTruthy()
     fireEvent.click(screen.getByRole('treeitem', { name: '应用' }))
     expect(screen.queryByRole('treeitem', { name: /会话1/ })).toBeNull()
+  })
+
+  it('archives a session from the row action menu', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const archiveSession = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(), archiveSession,
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }])
+    render(<TenantNav {...navProps(sessions)} />)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    fireEvent.click(await screen.findByRole('button', { name: '会话“会话1”的操作' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: '归档会话' }))
+    expect(archiveSession).toHaveBeenCalledWith('s1')
+  })
+
+  it('forks a session from the row action menu', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const forkSession = vi.fn()
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession,
+      archiveSession: vi.fn(async () => undefined),
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }])
+    render(<TenantNav {...navProps(sessions)} />)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    fireEvent.click(await screen.findByRole('button', { name: '会话“会话1”的操作' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: '分叉会话' }))
+    expect(forkSession).toHaveBeenCalledWith('s1')
+  })
+
+  it('renames a session through the dialog', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const renameSession = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined), renameSession,
+      forkSession: vi.fn(), archiveSession: vi.fn(async () => undefined),
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }])
+    render(<TenantNav {...navProps(sessions)} />)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    fireEvent.click(await screen.findByRole('button', { name: '会话“会话1”的操作' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: '重命名' }))
+    fireEvent.change(screen.getByRole('textbox', { name: '会话名称' }), { target: { value: '新标题' } })
+    fireEvent.click(screen.getByRole('button', { name: '重命名' }))
+    expect(renameSession).toHaveBeenCalledWith('s1', '新标题')
   })
 
   it('starts collapsed and reveals sessions only after expanding both levels', async () => {

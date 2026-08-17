@@ -3,15 +3,24 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { zh } from '../src/locales.ts'
-import { resetNav, selectApp, selectTenant, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
+import { type NavActions, resetNav, selectApp, selectTenant, setNavActions, setPackagesRoot } from '../src/client/nav.ts'
 import { SessionSwitchAction } from '../src/client/SessionSwitchAction.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh]) as never
 
+const navActions = (overrides: Partial<NavActions> = {}): NavActions => ({
+  openSession: vi.fn(),
+  createSession: vi.fn(async () => undefined),
+  renameSession: vi.fn(async () => undefined),
+  forkSession: vi.fn(),
+  archiveSession: vi.fn(async () => undefined),
+  ...overrides,
+})
+
 describe('SessionSwitchAction', () => {
   beforeEach(() => {
     resetNav()
-    setNavActions({ openSession: vi.fn(), createSession: vi.fn(async () => undefined) })
+    setNavActions(navActions())
   })
   afterEach(() => {
     cleanup()
@@ -23,7 +32,7 @@ describe('SessionSwitchAction', () => {
     selectTenant({ _id: 't1', identifier: 'tenant-a', name: '租户A' })
     selectApp({ _id: 'a1', name: '应用', identifier: 'app-x' })
     const openSession = vi.fn()
-    setNavActions({ openSession, createSession: vi.fn(async () => undefined) })
+    setNavActions(navActions({ openSession, createSession: vi.fn(async () => undefined) }))
     const sessions = {
       ids: ['s1', 's2'],
       byId: {
@@ -42,7 +51,7 @@ describe('SessionSwitchAction', () => {
 
   it('falls back to the current session cwd without an app selection', () => {
     const openSession = vi.fn()
-    setNavActions({ openSession, createSession: vi.fn(async () => undefined) })
+    setNavActions(navActions({ openSession, createSession: vi.fn(async () => undefined) }))
     const sessions = {
       ids: ['s1'],
       byId: { s1: { id: 's1', cwd: '/some/dir', displayTitle: '会话1' } },

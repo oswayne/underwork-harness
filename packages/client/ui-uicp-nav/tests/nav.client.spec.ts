@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  appCwd, createSession, currentApp, currentTenant, openSession, packagesRoot,
-  resolvePackagesRoot, resetNav, selectApp, selectTenant, setNavActions, setPackagesRoot,
+  appCwd, archiveSession, createSession, currentApp, currentTenant, forkSession,
+  openSession, packagesRoot, renameSession, resolvePackagesRoot, resetNav,
+  selectApp, selectTenant, setNavActions, setPackagesRoot,
 } from '../src/client/nav.ts'
 
 const TENANT = { _id: 't1', identifier: 'tenant-a', name: '租户A' }
@@ -33,11 +34,20 @@ describe('ui-uicp-nav nav state', () => {
     expect(createSession('/p')).toBeUndefined()
     const open = vi.fn()
     const create = vi.fn(async () => undefined)
-    setNavActions({ openSession: open, createSession: create })
+    const rename = vi.fn(async () => undefined)
+    const fork = vi.fn()
+    const archive = vi.fn(async () => undefined)
+    setNavActions({ openSession: open, createSession: create, renameSession: rename, forkSession: fork, archiveSession: archive })
     openSession('s1' as never)
     await createSession('/p')
+    await renameSession('s1' as never, '新标题')
+    forkSession('s1' as never)
+    await archiveSession('s1' as never)
     expect(open).toHaveBeenCalledWith('s1')
     expect(create).toHaveBeenCalledWith('/p')
+    expect(rename).toHaveBeenCalledWith('s1', '新标题')
+    expect(fork).toHaveBeenCalledWith('s1')
+    expect(archive).toHaveBeenCalledWith('s1')
   })
 
   it('resolves the packages root from the shell when present', async () => {

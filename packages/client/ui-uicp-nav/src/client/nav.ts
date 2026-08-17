@@ -18,6 +18,9 @@ export interface SelectedTenant {
 export interface NavActions {
   openSession: (id: SessionId) => void
   createSession: (cwd: string) => Promise<void>
+  renameSession: (id: SessionId, title: string) => Promise<void>
+  forkSession: (id: SessionId) => void
+  archiveSession: (id: SessionId) => Promise<void>
 }
 
 /**
@@ -64,6 +67,18 @@ export function openSession(id: SessionId): void {
 
 export function createSession(cwd: string): Promise<void> | undefined {
   return state.actions?.createSession(cwd)
+}
+
+export function renameSession(id: SessionId, title: string): Promise<void> | undefined {
+  return state.actions?.renameSession(id, title)
+}
+
+export function forkSession(id: SessionId): void {
+  state.actions?.forkSession(id)
+}
+
+export function archiveSession(id: SessionId): Promise<void> | undefined {
+  return state.actions?.archiveSession(id)
 }
 
 export function setPackagesRoot(root: string): void {

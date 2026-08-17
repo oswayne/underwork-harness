@@ -18,7 +18,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 const NS = 'nav'
 
 /** Required services: slots for registration, locale for dictionaries. */
-export const inject = ['slots', 'locale']
+export const inject = ['slots', 'locale', 'sessions', 'workspaces']
 
 /**
  * UICP navigation plugin, browser half: replaces the sidebar browsing region
@@ -35,6 +35,20 @@ export function apply(ctx: ClientContext): void {
       const workspace = await ctx.workspaces.create({ path: cwd })
       ctx.workspaces.startSession(workspace.workspaceId)
     },
+    renameSession: async (id, title) => {
+      const session = ctx.sessions.binding(id)?.session
+      if (session === undefined) throw new Error(`unknown session "${id}"`)
+      const result = await session.rename(title)
+      if (!result.ok) throw new Error(result.error.message)
+    },
+    forkSession: (id) => {
+      ctx.sessions.fork({ sessionId: id, increaseTitle: true })
+        .then((childId) => { ctx.sessions.open(childId) })
+        .catch(() => {
+          // Fork or child-rename failure keeps the current selection.
+        })
+    },
+    archiveSession: async (id) => { await ctx.workspaces.archiveSession(id) },
   })
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-uicp-nav: dictionaries')
   ctx.effect(
