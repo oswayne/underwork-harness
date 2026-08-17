@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-uicp-preview-backend",
-  "description": "M2 preview seam: serves the eureka preview bundle and app-package page/fixture reads",
+  "description": "App-package workspace seam: eureka preview/editor bundle plus page/fixture reads and editor write-back with re-validation",
   "version": "0.1.0-rc.5",
   "publishConfig": {
     "access": "public"
@@ -30,12 +30,14 @@
     "@deepseek-ai/cordis": "workspace:^",
     "@deepseek-ai/dsh-eureka-preview-host": "workspace:^",
     "@deepseek-ai/dsh-host-webserver": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^"
+    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-tool-apppackage-validate": "workspace:^"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
     "@deepseek-ai/dsh-eureka-preview-host": "workspace:^",
     "@deepseek-ai/dsh-host-webserver": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^"
+    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-tool-apppackage-validate": "workspace:^"
   }
 }

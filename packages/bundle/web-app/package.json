@@ -102,6 +102,7 @@
     "@deepseek-ai/dsh-storage": "workspace:^",
     "@deepseek-ai/dsh-storage-domain": "workspace:^",
     "@deepseek-ai/dsh-storage-json": "workspace:^",
+    "@deepseek-ai/dsh-tool-apppackage-validate": "workspace:^",
     "@deepseek-ai/dsh-uicp-api-proxy": "workspace:^",
     "@deepseek-ai/dsh-uicp-preview-backend": "workspace:^",
     "@deepseek-ai/dsh-workspace": "workspace:^",

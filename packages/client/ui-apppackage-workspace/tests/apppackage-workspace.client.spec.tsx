@@ -4,7 +4,9 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { zh } from '../src/locales.ts'
 import { AppPackageWorkspace } from '../src/client/AppPackageWorkspace.tsx'
+import type { AppPackageWorkspaceInjected } from '../src/client/AppPackageWorkspace.tsx'
 import { PreviewPanel } from '../src/client/PreviewPanel.tsx'
+import { EditorPanel } from '../src/client/EditorPanel.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh] ?? key) as never
 
@@ -21,7 +23,7 @@ function props(cwd: string | undefined, closeDetails = vi.fn()) {
   }) as never
   return {
     t, useSessions, closeDetails,
-  } as unknown as PropsRuntime<'details'> & PropsLocale<'apppackage'>
+  } as unknown as PropsRuntime<'details'> & PropsLocale<'apppackage'> & AppPackageWorkspaceInjected
 }
 
 afterEach(() => {
@@ -45,7 +47,7 @@ describe('AppPackageWorkspace', () => {
     vi.stubGlobal('fetch', fetchMock)
     render(<AppPackageWorkspace {...props('/root/cszh/dsh-test')} />)
     expect(screen.getByRole('tab', { name: '预览' })).toBeTruthy()
-    expect(screen.getByRole('tab', { name: '编辑' }).hasAttribute('disabled')).toBe(true)
+    expect(screen.getByRole('tab', { name: '编辑' }).hasAttribute('disabled')).toBe(false)
     await waitFor(() => {
       expect(mount).toHaveBeenCalled()
     })
@@ -98,6 +100,90 @@ describe('AppPackageWorkspace', () => {
     await waitFor(() => {
       const call = mount.mock.calls.at(-1)
       expect((call?.[1] as { title?: string } | undefined)?.title).toBe('订单详情')
+    })
+  })
+
+  it('mounts the editor and writes the edited schema back with validation feedback', async () => {
+    type EditorMount = (
+      container: Element,
+      schema: unknown,
+      env: { onSave: (value: unknown) => void },
+    ) => { save: () => void; unmount: () => void }
+    let onSave: ((value: unknown) => void) | undefined
+    const mount = vi.fn<EditorMount>((_container, _schema, env) => {
+      onSave = env.onSave
+      return { save: () => { onSave?.({ type: 'page', title: '订单（改）', body: [] }) }, unmount: vi.fn() }
+    })
+    ;(window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview = { mountEurekaEditor: mount }
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+      if (init?.method === 'POST') {
+        return new Response(JSON.stringify({ status: 0, data: { ok: true, issues: [] } }))
+      }
+      return new Response(JSON.stringify({
+        status: 0,
+        data: { schema: { type: 'page', title: '订单管理' }, pages: [{ id: 'order-list', title: '订单管理' }] },
+      }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<AppPackageWorkspace {...props('/root/cszh/dsh-test')} />)
+    fireEvent.click(screen.getByRole('tab', { name: '编辑' }))
+    await waitFor(() => {
+      expect(mount).toHaveBeenCalled()
+    })
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    await waitFor(() => {
+      expect(screen.getByText('已保存并通过校验')).toBeTruthy()
+    })
+    const post = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')
+    expect(post).toBeDefined()
+    const raw = post?.[1]?.body
+    const posted = JSON.parse(typeof raw === 'string' ? raw : '{}') as {
+      cwd: string
+      page: string
+      value: { type: string; title: string; body: unknown[] }
+    }
+    expect(posted).toEqual({
+      cwd: '/root/cszh/dsh-test',
+      page: 'order-list',
+      value: { type: 'page', title: '订单（改）', body: [] },
+    })
+  })
+
+  it('shows validation findings after a non-conforming save', async () => {
+    type EditorMount = (
+      container: Element,
+      schema: unknown,
+      env: { onSave: (value: unknown) => void },
+    ) => { save: () => void; unmount: () => void }
+    let onSave: ((value: unknown) => void) | undefined
+    const mount = vi.fn<EditorMount>((_container, _schema, env) => {
+      onSave = env.onSave
+      return { save: () => { onSave?.({ type: 'page' }) }, unmount: vi.fn() }
+    })
+    ;(window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview = { mountEurekaEditor: mount }
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+      if (init?.method === 'POST') {
+        return new Response(JSON.stringify({
+          status: 0,
+          data: {
+            ok: false,
+            issues: [{ severity: 'error', file: 'pages/order-list.json', rule: 'page.schema', message: 'Eureka schema 校验失败' }],
+          },
+        }))
+      }
+      return new Response(JSON.stringify({
+        status: 0,
+        data: { schema: { type: 'page' }, pages: [{ id: 'order-list', title: '订单管理' }] },
+      }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<EditorPanel cwd="/root/cszh/dsh-test" t={t} />)
+    await waitFor(() => {
+      expect(mount).toHaveBeenCalled()
+    })
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    await waitFor(() => {
+      expect(screen.getByText(/Eureka schema 校验失败/)).toBeTruthy()
     })
   })
 })

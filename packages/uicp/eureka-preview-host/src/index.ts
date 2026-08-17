@@ -1,23 +1,16 @@
 /**
- * Self-contained Eureka page preview (React 19) for the UICP low-code driver.
- * The caller mounts a page JSON into any DOM node; the bundle carries its own
- * React 19 + eureka runtime, so the hosting app's React version is irrelevant.
+ * Self-contained Eureka page preview and editor (React 19) for the UICP
+ * low-code driver. The caller mounts a page JSON into any DOM node; the
+ * bundle carries its own React 19 + eureka runtime, so the hosting app's
+ * React version is irrelevant.
  * @module @deepseek-ai/dsh-eureka-preview-host
  */
-
-// Eureka preview styling, mirroring the uicp-web-editor entry: icon fonts,
-// the cxd theme, and the shared helpers. All assets are inlined into the
-// bundle CSS by the vite build (assetsInlineLimit), so the preview depends
-// only on bundle.js + bundle.css. Relative paths sidestep the eureka exports
-// map, which does not expose its css assets.
-import '../node_modules/@fortawesome/fontawesome-free/css/all.min.css'
-import '../node_modules/eureka/dist/themes/cxd.css'
-import '../node_modules/eureka/dist/helper.css'
 
 import React from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { render as renderEureka } from 'eureka'
 import { AlertComponent, ToastComponent } from 'eureka-ui'
+export { mountEurekaEditor, type EditorHandle, type EurekaEditorEnv } from './editor.ts'
 
 /** Eureka env callback contract (subset of what `renderEureka` requires). */
 export interface EurekaPreviewEnv {

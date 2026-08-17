@@ -1429,6 +1429,9 @@ importers:
       '@deepseek-ai/dsh-storage-json':
         specifier: workspace:^
         version: link:../../storage/storage-json
+      '@deepseek-ai/dsh-tool-apppackage-validate':
+        specifier: workspace:^
+        version: link:../../uicp/tool-apppackage-validate
       '@deepseek-ai/dsh-uicp-api-proxy':
         specifier: workspace:^
         version: link:../../uicp/api-proxy
@@ -8093,6 +8096,9 @@ importers:
       '@deepseek-ai/dsh-invariants':
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
+      '@deepseek-ai/dsh-tool-apppackage-validate':
+        specifier: workspace:^
+        version: link:../tool-apppackage-validate
 
   packages/uicp/sandbox-server:
     devDependencies:

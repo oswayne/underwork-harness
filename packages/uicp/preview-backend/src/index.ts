@@ -1,18 +1,20 @@
 /**
- * M2 preview seam: serves the self-contained eureka preview bundle and the
- * current app-package's page schema plus fixture data to the browser
- * workspace. Read-only and loopback-only; the full sandbox data path lands in
- * M3, so this seam is the minimal fixture preview bridge.
+ * M2/M3 app-package workspace seam: serves the self-contained eureka preview
+ * bundle and the current app-package's page schema plus fixture data to the
+ * browser workspace, and writes editor changes back to the local page file
+ * with a static re-validation. Loopback-only; the full sandbox data path
+ * lands in M3, so this seam is the minimal preview/editor bridge.
  * @module @deepseek-ai/dsh-uicp-preview-backend
  */
 
 import { createRequire } from 'node:module'
-import { readFile, readdir } from 'node:fs/promises'
+import { readFile, readdir, writeFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
-import { dirname, join, resolve, sep } from 'node:path'
+import { basename, dirname, join, resolve, sep } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-host-webserver'
+import { validatePackage, type Issue } from '@deepseek-ai/dsh-tool-apppackage-validate/src/validate.ts'
 
 export const name = 'uicp-preview-backend'
 export const inject = ['webServer']
@@ -28,6 +30,8 @@ const PREVIEW_HOST_PKG = require.resolve('@deepseek-ai/dsh-eureka-preview-host/p
 const PREVIEW_DIST = join(dirname(PREVIEW_HOST_PKG), 'dist')
 const BUNDLE_JS = join(PREVIEW_DIST, 'uicp-eureka-preview.js')
 const BUNDLE_CSS = join(PREVIEW_DIST, 'uicp-eureka-preview.css')
+const VALIDATE_PKG = require.resolve('@deepseek-ai/dsh-tool-apppackage-validate/package.json')
+const EUREKA_SCHEMA = join(dirname(VALIDATE_PKG), 'data', 'eureka-schema.json')
 
 /** A page id must be a single path segment (no separators or traversal). */
 function safePageId(pageId: string): boolean {
@@ -169,6 +173,116 @@ export async function pageHandler(
   }
 }
 
+/** Read the JSON request body; rejects non-JSON payloads. */
+function readJsonBody(req: IncomingMessage): Promise<unknown> {
+  return new Promise((resolveBody, reject) => {
+    let text = ''
+    req.on('data', (chunk) => { text += String(chunk) })
+    req.on('end', () => {
+      try {
+        resolveBody(text === '' ? undefined : JSON.parse(text) as unknown)
+      } catch {
+        reject(new Error('request body must be JSON'))
+      }
+    })
+    req.on('error', reject)
+  })
+}
+
+/**
+ * Collect the contract-relevant files of one app-package directory into a
+ * relative-path → content map for the static validator.
+ * @param dir - the app-package directory.
+ * @returns the file map.
+ */
+async function collectPackageFiles(dir: string): Promise<Record<string, string>> {
+  const files: Record<string, string> = {}
+  const readNamed = async (name: string): Promise<void> => {
+    const path = join(dir, name)
+    if (existsSync(path)) files[name] = await readFile(path, 'utf8')
+  }
+  await readNamed('app.json')
+  await readNamed('tenant.json')
+  await readNamed('menus.json')
+  for (const sub of ['entities', 'pages', 'data'] as const) {
+    const subDir = join(dir, sub)
+    if (!existsSync(subDir)) continue
+    for (const entry of await readdir(subDir)) {
+      if (entry.endsWith('.json')) files[`${sub}/${entry}`] = await readFile(join(subDir, entry), 'utf8')
+    }
+  }
+  const funcsDir = join(dir, 'funcs')
+  if (existsSync(funcsDir)) {
+    for (const entity of await readdir(funcsDir)) {
+      const entityDir = join(funcsDir, entity)
+      if (!statSync(entityDir).isDirectory()) continue
+      for (const entry of await readdir(entityDir)) {
+        files[`funcs/${entity}/${entry}`] = await readFile(join(entityDir, entry), 'utf8')
+      }
+    }
+  }
+  return files
+}
+
+/** Validate one app-package directory against the frozen contract. */
+async function validatePackageDir(dir: string): Promise<{ ok: boolean; issues: Issue[] }> {
+  const files = await collectPackageFiles(dir)
+  const result = validatePackage(files, {
+    tenantDirName: basename(dirname(dir)),
+    appDirName: basename(dir),
+  }, await readFile(EUREKA_SCHEMA, 'utf8'))
+  return { ok: result.issues.every(item => item.severity !== 'error'), issues: result.issues }
+}
+
+/**
+ * Handle `POST /uicp/preview/page`: write an edited page schema back to the
+ * app-package `pages/` directory and re-validate the package, answering
+ * `{ status, data: { ok, issues } }`.
+ * @param req - the incoming POST with `{ cwd, page, value }`.
+ * @param res - the response.
+ * @param root - the app-packages root for path validation.
+ */
+export async function savePageHandler(
+  req: IncomingMessage,
+  res: ServerResponse,
+  root: string,
+): Promise<void> {
+  const json = (status: number, body: unknown): void => {
+    res.writeHead(status, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(body))
+  }
+  let body: { cwd?: unknown; page?: unknown; value?: unknown }
+  try {
+    const parsed = await readJsonBody(req)
+    if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
+    body = parsed
+  } catch (error) {
+    json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
+    return
+  }
+  const dir = resolvePackageDir(root, typeof body.cwd === 'string' ? body.cwd : undefined)
+  const pageId = body.page
+  if (dir === undefined) {
+    json(400, { status: 400, msg: 'cwd must be an app-package directory under the app-packages root', data: null })
+    return
+  }
+  if (typeof pageId !== 'string' || !safePageId(pageId)) {
+    json(400, { status: 400, msg: 'page must be a single path segment', data: null })
+    return
+  }
+  const value = body.value
+  if (typeof value !== 'object' || value === null || Array.isArray(value) || (value as { type?: unknown }).type !== 'page') {
+    json(400, { status: 400, msg: 'value must be a page schema', data: null })
+    return
+  }
+  try {
+    await writeFile(join(dir, 'pages', `${pageId}.json`), `${JSON.stringify(value, null, 2)}\n`)
+    json(200, { status: 0, data: await validatePackageDir(dir) })
+  } catch (error) {
+    json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
+  }
+}
+
 /** First page file in the app-package `pages/` directory. */
 async function firstPageFile(dir: string): Promise<string | undefined> {
   const pageDir = join(dir, 'pages')
@@ -213,7 +327,10 @@ export function apply(ctx: Context, config: Config = {}): void {
         ctx.webServer.register({
           kind: 'exact',
           path: '/uicp/preview/page',
-          handler: (req, res) => { void pageHandler(req, res, root) },
+          handler: (req, res) => {
+            if (req.method === 'POST') void savePageHandler(req, res, root)
+            else void pageHandler(req, res, root)
+          },
         }),
       ]
       return () => {

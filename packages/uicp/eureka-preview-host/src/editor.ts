@@ -8,6 +8,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { Editor } from 'eureka-editor'
 import { createEditorHandle, type EditorHandle } from './editor-state.ts'
+export type { EditorHandle } from './editor-state.ts'
 
 /** Editor mount options. */
 export interface EurekaEditorEnv {
@@ -26,11 +27,16 @@ export interface EurekaEditorEnv {
  * @param container - DOM node receiving the editor.
  * @param schema - initial page JSON.
  * @param env - save callback and presentation options.
- * @returns handle whose `save()` runs `onSave` with the current value.
+ * @returns handle whose `save()` runs `onSave` with the current value and
+ * whose `unmount()` tears the React root down.
  */
-export function mountEurekaEditor(container: Element, schema: unknown, env: EurekaEditorEnv): EditorHandle {
-  const handle = createEditorHandle(schema, env.onSave)
+export function mountEurekaEditor(
+  container: Element,
+  schema: unknown,
+  env: EurekaEditorEnv,
+): EditorHandle & { unmount: () => void } {
   const root = createRoot(container)
+  const handle = createEditorHandle(schema, env.onSave)
   root.render(
     React.createElement(Editor, {
       value: handle.getValue(),
@@ -43,5 +49,5 @@ export function mountEurekaEditor(container: Element, schema: unknown, env: Eure
       showCustomRenderersPanel: true,
     }),
   )
-  return handle
+  return { ...handle, unmount: () => { root.unmount() } }
 }

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { AppPackageKey } from '../locales.ts'
 import { PreviewPanel } from './PreviewPanel.tsx'
+import { EditorPanel } from './EditorPanel.tsx'
 import css from './AppPackageWorkspace.module.css'
 
 type TabId = 'preview' | 'editor' | 'json' | 'tests' | 'versions'
@@ -22,8 +23,9 @@ export interface AppPackageWorkspaceInjected {
 
 /**
  * App-package product workspace replacing the upstream details seat: tabs for
- * preview and the M3 surfaces (editor / JSON / tests / versions). M2 renders
- * the eureka preview with fixture data; the other tabs are placeholders.
+ * preview/editor plus the remaining M3 surfaces (JSON / tests / versions).
+ * M2 renders the eureka preview with fixture data; M3 edits pages back to the
+ * local app-package with re-validation.
  */
 export function AppPackageWorkspace(
   props: PropsRuntime<'details'> & AppPackageWorkspaceInjected & PropsLocale<'apppackage'>,
@@ -44,8 +46,8 @@ export function AppPackageWorkspace(
             role="tab"
             aria-selected={tab === item.id}
             className={tab === item.id ? css.tabActive : css.tab}
-            disabled={item.id !== 'preview'}
-            title={item.id === 'preview' ? undefined : t('workspace.m3')}
+            disabled={item.id !== 'preview' && item.id !== 'editor'}
+            title={item.id === 'preview' || item.id === 'editor' ? undefined : t('workspace.m3')}
             onClick={() => { setTab(item.id) }}
           >
             {t(item.key)}
@@ -62,13 +64,14 @@ export function AppPackageWorkspace(
           </svg>
         </button>
       </div>
-      <div className={css.body}>
-        {tab === 'preview'
-          ? cwd === undefined
-            ? <div className={css.hint}>{t('workspace.noSession')}</div>
-            : <PreviewPanel cwd={cwd} t={t} />
-          : <div className={css.hint}>{t('workspace.m3')}</div>}
-      </div>
+      <div className={css.body}>{renderBody()}</div>
     </div>
   )
+
+  function renderBody(): ReactNode {
+    if (cwd === undefined) return <div className={css.hint}>{t('workspace.noSession')}</div>
+    if (tab === 'preview') return <PreviewPanel cwd={cwd} t={t} />
+    if (tab === 'editor') return <EditorPanel cwd={cwd} t={t} />
+    return <div className={css.hint}>{t('workspace.m3')}</div>
+  }
 }

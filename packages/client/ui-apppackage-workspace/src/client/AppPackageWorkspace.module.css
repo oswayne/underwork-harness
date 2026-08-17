@@ -103,6 +103,71 @@
   min-height: 100%;
 }
 
+.editorRoot {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.saveBar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+}
+
+.saveButton {
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  background: var(--dsw-alias-brand-primary);
+  padding: 6px 16px;
+  font-size: 13px;
+  line-height: 20px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.resultOk {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.resultError {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.resultIssues {
+  min-width: 0;
+}
+
+.issueList {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.issueError {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.editorHost {
+  flex: 1;
+  min-height: 0;
+}
+
 .loading,
 .hint {
   padding: 24px;

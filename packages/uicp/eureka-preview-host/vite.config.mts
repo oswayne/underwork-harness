@@ -23,7 +23,7 @@ export default defineConfig({
     // is self-contained and the preview seam only serves bundle.js/.css.
     assetsInlineLimit: 20 * 1024 * 1024,
     lib: {
-      entry: 'src/index.ts',
+      entry: 'src/bundle.ts',
       name: 'UicpEurekaPreview',
       formats: ['iife'],
       fileName: () => 'uicp-eureka-preview.js',

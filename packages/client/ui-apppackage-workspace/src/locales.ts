@@ -11,6 +11,11 @@ export const zh = {
   'preview.action': '预览',
   'preview.page': '页面',
   'preview.loading': '正在加载预览…',
+  'editor.save': '保存',
+  'editor.saving': '正在保存…',
+  'editor.saved': '已保存并通过校验',
+  'editor.issues': '校验发现问题',
+  'editor.saveFailed': '保存失败',
 }
 
 /** English dictionary. */
@@ -27,4 +32,9 @@ export const en: Record<AppPackageKey, string> = {
   'preview.action': 'Preview',
   'preview.page': 'Page',
   'preview.loading': 'Loading preview…',
+  'editor.save': 'Save',
+  'editor.saving': 'Saving…',
+  'editor.saved': 'Saved and validated',
+  'editor.issues': 'Validation findings',
+  'editor.saveFailed': 'Save failed',
 }
