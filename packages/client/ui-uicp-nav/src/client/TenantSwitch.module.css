@@ -2,9 +2,10 @@
    shell's New Session button (same height, border, radius, and fill). */
 
 .root {
+  flex: 1 1 0%;
   width: 100%;
   box-sizing: border-box;
-  padding: 0 8px 8px;
+  padding: 0 2px 8px;
   min-width: 0;
 }
 
