@@ -9,9 +9,9 @@ import { TenantNav } from '../src/client/TenantNav.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh]) as never
 
-function listState(sessions: Array<{ id: string; cwd?: string; title: string }>) {
+function listState(sessions: Array<{ id: string; cwd?: string; title: string }>, current?: string) {
   const byId = Object.fromEntries(sessions.map(s => [s.id, { id: s.id, cwd: s.cwd, displayTitle: s.title }]))
-  return { ids: sessions.map(s => s.id), byId, current: undefined, phase: 'ready' } as never
+  return { ids: sessions.map(s => s.id), byId, current, phase: 'ready' } as never
 }
 
 function shellInvoke() {
@@ -54,7 +54,7 @@ describe('TenantNav', () => {
     expect(screen.queryByRole('button')).toBeNull()
   })
 
-  it('lists tenants once a token is stored', async () => {
+  it('lists tenants as project roots once a token is stored', async () => {
     const invoke = vi.fn(async (cmd: string) => {
       if (cmd === 'get_token') return 'tok'
       if (cmd === 'app_packages_root') return '/root'
@@ -69,7 +69,7 @@ describe('TenantNav', () => {
       return new Response(JSON.stringify({ status: 0, data: [] }))
     }))
     render(<TenantNav {...navProps(listState([]))} />)
-    expect(await screen.findByRole('button', { name: '租户B（tenant-b）' })).toBeTruthy()
+    expect(await screen.findByRole('treeitem', { name: /租户B/ })).toBeTruthy()
   })
 
   it('surfaces tenant fetch errors', async () => {
@@ -82,10 +82,11 @@ describe('TenantNav', () => {
     expect(await screen.findByText('Error: bad')).toBeTruthy()
   })
 
-  it('navigates tenant → app-package → sessions and switches sessions', async () => {
+  it('navigates project → app-package → sessions as a tree and switches sessions', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const openSession = vi.fn()
-    setNavActions({ openSession, createSession: vi.fn(async () => undefined) })
+    const createSession = vi.fn(async () => undefined)
+    setNavActions({ openSession, createSession })
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
         return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
@@ -97,14 +98,47 @@ describe('TenantNav', () => {
       { id: 's2', cwd: '/other', title: '其它' },
     ])
     render(<TenantNav {...navProps(sessions)} />)
-    fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
-    fireEvent.click(await screen.findByRole('button', { name: '应用' }))
-    expect(await screen.findByRole('button', { name: '会话1' })).toBeTruthy()
-    expect(screen.queryByRole('button', { name: '其它' })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: '会话1' }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
+    expect(screen.queryByRole('treeitem', { name: '其它' })).toBeNull()
+    fireEvent.click(screen.getByRole('treeitem', { name: '会话1' }))
     expect(openSession).toHaveBeenCalledWith('s1')
     fireEvent.click(screen.getByRole('button', { name: '新建会话' }))
+    expect(createSession).toHaveBeenCalledWith('/root/tenant-a/app-x')
     cleanup()
+  })
+
+  it('collapses the session list when the app package row closes', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }])
+    render(<TenantNav {...navProps(sessions)} />)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    const appRow = await screen.findByRole('treeitem', { name: '应用' })
+    fireEvent.click(appRow)
+    expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('treeitem', { name: '应用' }))
+    expect(screen.queryByRole('treeitem', { name: '会话1' })).toBeNull()
+  })
+
+  it('reveals the branch of the active session without manual clicks', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [{ _id: 't1', name: '租户A', identifier: 'tenant-a', available: true }] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
+    }))
+    const sessions = listState([{ id: 's1', cwd: '/root/tenant-a/app-x', title: '会话1' }], 's1')
+    render(<TenantNav {...navProps(sessions)} />)
+    expect(await screen.findByRole('treeitem', { name: '会话1' })).toBeTruthy()
+    expect(screen.getByRole('treeitem', { name: '会话1' }).getAttribute('aria-selected')).toBe('true')
   })
 
   it('logs out and clears the browsing tree', async () => {
@@ -132,7 +166,7 @@ describe('TenantNav', () => {
     await new Promise(resolve => setTimeout(resolve, 0))
   })
 
-  it('keeps the app selection highlight on the current app', async () => {
+  it('highlights the selected app package row', async () => {
     ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
@@ -141,9 +175,9 @@ describe('TenantNav', () => {
       return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
     }))
     render(<TenantNav {...navProps(listState([]))} />)
-    fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
-    fireEvent.click(await screen.findByRole('button', { name: '应用' }))
-    expect((await screen.findByRole('button', { name: '应用' })).hasAttribute('disabled')).toBe(true)
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
+    expect(screen.getByRole('treeitem', { name: '应用' }).className).toMatch(/selected/)
   })
 
   it('surfaces app-package fetch errors', async () => {
@@ -158,7 +192,7 @@ describe('TenantNav', () => {
       return new Response(JSON.stringify({ status: 400, msg: 'apps-bad' }))
     }))
     render(<TenantNav {...navProps(listState([]))} />)
-    fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
     expect(await screen.findByText('Error: apps-bad')).toBeTruthy()
   })
 
@@ -174,8 +208,8 @@ describe('TenantNav', () => {
       return new Response(JSON.stringify({ status: 0, data: [{ _id: 'a1', name: '应用', identifier: 'app-x' }] }))
     }))
     render(<TenantNav {...navProps(listState([]))} />)
-    fireEvent.click(await screen.findByRole('button', { name: '租户A（tenant-a）' }))
-    fireEvent.click(await screen.findByRole('button', { name: '应用' }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: /租户A/ }))
+    fireEvent.click(await screen.findByRole('treeitem', { name: '应用' }))
     expect(screen.queryByRole('button', { name: '新建会话' })).toBeNull()
     expect(screen.getByText('（空）')).toBeTruthy()
   })

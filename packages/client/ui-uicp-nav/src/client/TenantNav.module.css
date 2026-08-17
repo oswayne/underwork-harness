@@ -1,7 +1,7 @@
-/* Tenant/app/session browsing region filling the sidebar shell's
-   `sidebar.workspaces` hole. Row chrome, section headers, and the empty
-   state reuse the dsh sidebar token families (the same ones ui-workspace
-   rows use), so the uicp browser reads as part of the shell. */
+/* Tenant/app/session tree filling the sidebar shell's `sidebar.workspaces`
+   hole. Row chrome mirrors the dsh workspace browser (figma 14:3080):
+   project rows 34px with a folder -> chevron hover swap, session rows 32px
+   with the status-dot slot, and a 22px indent step per tree level. */
 
 .root {
   flex: 1;
@@ -24,40 +24,157 @@
   color: var(--dsw-alias-label-tertiary);
 }
 
-.list {
+.tree {
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
-.list > * + * {
+.group > * + * {
   margin-top: 2px;
 }
 
-.row {
+.group + .group {
+  margin-top: 4px;
+}
+
+.projectRow,
+.sessionRow {
   display: flex;
   align-items: center;
   box-sizing: border-box;
   width: 100%;
-  height: 32px;
-  padding: 0 8px;
-  border: none;
   border-radius: 8px;
-  background: transparent;
   cursor: pointer;
-  text-align: left;
-  font-size: 14px;
-  line-height: 20px;
+  user-select: none;
   color: var(--dsw-alias-label-primary);
 }
 
-.row:hover {
+.projectRow:hover,
+.sessionRow:hover {
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
-.row:disabled {
+.projectRow {
+  height: 34px;
+  padding: 0 8px;
+  gap: 6px;
+}
+
+/* Level 2 (app package): one 22px indent step. */
+.appRow {
+  padding-left: 30px;
+}
+
+.sessionRow {
+  height: 32px;
+  padding: 0 8px 0 52px;
+  gap: 0;
+  animation: row-in 150ms var(--ds-ease-in-out);
+}
+
+.projectRow.selected,
+.sessionRow.selected {
   background: var(--dsw-alias-interactive-bg-hover);
-  cursor: default;
+}
+
+@keyframes row-in {
+  from { opacity: 0; }
+}
+
+.slot {
+  flex: none;
+  width: 16px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+/* Project leading slot: folder by default, expand arrow on row hover. */
+.projectRow .chevron {
+  display: none;
+}
+
+.projectRow:hover .chevron {
+  display: inline-flex;
+}
+
+.projectRow:hover .folder {
+  display: none;
+}
+
+.arrow {
+  transition: transform 150ms var(--ds-ease-in-out);
+}
+
+.arrowOpen {
+  transform: rotate(90deg);
+}
+
+.folderActive {
+  color: var(--dsw-alias-state-business-primary);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sessionRow .title {
+  flex: 1;
+  margin: 0 6px 0 4px;
+}
+
+.meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.rowActions {
+  flex: none;
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.projectRow:hover .rowActions {
+  display: inline-flex;
+}
+
+.iconButton {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 4px;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.iconButton:hover {
+  color: var(--dsw-alias-label-primary);
 }
 
 .error {
@@ -74,11 +191,6 @@
   color: var(--dsw-alias-label-tertiary);
 }
 
-.newSession {
-  width: 100%;
-  margin: 4px 0;
-}
-
 .footer {
   flex: none;
   margin-top: auto;
@@ -88,4 +200,12 @@
 .logout {
   width: 100%;
   color: var(--dsw-alias-label-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sessionRow,
+  .arrow {
+    animation: none;
+    transition: none;
+  }
 }
