@@ -91,7 +91,7 @@ export function apply(ctx: ClientContext): void {
     },
     renameWorkspace: async (workspaceId, title) => { await ctx.workspaces.rename(workspaceId, title) },
     deleteWorkspace: async (workspaceId) => { await ctx.workspaces.delete(workspaceId) },
-    canDeleteWorkspace: path => ctx.get('managedWorkspaces')?.isManaged(path) !== true,
+    canModifyWorkspace: path => ctx.get('managedWorkspaces')?.isManaged(path) !== true,
     insertWorkspaceBefore: async (workspaceId, beforeWorkspaceId) => {
       await ctx.workspaces.insertBefore(workspaceId, beforeWorkspaceId)
     },

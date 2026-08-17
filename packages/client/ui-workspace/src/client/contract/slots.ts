@@ -120,10 +120,11 @@ export type WorkspaceBrowserInjected = DirectoryPickingInjected & {
   /** Delete only a Host Workspace registration; directory and Session logs remain. */
   deleteWorkspace: (workspaceId: WorkspaceId) => Promise<void>
   /**
-   * Whether the workspace at this path may be deleted by the user. Absent
-   * means every workspace is deletable; false hides the delete affordance.
+   * Whether the workspace at this path may be modified by the user (rename
+   * and delete). Absent means every workspace is editable; false hides the
+   * row's action menu entirely.
    */
-  canDeleteWorkspace?: (path: string) => boolean
+  canModifyWorkspace?: (path: string) => boolean
   /**
    * Reorder a Workspace in the durable registry display order.
    * Omitted anchor appends to the end.
