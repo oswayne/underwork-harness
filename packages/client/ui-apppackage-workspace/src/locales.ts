@@ -8,6 +8,7 @@ export const zh = {
   'workspace.m3': 'M3 里程碑实现',
   'workspace.noSession': '选择一个会话以预览应用包页面',
   'preview.action': '预览',
+  'preview.page': '页面',
   'preview.loading': '正在加载预览…',
 }
 
@@ -22,5 +23,6 @@ export const en: Record<AppPackageKey, string> = {
   'workspace.m3': 'Landing in M3',
   'workspace.noSession': 'Select a session to preview the app package page',
   'preview.action': 'Preview',
+  'preview.page': 'Page',
   'preview.loading': 'Loading preview…',
 }

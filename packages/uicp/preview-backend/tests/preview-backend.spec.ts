@@ -41,6 +41,11 @@ async function packageDir(): Promise<string> {
     title: '订单管理',
     body: [{ type: 'crud', api: { method: 'get', url: '/app-package/entity/order/page' } }],
   }))
+  await writeFile(join(dir, 'pages', 'order-detail.json'), JSON.stringify({
+    type: 'page',
+    title: '订单详情',
+    body: [],
+  }))
   await writeFile(join(dir, 'data', 'order.json'), JSON.stringify([
     { orderNo: 'SO-001', amount: 12.5 },
   ]))
@@ -70,15 +75,23 @@ describe('pageHandler', () => {
   it('serves the page schema and referenced fixtures', async () => {
     const app = await packageDir()
     const { res, captured } = fakeRes()
-    await pageHandler(fakeReq(`/uicp/preview/page?cwd=${encodeURIComponent(app)}`), res, join(app, '..'))
+    await pageHandler(
+      fakeReq(`/uicp/preview/page?cwd=${encodeURIComponent(app)}&page=order-list`),
+      res,
+      join(app, '..'),
+    )
     expect(captured.statusCode).toBe(200)
     const body = JSON.parse(captured.body) as {
       status: number
-      data: { schema: { type: string }; fixtures: Record<string, unknown[]> }
+      data: { schema: { type: string }; fixtures: Record<string, unknown[]>; pages: { id: string; title: string }[] }
     }
     expect(body.status).toBe(0)
     expect(body.data.schema.type).toBe('page')
     expect(body.data.fixtures.order).toHaveLength(1)
+    expect(body.data.pages).toEqual([
+      { id: 'order-detail', title: '订单详情' },
+      { id: 'order-list', title: '订单管理' },
+    ])
   })
 
   it('rejects a requested page outside the package and a bad cwd', async () => {

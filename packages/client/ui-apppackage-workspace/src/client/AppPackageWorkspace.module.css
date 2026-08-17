@@ -51,6 +51,35 @@
   overflow: auto;
 }
 
+.pageBar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--dsw-alias-bg-base);
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+}
+
+.pageLabel {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.pageSelect {
+  appearance: none;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background: var(--dsw-alias-button-elevated-fill);
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-primary);
+}
+
 .host {
   min-height: 100%;
 }

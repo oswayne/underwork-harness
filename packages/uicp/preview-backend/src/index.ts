@@ -75,10 +75,40 @@ function referencedEntities(pageText: string): string[] {
   return [...ids]
 }
 
+/** One page entry in an app-package `pages/` directory. */
+export interface PageInfo {
+  /** Page identifier (the file basename without `.json`). */
+  id: string
+  /** Page title from the page JSON, falling back to the identifier. */
+  title: string
+}
+
+/** List the app-package's pages with their titles, in directory order. */
+async function listPages(dir: string): Promise<PageInfo[]> {
+  const pageDir = join(dir, 'pages')
+  if (!existsSync(pageDir)) return []
+  const pages: PageInfo[] = []
+  for (const file of await readdir(pageDir)) {
+    if (!file.endsWith('.json')) continue
+    const id = file.slice(0, -5)
+    if (!IDENTIFIER.test(id)) continue
+    let title = id
+    try {
+      const parsed = JSON.parse(await readFile(join(pageDir, file), 'utf8')) as { title?: unknown }
+      if (typeof parsed.title === 'string' && parsed.title !== '') title = parsed.title
+    } catch {
+      // An unreadable page file still lists by identifier; the preview errors
+      // when the user picks it.
+    }
+    pages.push({ id, title })
+  }
+  return pages
+}
+
 /**
  * Handle `GET /uicp/preview/page?cwd=<dir>&page=<id>`: read the page JSON and
- * every referenced entity's fixture, answering `{ status, data: { schema,
- * fixtures } }`.
+ * every referenced entity's fixture plus the page list, answering
+ * `{ status, data: { schema, fixtures, pages } }`.
  * @param req - the incoming GET.
  * @param res - the response.
  * @param root - the app-packages root for path validation.
@@ -115,7 +145,7 @@ export async function pageHandler(
       const fixture: unknown = JSON.parse(await readFile(fixtureFile, 'utf8'))
       fixtures[entity] = fixture as unknown[]
     }
-    json(200, { status: 0, data: { schema, fixtures } })
+    json(200, { status: 0, data: { schema, fixtures, pages: await listPages(dir) } })
   } catch (error) {
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }

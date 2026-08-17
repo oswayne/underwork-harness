@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { zh } from '../src/locales.ts'
 import { AppPackageWorkspace } from '../src/client/AppPackageWorkspace.tsx'
+import { PreviewPanel } from '../src/client/PreviewPanel.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh] ?? key) as never
 
@@ -37,7 +38,7 @@ describe('AppPackageWorkspace', () => {
     ;(window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview = { mountEurekaPreview: mount }
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({
       status: 0,
-      data: { schema: { type: 'page' }, fixtures: { order: [] } },
+      data: { schema: { type: 'page' }, fixtures: { order: [] }, pages: [{ id: 'order-list', title: '订单管理' }] },
     })))
     vi.stubGlobal('fetch', fetchMock)
     render(<AppPackageWorkspace {...props('/root/cszh/dsh-test')} />)
@@ -57,5 +58,37 @@ describe('AppPackageWorkspace', () => {
   it('shows the no-session hint without a current cwd', () => {
     render(<AppPackageWorkspace {...props(undefined)} />)
     expect(screen.getByText('选择一个会话以预览应用包页面')).toBeTruthy()
+  })
+
+  it('lets the user switch pages when the package has several', async () => {
+    type PreviewMount = (container: Element, schema: unknown, env: unknown) => { unmount: () => void }
+    const mount = vi.fn<PreviewMount>(() => ({ unmount: vi.fn() }))
+    ;(window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview = { mountEurekaPreview: mount }
+    const fetchMock = vi.fn(async (url: string) => {
+      const page = new URL(url, 'http://localhost').searchParams.get('page')
+      return new Response(JSON.stringify({
+        status: 0,
+        data: {
+          schema: { type: 'page', title: page === 'order-detail' ? '订单详情' : '订单管理' },
+          fixtures: { order: [] },
+          pages: [
+            { id: 'order-list', title: '订单管理' },
+            { id: 'order-detail', title: '订单详情' },
+          ],
+        },
+      }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<PreviewPanel cwd="/root/cszh/dsh-test" t={t} />)
+    const select = await screen.findByRole('combobox', { name: '页面' })
+    expect(select).toBeTruthy()
+    fireEvent.change(select, { target: { value: 'order-detail' } })
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('page=order-detail'))
+    })
+    await waitFor(() => {
+      const call = mount.mock.calls.at(-1)
+      expect((call?.[1] as { title?: string } | undefined)?.title).toBe('订单详情')
+    })
   })
 })
