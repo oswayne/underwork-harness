@@ -1,4 +1,5 @@
 import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 
 /** One platform app-package row (identifier-scoped local record). */
 export interface AppPackage {
@@ -23,6 +24,8 @@ export interface NavActions {
   archiveSession: (id: SessionId) => Promise<void>
   /** Adopt an app-package directory as a dsh Workspace titled with the app name. */
   registerAppWorkspace: (cwd: string, title: string) => Promise<void>
+  /** Drop one Workspace registration (directory and Session logs remain). */
+  deleteWorkspace: (workspaceId: WorkspaceId) => Promise<void>
 }
 
 /**
@@ -85,6 +88,10 @@ export function archiveSession(id: SessionId): Promise<void> | undefined {
 
 export function registerAppWorkspace(cwd: string, title: string): Promise<void> | undefined {
   return state.actions?.registerAppWorkspace(cwd, title)
+}
+
+export function deleteWorkspace(workspaceId: WorkspaceId): Promise<void> | undefined {
+  return state.actions?.deleteWorkspace(workspaceId)
 }
 
 export function setPackagesRoot(root: string): void {

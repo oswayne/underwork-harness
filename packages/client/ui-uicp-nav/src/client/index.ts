@@ -68,6 +68,7 @@ export function apply(ctx: ClientContext): void {
         // A title conflict with another workspace keeps the basename title.
       })
     },
+    deleteWorkspace: async (workspaceId) => { await ctx.workspaces.delete(workspaceId) },
   })
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-uicp-nav: dictionaries')
   ctx.effect(

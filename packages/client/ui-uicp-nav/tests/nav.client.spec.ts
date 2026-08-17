@@ -2,8 +2,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   appCwd, archiveSession, createSession, currentApp, currentTenant, forkSession,
-  openSession, packagesRoot, registerAppWorkspace, renameSession, resolvePackagesRoot, resetNav,
-  selectApp, selectTenant, setNavActions, setPackagesRoot,
+  deleteWorkspace, openSession, packagesRoot, registerAppWorkspace, renameSession,
+  resolvePackagesRoot, resetNav, selectApp, selectTenant, setNavActions, setPackagesRoot,
 } from '../src/client/nav.ts'
 
 const TENANT = { _id: 't1', identifier: 'tenant-a', name: '租户A' }
@@ -38,9 +38,10 @@ describe('ui-uicp-nav nav state', () => {
     const fork = vi.fn()
     const archive = vi.fn(async () => undefined)
     const register = vi.fn(async () => undefined)
+    const del = vi.fn(async () => undefined)
     setNavActions({
       openSession: open, createSession: create, renameSession: rename, forkSession: fork,
-      archiveSession: archive, registerAppWorkspace: register,
+      archiveSession: archive, registerAppWorkspace: register, deleteWorkspace: del,
     })
     openSession('s1' as never)
     await createSession('/p')
@@ -48,12 +49,14 @@ describe('ui-uicp-nav nav state', () => {
     forkSession('s1' as never)
     await archiveSession('s1' as never)
     await registerAppWorkspace('/p', '应用')
+    await deleteWorkspace('ws-1' as never)
     expect(open).toHaveBeenCalledWith('s1')
     expect(create).toHaveBeenCalledWith('/p')
     expect(rename).toHaveBeenCalledWith('s1', '新标题')
     expect(fork).toHaveBeenCalledWith('s1')
     expect(archive).toHaveBeenCalledWith('s1')
     expect(register).toHaveBeenCalledWith('/p', '应用')
+    expect(del).toHaveBeenCalledWith('ws-1')
   })
 
   it('resolves the packages root from the shell when present', async () => {

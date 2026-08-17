@@ -17,8 +17,12 @@ function shellInvoke() {
   })
 }
 
-function navProps(wide = true) {
-  return { t, wide } as unknown as PropsRuntime<'sidebar.footer.action'> & PropsLocale<'nav'>
+function navProps(wide = true, workspaces: Array<{ workspaceId: string; path: string }> = []) {
+  const useWorkspaces = ((sel: (s: unknown) => unknown) => sel({
+    items: workspaces, archivedSessionIds: [], state: 'idle', phase: 'pending',
+    error: null, baselinesReady: true, recentWorkspaceId: undefined,
+  })) as never
+  return { t, wide, useWorkspaces } as unknown as PropsRuntime<'sidebar.footer.action'> & PropsLocale<'nav'>
 }
 
 describe('TenantSwitch', () => {
@@ -34,6 +38,7 @@ describe('TenantSwitch', () => {
       forkSession: vi.fn(),
       archiveSession: vi.fn(async () => undefined),
       registerAppWorkspace: vi.fn(async () => undefined),
+      deleteWorkspace: vi.fn(async () => undefined),
     })
   })
   afterEach(() => {
@@ -57,6 +62,7 @@ describe('TenantSwitch', () => {
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
       renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
       archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+      deleteWorkspace: vi.fn(async () => undefined),
     })
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
@@ -85,6 +91,7 @@ describe('TenantSwitch', () => {
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
       renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
       archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+      deleteWorkspace: vi.fn(async () => undefined),
     })
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
@@ -105,6 +112,41 @@ describe('TenantSwitch', () => {
     })
   })
 
+  it('prunes other tenants app-package workspaces when switching tenants', async () => {
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
+    const del = vi.fn(async () => undefined)
+    setNavActions({
+      openSession: vi.fn(), createSession: vi.fn(async () => undefined),
+      renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
+      archiveSession: vi.fn(async () => undefined),
+      registerAppWorkspace: vi.fn(async () => undefined), deleteWorkspace: del,
+    })
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.endsWith('/systemctl/tenant/list')) {
+        return new Response(JSON.stringify({ status: 0, data: [
+          { _id: 't1', name: '租户A', identifier: 'tenant-a', available: true },
+          { _id: 't2', name: '租户B', identifier: 'tenant-b', available: true },
+        ] }))
+      }
+      return new Response(JSON.stringify({ status: 0, data: [
+        { _id: 'a1', name: '应用', identifier: 'app-x' },
+      ] }))
+    }))
+    const workspaces = [
+      { workspaceId: 'ws-a', path: '/root/tenant-a/app-x' },
+      { workspaceId: 'ws-b', path: '/root/tenant-b/app-x' },
+    ]
+    render(<TenantSwitch {...navProps(true, workspaces)} />)
+    await waitFor(() => {
+      expect(del).toHaveBeenCalledWith('ws-b')
+    })
+    fireEvent.click(screen.getByRole('button', { name: '租户A' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: '租户B' }))
+    await waitFor(() => {
+      expect(del).toHaveBeenCalledWith('ws-a')
+    })
+  })
+
   it('skips workspace registration when the packages root is unknown', async () => {
     resetNav()
     ;(window as { __TAURI__?: unknown }).__TAURI__ = {
@@ -115,6 +157,7 @@ describe('TenantSwitch', () => {
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
       renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
       archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+      deleteWorkspace: vi.fn(async () => undefined),
     })
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {
@@ -141,6 +184,7 @@ describe('TenantSwitch', () => {
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
       renameSession: vi.fn(async () => undefined), forkSession: vi.fn(),
       archiveSession: vi.fn(async () => undefined), registerAppWorkspace: register,
+      deleteWorkspace: vi.fn(async () => undefined),
     })
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       if (url.endsWith('/systemctl/tenant/list')) {

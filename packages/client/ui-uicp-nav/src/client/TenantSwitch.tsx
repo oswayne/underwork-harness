@@ -3,7 +3,9 @@ import { useSyncExternalStore } from 'react'
 import { IconChevronDownOutline14, Menu } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { API_BASE, authSnapshot, refreshAuth, subscribeAuth } from './token.ts'
-import { packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant } from './nav.ts'
+import {
+  deleteWorkspace, packagesRoot, registerAppWorkspace, resolvePackagesRoot, selectTenant,
+} from './nav.ts'
 import css from './TenantSwitch.module.css'
 
 interface Tenant {
@@ -52,6 +54,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const { t, wide } = props
   const auth = useSyncExternalStore(subscribeAuth, authSnapshot)
   const token = auth.status === 'authenticated' ? auth.token : undefined
+  const workspaces = props.useWorkspaces(s => s.items)
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [tenantId, setTenantId] = useState<string | undefined>(readStoredTenant)
   const [error, setError] = useState<string | undefined>()
@@ -123,6 +126,8 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const choose = (id: string): void => {
     const tenant = tenants.find(item => item._id === id)
     if (tenant === undefined) return
+    const root = packagesRoot()
+    if (root !== undefined) pruneOtherTenants(root, tenant)
     setTenantId(id)
     writeStoredTenant(id)
     selectTenant(tenant)
@@ -133,24 +138,29 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
     })
   }
 
-  // Initial pass: register every tenant's synced app packages, land the
-  // selection on a tenant with synced apps (stored choice wins when valid),
-  // and only complain when no tenant has any app package locally.
+  /** Drop app-package Workspaces of every other tenant (sessions stay open). */
+  const pruneOtherTenants = (root: string, tenant: Tenant): void => {
+    const prefix = `${root}/${tenant.identifier}/`
+    for (const workspace of workspaces) {
+      if (workspace.path.startsWith(`${root}/`) && !workspace.path.startsWith(prefix)) {
+        void deleteWorkspace(workspace.workspaceId)?.catch(() => {
+          // The workspace may already be gone.
+        })
+      }
+    }
+  }
+
+  // Initial pass: land on the stored tenant (else the first), register only
+  // its app packages, and prune the other tenants' app-package Workspaces.
   useEffect(() => {
     if (tenants.length === 0) return
-    let firstSynced: Tenant | undefined
     void (async () => {
-      for (const tenant of tenants) {
-        try {
-          const n = await registerApps(tenant)
-          if (n > 0) firstSynced ??= tenant
-        } catch (reason) {
-          setError(reason instanceof Error ? reason.message : String(reason))
-          return
-        }
+      const root = packagesRoot() ?? await resolvePackagesRoot()
+      if (root === undefined) {
+        setError(t('nav.rootMissing'))
+        return
       }
-      const fallback = firstSynced ?? tenants[0]
-      const effective = tenants.find(item => item._id === tenantId) ?? fallback
+      const effective = tenants.find(item => item._id === tenantId) ?? tenants[0]
       if (effective !== undefined) {
         if (tenantId === undefined || !tenants.some(item => item._id === tenantId)) {
           setTenantId(effective._id)
@@ -158,9 +168,25 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
         }
         selectTenant(effective)
       }
-      setError(undefined)
+      if (effective === undefined) return
+      pruneOtherTenants(root, effective)
+      try {
+        await registerApps(effective)
+        setError(undefined)
+      } catch (reason) {
+        setError(reason instanceof Error ? reason.message : String(reason))
+      }
     })()
   }, [tenants])
+
+  // Keep the browser scoped to the current tenant as the workspace list
+  // settles (registration/removal frames arrive after the initial pass).
+  useEffect(() => {
+    const root = packagesRoot()
+    const effective = tenants.find(item => item._id === tenantId)
+    if (root === undefined || effective === undefined) return
+    pruneOtherTenants(root, effective)
+  }, [workspaces, tenants, tenantId])
 
   if (token === undefined || !wide) return null
   const current = tenants.find(item => item._id === tenantId)

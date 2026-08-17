@@ -15,6 +15,7 @@ const navActions = (overrides: Partial<NavActions> = {}): NavActions => ({
   forkSession: vi.fn(),
   archiveSession: vi.fn(async () => undefined),
   registerAppWorkspace: vi.fn(async () => undefined),
+  deleteWorkspace: vi.fn(async () => undefined),
   ...overrides,
 })
 
