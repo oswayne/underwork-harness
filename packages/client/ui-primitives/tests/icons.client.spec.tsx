@@ -59,8 +59,8 @@ describe('AppLogo', () => {
     const { container } = render(<primitives.AppLogo />)
     const svg = container.querySelector('svg')!
     expect(svg.getAttribute('width')).toBe('24')
-    expect(Number(svg.getAttribute('height'))).toBeCloseTo(17.17, 1)
-    expect(svg.getAttribute('viewBox')).toBe('0 0 622 445')
+    expect(Number(svg.getAttribute('height'))).toBeCloseTo(19.49, 1)
+    expect(svg.getAttribute('viewBox')).toBe('0 0 739 600')
     expect(container.querySelectorAll('path')).toHaveLength(1)
     expect(container.innerHTML).toContain('currentColor')
     expect(container.innerHTML).not.toContain('<rect')

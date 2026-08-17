@@ -20,10 +20,10 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
         <svg
           aria-hidden="true"
           class="railFish"
-          data-content="0e150e4a"
+          data-content="e5deb866"
           fill="none"
-          height="17.170418006430868"
-          viewBox="0 0 622 445"
+          height="19.485791610284167"
+          viewBox="0 0 739 600"
           width="24"
         />
         <svg
@@ -105,10 +105,10 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
         >
           <svg
             aria-hidden="true"
-            data-content="0e150e4a"
+            data-content="e5deb866"
             fill="none"
-            height="17.170418006430868"
-            viewBox="0 0 622 445"
+            height="19.485791610284167"
+            viewBox="0 0 739 600"
             width="24"
           />
           Underwork Harness
@@ -203,10 +203,10 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         >
           <svg
             aria-hidden="true"
-            data-content="0e150e4a"
+            data-content="e5deb866"
             fill="none"
-            height="17.170418006430868"
-            viewBox="0 0 622 445"
+            height="19.485791610284167"
+            viewBox="0 0 739 600"
             width="24"
           />
           Underwork Harness
