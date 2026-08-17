@@ -30,9 +30,6 @@ const succeeded = (body: { status?: number }): boolean => (body.status ?? 0) ===
 /** localStorage key remembering the last selected tenant (project). */
 const TENANT_KEY = 'uicp.platform.tenant'
 
-/** How long a switch may stay quiet before the sidebar veil appears (dsh slow-load pattern). */
-const VEIL_DELAY_MS = 300
-
 function readStoredTenant(): string | undefined {
   try {
     return window.localStorage.getItem(TENANT_KEY) ?? undefined
@@ -67,21 +64,15 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [veilWidth, setVeilWidth] = useState(0)
-  const [veilVisible, setVeilVisible] = useState(false)
 
-  // Mask the whole sidebar column while a switch runs, after a short delay
-  // so fast switches never flash it. The width comes from the layout frame's
-  // first grid child (the sidebar column) via the shell overlay hook.
+  // Mask the whole sidebar column for the entire switch, so no workspace
+  // mutation is ever visible. The width comes from the layout frame's first
+  // grid child (the sidebar column) via the shell overlay hook.
   useEffect(() => {
-    if (!busy) {
-      setVeilVisible(false)
-      return
-    }
+    if (!busy) return
     const layer = document.querySelector('[data-shell-overlay]')
     const sidebar = layer?.parentElement?.firstElementChild
     if (sidebar instanceof Element) setVeilWidth(sidebar.getBoundingClientRect().width)
-    const timer = window.setTimeout(() => { setVeilVisible(true) }, VEIL_DELAY_MS)
-    return () => { window.clearTimeout(timer) }
   }, [busy])
 
   useEffect(() => {
@@ -249,7 +240,7 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
           </button>
         )}
       />
-      {veilVisible && createPortal(
+      {busy && createPortal(
         <div className={css.veil} style={{ width: veilWidth }}>
           <IconLoadingOutline16 className={css.veilSpinner} size={20} />
           <span className={css.veilText}>{t('nav.switchingTenant')}</span>

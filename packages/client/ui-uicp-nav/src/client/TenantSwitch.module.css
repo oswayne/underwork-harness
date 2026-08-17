@@ -82,8 +82,8 @@
 }
 
 /* Full-sidebar loading veil during tenant switch: an opaque same-fill mask
-   over the whole column (width measured from the layout frame), revealed
-   after a short delay so fast switches never flash it. */
+   over the whole column (width measured from the layout frame), shown for
+   the entire switch so no workspace mutation is ever visible. */
 .veil {
   position: fixed;
   top: 0;
