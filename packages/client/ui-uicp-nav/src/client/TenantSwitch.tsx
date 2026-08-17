@@ -90,7 +90,10 @@ export function TenantSwitch(props: PropsRuntime<'sidebar.footer.action'> & Prop
   const registerApps = async (tenant: Tenant): Promise<void> => {
     if (token === undefined) return
     const root = packagesRoot() ?? await resolvePackagesRoot()
-    if (root === undefined) return
+    if (root === undefined) {
+      setError(t('nav.rootMissing'))
+      return
+    }
     const res = await fetch(`${API_BASE}/app-package/list`, {
       headers: { Authorization: token, Tenant: tenant._id },
     })

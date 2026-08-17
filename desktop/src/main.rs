@@ -108,11 +108,10 @@ fn clear_token(state: tauri::State<Token>) {
 /// `app-packages` directory walking up from both the launch cwd and the
 /// executable's own directory (Finder launches run with a root cwd, but the
 /// binary lives inside the repo), overridable with `UICP_APP_PACKAGES_ROOT`.
-#[tauri::command]
-fn app_packages_root() -> Result<String, String> {
+fn resolve_app_packages_root() -> String {
     if let Ok(env) = std::env::var("UICP_APP_PACKAGES_ROOT") {
         if !env.is_empty() {
-            return Ok(env)
+            return env
         }
     }
     let mut starts = Vec::new();
@@ -128,12 +127,29 @@ fn app_packages_root() -> Result<String, String> {
         for ancestor in start.ancestors() {
             let candidate = ancestor.join("app-packages");
             if candidate.is_dir() {
-                return Ok(candidate.to_string_lossy().into_owned())
+                return candidate.to_string_lossy().into_owned()
             }
         }
     }
-    let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
-    Ok(cwd.join("app-packages").to_string_lossy().into_owned())
+    let cwd = std::env::current_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+    cwd.join("app-packages").to_string_lossy().into_owned()
+}
+
+#[tauri::command]
+fn app_packages_root() -> Result<String, String> {
+    Ok(resolve_app_packages_root())
+}
+
+/// Percent-encode a path for use as one URL query value (unreserved + `/`).
+fn encode_query(value: &str) -> String {
+    let mut out = String::with_capacity(value.len());
+    for byte in value.bytes() {
+        match byte {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'/' | b'-' | b'_' | b'.' => out.push(byte as char),
+            _ => out.push_str(&format!("%{byte:02X}")),
+        }
+    }
+    out
 }
 
 fn main() {
@@ -226,6 +242,12 @@ fn main() {
                         std::thread::sleep(Duration::from_millis(500));
                     }
                     if ready {
+                        // Hand the resolved app-packages root to the web UI
+                        // through the page URL: the sidecar origin has no
+                        // reliable IPC channel otherwise.
+                        let root = encode_query(&resolve_app_packages_root());
+                        let target = format!("{}?uicp-app-packages-root={root}", target.as_str());
+                        let target = tauri::Url::parse(&target).unwrap_or(parsed.clone());
                         if let Some(window) = handle.get_webview_window("main") {
                             let _ = window.navigate(target);
                         }

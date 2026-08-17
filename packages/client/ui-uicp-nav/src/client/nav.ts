@@ -91,13 +91,30 @@ export function setPackagesRoot(root: string): void {
   state.packagesRoot = root
 }
 
+/** App-packages root passed by the desktop shell through the page URL. */
+function queryPackagesRoot(): string | undefined {
+  try {
+    const value = new URLSearchParams(window.location.search).get('uicp-app-packages-root')
+    return value !== null && value !== '' ? value : undefined
+  } catch {
+    // Non-browser environment: no URL to parse.
+    return undefined
+  }
+}
+
 /**
  * Resolve the app-packages root from the shell, remembering it locally.
- * The Tauri bridge may not be ready on first render, so a failed invoke is
- * retried; an unavailable bridge leaves the root unset (plain-browser mode).
+ * The desktop shell passes it through the page URL; the Tauri bridge is a
+ * fallback for plain-browser development. A failed invoke is retried; an
+ * unavailable shell leaves the root unset.
  * @returns the resolved root, or undefined when the shell is unavailable.
  */
 export async function resolvePackagesRoot(): Promise<string | undefined> {
+  const fromQuery = queryPackagesRoot()
+  if (fromQuery !== undefined) {
+    setPackagesRoot(fromQuery)
+    return fromQuery
+  }
   const core = window.__TAURI__?.core
   if (core !== undefined) {
     for (let attempt = 0; attempt < 3; attempt += 1) {

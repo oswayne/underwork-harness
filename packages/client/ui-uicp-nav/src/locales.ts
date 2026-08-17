@@ -8,6 +8,7 @@ export const zh = {
   'login.submit': '登录',
   'nav.tenant': '当前租户',
   'nav.rootUnavailable': '应用包目录不可用（{root}）',
+  'nav.rootMissing': '无法获取应用包根目录',
   'nav.sessions': '会话',
 }
 
@@ -22,5 +23,6 @@ export const en: Record<NavKey, string> = {
   'login.submit': 'Sign in',
   'nav.tenant': 'Tenant',
   'nav.rootUnavailable': 'App package directory unavailable ({root})',
+  'nav.rootMissing': 'Cannot resolve the app-package root',
   'nav.sessions': 'Sessions',
 }

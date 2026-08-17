@@ -64,6 +64,14 @@ describe('ui-uicp-nav nav state', () => {
     expect(invoke).toHaveBeenCalledWith('app_packages_root')
   })
 
+  it('prefers the app-packages root passed through the page URL', async () => {
+    window.history.replaceState({}, '', '/?uicp-app-packages-root=/url/root')
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => '/shell/root') } }
+    await resolvePackagesRoot()
+    expect(packagesRoot()).toBe('/url/root')
+    window.history.replaceState({}, '', '/')
+  })
+
   it('keeps the root unset without a shell bridge', async () => {
     await resolvePackagesRoot()
     expect(packagesRoot()).toBeUndefined()
