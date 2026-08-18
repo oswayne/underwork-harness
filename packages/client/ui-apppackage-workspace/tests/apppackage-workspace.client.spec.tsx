@@ -9,6 +9,7 @@ import { PreviewPanel } from '../src/client/PreviewPanel.tsx'
 import { EditorPanel } from '../src/client/EditorPanel.tsx'
 import { JsonPanel } from '../src/client/JsonPanel.tsx'
 import { TestsPanel } from '../src/client/TestsPanel.tsx'
+import { VersionsPanel } from '../src/client/VersionsPanel.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh] ?? key) as never
 
@@ -52,7 +53,7 @@ describe('AppPackageWorkspace', () => {
     expect(screen.getByRole('tab', { name: '编辑' }).hasAttribute('disabled')).toBe(false)
     expect(screen.getByRole('tab', { name: 'JSON' }).hasAttribute('disabled')).toBe(false)
     expect(screen.getByRole('tab', { name: '测试' }).hasAttribute('disabled')).toBe(false)
-    expect(screen.getByRole('tab', { name: '版本' }).hasAttribute('disabled')).toBe(true)
+    expect(screen.getByRole('tab', { name: '版本' }).hasAttribute('disabled')).toBe(false)
     await waitFor(() => {
       expect(mount).toHaveBeenCalled()
     })
@@ -270,5 +271,32 @@ describe('AppPackageWorkspace', () => {
     expect(post).toBeDefined()
     const raw = post?.[1]?.body
     expect(JSON.parse(typeof raw === 'string' ? raw : '{}')).toEqual({ cwd: '/root/cszh/dsh-test' })
+  })
+
+  it('creates, lists, and restores package versions', async () => {
+    let snapshotted = false
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+      const raw = init?.body
+      const body = JSON.parse(typeof raw === 'string' ? raw : '{}') as { action: string; version?: string }
+      if (body.action === 'snapshot') {
+        snapshotted = true
+        return new Response(JSON.stringify({ status: 0, data: { ok: true, action: 'snapshot', version: 'v1' } }))
+      }
+      if (body.action === 'restore') {
+        return new Response(JSON.stringify({ status: 0, data: { ok: true, action: 'restore', version: 'v1', restored: 4 } }))
+      }
+      return new Response(JSON.stringify({
+        status: 0,
+        data: { ok: true, action: 'list', versions: snapshotted ? ['v1'] : [] },
+      }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<VersionsPanel cwd="/root/cszh/dsh-test" t={t} />)
+    expect(await screen.findByText('暂无版本快照')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: '创建快照' }))
+    expect(await screen.findByText(/已创建版本: v1/)).toBeTruthy()
+    expect(await screen.findByText('v1')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: '恢复' }))
+    expect(await screen.findByText('已恢复 4 个文件')).toBeTruthy()
   })
 })

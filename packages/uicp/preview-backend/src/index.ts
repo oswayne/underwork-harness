@@ -361,6 +361,128 @@ export async function testHandler(
   }
 }
 
+/** Top-level product directories excluded from version snapshots. */
+const EXCLUDED_TOP_LEVEL = new Set(['tests', 'versions'])
+
+/** Recursively collect product files, excluding tests/, versions/, and nested data session dirs. */
+async function collectProductFiles(dir: string, rel = ''): Promise<Map<string, string>> {
+  const files = new Map<string, string>()
+  const fullDir = rel === '' ? dir : join(dir, rel)
+  for (const entry of await readdir(fullDir)) {
+    const childRel = rel === '' ? entry : `${rel}/${entry}`
+    const top = String(childRel.split('/')[0])
+    if (EXCLUDED_TOP_LEVEL.has(top)) continue
+    if (top === 'data' && childRel.split('/').length > 2) continue
+    const childPath = join(fullDir, entry)
+    if (statSync(childPath).isDirectory()) {
+      for (const [path, content] of await collectProductFiles(dir, childRel)) files.set(path, content)
+    } else {
+      files.set(childRel, await readFile(childPath, 'utf8'))
+    }
+  }
+  return files
+}
+
+/** Snapshot product files into `versions/<name>`; returns the version id. */
+async function snapshotPackage(dir: string, name?: string): Promise<string> {
+  const version = name ?? new Date().toISOString().replace(/[:.]/g, '-')
+  const versionRoot = join(dir, 'versions', version)
+  const files = await collectProductFiles(dir)
+  for (const [rel, content] of files) {
+    const target = join(versionRoot, rel)
+    await mkdir(dirname(target), { recursive: true })
+    await writeFile(target, content)
+  }
+  return version
+}
+
+/** Restore one version's files over the working directory; returns file count. */
+async function restorePackage(dir: string, version: string): Promise<number> {
+  const versionRoot = join(dir, 'versions', version)
+  if (!existsSync(versionRoot)) throw new Error(`version not found: ${version}`)
+  const files = await collectProductFiles(versionRoot)
+  let count = 0
+  for (const [rel, content] of files) {
+    const target = join(dir, rel)
+    await mkdir(dirname(target), { recursive: true })
+    await writeFile(target, content)
+    count += 1
+  }
+  return count
+}
+
+/** List version directories, newest first; empty when none exist. */
+async function listPackageVersions(dir: string): Promise<string[]> {
+  const versionsRoot = join(dir, 'versions')
+  if (!existsSync(versionsRoot)) return []
+  const versions: string[] = []
+  for (const entry of await readdir(versionsRoot)) {
+    if (statSync(join(versionsRoot, entry)).isDirectory()) versions.push(entry)
+  }
+  return versions.sort().reverse()
+}
+
+/**
+ * Handle `POST /uicp/preview/version`: snapshot, list, or restore local
+ * app-package versions, answering `{ status, data }` with the tool-shaped
+ * result.
+ * @param req - the incoming POST with `{ cwd, action, version? }`.
+ * @param res - the response.
+ * @param root - the app-packages root for path validation.
+ */
+export async function versionHandler(
+  req: IncomingMessage,
+  res: ServerResponse,
+  root: string,
+): Promise<void> {
+  const json = (status: number, body: unknown): void => {
+    res.writeHead(status, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(body))
+  }
+  if (req.method !== 'POST') {
+    json(405, { status: 405, msg: 'method not allowed', data: null })
+    return
+  }
+  let body: { cwd?: unknown; action?: unknown; version?: unknown }
+  try {
+    const parsed = await readJsonBody(req)
+    if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
+    body = parsed
+  } catch (error) {
+    json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
+    return
+  }
+  const dir = resolvePackageDir(root, typeof body.cwd === 'string' ? body.cwd : undefined)
+  if (dir === undefined) {
+    json(400, { status: 400, msg: 'cwd must be an app-package directory under the app-packages root', data: null })
+    return
+  }
+  const action = body.action
+  try {
+    if (action === 'list') {
+      json(200, { status: 0, data: { ok: true, action: 'list', versions: await listPackageVersions(dir) } })
+      return
+    }
+    if (action === 'snapshot') {
+      const version = await snapshotPackage(dir, typeof body.version === 'string' ? body.version : undefined)
+      json(200, { status: 0, data: { ok: true, action: 'snapshot', version } })
+      return
+    }
+    if (action === 'restore') {
+      if (typeof body.version !== 'string' || body.version === '') {
+        json(400, { status: 400, msg: 'version is required for restore', data: null })
+        return
+      }
+      const restored = await restorePackage(dir, body.version)
+      json(200, { status: 0, data: { ok: true, action: 'restore', version: body.version, restored } })
+      return
+    }
+    json(400, { status: 400, msg: `unknown action: ${String(action)}`, data: null })
+  } catch (error) {
+    json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
+  }
+}
+
 /** First page file in the app-package `pages/` directory. */
 async function firstPageFile(dir: string): Promise<string | undefined> {
   const pageDir = join(dir, 'pages')
@@ -414,6 +536,11 @@ export function apply(ctx: Context, config: Config = {}): void {
           kind: 'exact',
           path: '/uicp/preview/test',
           handler: (req, res) => { void testHandler(req, res, root) },
+        }),
+        ctx.webServer.register({
+          kind: 'exact',
+          path: '/uicp/preview/version',
+          handler: (req, res) => { void versionHandler(req, res, root) },
         }),
       ]
       return () => {

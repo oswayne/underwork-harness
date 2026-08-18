@@ -5,6 +5,7 @@ import { PreviewPanel } from './PreviewPanel.tsx'
 import { EditorPanel } from './EditorPanel.tsx'
 import { JsonPanel } from './JsonPanel.tsx'
 import { TestsPanel } from './TestsPanel.tsx'
+import { VersionsPanel } from './VersionsPanel.tsx'
 import css from './AppPackageWorkspace.module.css'
 
 type TabId = 'preview' | 'editor' | 'json' | 'tests' | 'versions'
@@ -48,8 +49,6 @@ export function AppPackageWorkspace(
             role="tab"
             aria-selected={tab === item.id}
             className={tab === item.id ? css.tabActive : css.tab}
-            disabled={item.id === 'versions'}
-            title={item.id === 'versions' ? t('workspace.m3') : undefined}
             onClick={() => { setTab(item.id) }}
           >
             {t(item.key)}
@@ -76,6 +75,6 @@ export function AppPackageWorkspace(
     if (tab === 'editor') return <EditorPanel cwd={cwd} t={t} />
     if (tab === 'json') return <JsonPanel cwd={cwd} t={t} />
     if (tab === 'tests') return <TestsPanel cwd={cwd} t={t} />
-    return <div className={css.hint}>{t('workspace.m3')}</div>
+    return <VersionsPanel cwd={cwd} t={t} />
   }
 }

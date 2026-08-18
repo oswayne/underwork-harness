@@ -218,6 +218,52 @@
   font-weight: 600;
 }
 
+.versionList {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  padding: 8px 12px;
+  list-style: none;
+}
+
+.versionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.versionName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.versionRestore {
+  appearance: none;
+  flex: none;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background: transparent;
+  padding: 4px 12px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-primary);
+  cursor: pointer;
+}
+
+.versionRestore:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .loading,
 .hint {
   padding: 24px;

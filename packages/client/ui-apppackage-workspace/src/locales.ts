@@ -23,6 +23,13 @@ export const zh = {
   'tests.passed': '通过',
   'tests.failed': '失败',
   'tests.skipped': '跳过',
+  'versions.create': '创建快照',
+  'versions.creating': '正在创建…',
+  'versions.restore': '恢复',
+  'versions.restored': '已恢复',
+  'versions.created': '已创建版本',
+  'versions.files': '个文件',
+  'versions.empty': '暂无版本快照',
 }
 
 /** English dictionary. */
@@ -51,4 +58,11 @@ export const en: Record<AppPackageKey, string> = {
   'tests.passed': 'Passed',
   'tests.failed': 'Failed',
   'tests.skipped': 'Skipped',
+  'versions.create': 'Create snapshot',
+  'versions.creating': 'Creating…',
+  'versions.restore': 'Restore',
+  'versions.restored': 'Restored',
+  'versions.created': 'Created version',
+  'versions.files': 'files',
+  'versions.empty': 'No versions yet',
 }

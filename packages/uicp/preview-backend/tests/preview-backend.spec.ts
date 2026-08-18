@@ -8,7 +8,7 @@ import {
   apply as applyInvariant, inject as invariantInject, name as invariantName,
 } from '../src/invariant.ts'
 import {
-  pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler,
+  pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler, versionHandler,
 } from '../src/index.ts'
 
 let dir: string | undefined
@@ -231,5 +231,47 @@ describe('testHandler', () => {
     const badBody = fakeRes()
     await testHandler(fakePostReq('/uicp/preview/test', 'x'), badBody.res, join(app, '..'))
     expect(badBody.captured.statusCode).toBe(400)
+  })
+})
+
+describe('versionHandler', () => {
+  it('snapshots, lists, and restores the package files', async () => {
+    const app = await packageDir()
+    const snap = fakeRes()
+    await versionHandler(fakePostReq('/uicp/preview/version', { cwd: app, action: 'snapshot' }), snap.res, join(app, '..'))
+    expect(snap.captured.statusCode).toBe(200)
+    const snapBody = JSON.parse(snap.captured.body) as { status: number; data: { version: string } }
+    expect(snapBody.status).toBe(0)
+    expect(snapBody.data.version).toBeTruthy()
+
+    const list = fakeRes()
+    await versionHandler(fakePostReq('/uicp/preview/version', { cwd: app, action: 'list' }), list.res, join(app, '..'))
+    const listBody = JSON.parse(list.captured.body) as { data: { versions: string[] } }
+    expect(listBody.data.versions).toEqual([snapBody.data.version])
+
+    await writeFile(join(app, 'pages', 'order-list.json'), JSON.stringify({ type: 'page', title: '被改坏', body: [] }))
+    const restore = fakeRes()
+    await versionHandler(
+      fakePostReq('/uicp/preview/version', { cwd: app, action: 'restore', version: snapBody.data.version }),
+      restore.res,
+      join(app, '..'),
+    )
+    const restoreBody = JSON.parse(restore.captured.body) as { data: { restored: number } }
+    expect(restoreBody.data.restored).toBeGreaterThan(0)
+    const page = JSON.parse(await readFile(join(app, 'pages', 'order-list.json'), 'utf8')) as { title: string }
+    expect(page.title).toBe('订单管理')
+  })
+
+  it('rejects GET, unknown actions, and restore without a version', async () => {
+    const app = await packageDir()
+    const get = fakeRes()
+    await versionHandler(fakeReq('/uicp/preview/version'), get.res, join(app, '..'))
+    expect(get.captured.statusCode).toBe(405)
+    const bad = fakeRes()
+    await versionHandler(fakePostReq('/uicp/preview/version', { cwd: app, action: 'nope' }), bad.res, join(app, '..'))
+    expect(bad.captured.statusCode).toBe(400)
+    const noVersion = fakeRes()
+    await versionHandler(fakePostReq('/uicp/preview/version', { cwd: app, action: 'restore' }), noVersion.res, join(app, '..'))
+    expect(noVersion.captured.statusCode).toBe(400)
   })
 })
