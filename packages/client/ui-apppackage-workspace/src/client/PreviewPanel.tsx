@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
-import { makeFixtureFetcher, type PreviewFixtures } from './fixture-fetcher.ts'
+import { makeSandboxFetcher } from './sandbox-fetcher.ts'
 import { loadPreviewBundle } from './preview-bundle.ts'
 import css from './AppPackageWorkspace.module.css'
 
@@ -45,7 +45,7 @@ export function PreviewPanel({ cwd, t }: PreviewPanelProps) {
         const response = await fetch(`/uicp/preview/page?${query}`)
         const body = (await response.json()) as {
           status: number
-          data?: { schema: unknown; fixtures?: PreviewFixtures; pages?: PageInfo[] }
+          data?: { schema: unknown; fixtures?: unknown; pages?: PageInfo[] }
           msg?: string
         }
         if (body.status !== 0 || body.data === undefined) {
@@ -57,7 +57,7 @@ export function PreviewPanel({ cwd, t }: PreviewPanelProps) {
         const container = host.current
         if (container === null) return
         handle = api.mountEurekaPreview(container, body.data.schema, {
-          fetcher: makeFixtureFetcher(body.data.fixtures ?? {}),
+          fetcher: makeSandboxFetcher(cwd),
         })
         setPages(body.data.pages ?? [])
         setCurrentPage(wanted ?? body.data.pages?.[0]?.id)

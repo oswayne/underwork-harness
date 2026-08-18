@@ -77,6 +77,8 @@ export function buildFilter(
     if (value === undefined || value === '') continue
     const name = normalizeKey(key)
     const field = fields.get(name)
+    // Mirror uicp DataQueryApp: unknown fields are skipped, never like-filtered.
+    if (field === undefined) continue
     const separator = value.indexOf('>')
     if (separator === -1) {
       filter[name] = condition(field, 'like', value)

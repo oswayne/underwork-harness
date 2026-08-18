@@ -189,12 +189,13 @@ describe('query engine', () => {
   const fields = new Map(ORDER_ENTITY.fields.map(field => [field.name, field]))
 
   it('builds filters for like, operators, and unknown-operator fallback', () => {
-    expect(buildFilter({ name: 'alpha' }, fields)).toEqual({ name: /alpha/i })
+    expect(buildFilter({ orderNo: 'SO-1' }, fields)).toEqual({ orderNo: /SO-1/i })
     expect(buildFilter({ amount: 'gt>15' }, fields)).toEqual({ amount: { $gt: 15 } })
     expect(buildFilter({ amount: 'bogus>1' }, fields)).toEqual({ amount: /bogus>1/i })
     expect(buildFilter({ amount: 'in>10,30' }, fields)).toEqual({ amount: { $in: [10, 30] } })
-    expect(buildFilter({ 'a[b]': 'x' }, fields)).toEqual({ 'a.b': /x/i })
     expect(buildFilter({ amount: 'gt>', page: '1', _sort: 'x' }, fields)).toEqual({})
+    expect(buildFilter({ 'a[b]': 'x' }, fields)).toEqual({})
+    expect(buildFilter({ orderNo: 'SO-1', missing: 'x' }, fields)).toEqual({ orderNo: /SO-1/i })
   })
 
   it('matches records against operators', () => {
@@ -242,8 +243,8 @@ describe('query engine', () => {
     expect(parseFieldValue('日期', '2026-01-02')).toBeInstanceOf(Date)
     expect(parseFieldValue('日期', 'not-a-date')).toBe('not-a-date')
     expect(parseFieldValue(undefined, 'plain')).toBe('plain')
-    const notLike = buildFilter({ name: 'notLike>alpha' }, fields).name as { $not: RegExp }
-    expect(matches(rows[1]!, { name: notLike })).toBe(true)
+    const notLike = buildFilter({ amount: 'notLike>15' }, fields).amount as { $not: RegExp }
+    expect(matches(rows[1]!, { amount: notLike })).toBe(true)
     expect(matches(rows[0]!, { name: { $not: 'beta' } })).toBe(true)
     expect(matches(rows[0]!, { amount: { $in: [] } })).toBe(false)
     expect(matches(rows[0]!, { amount: { $nin: [] } })).toBe(true)

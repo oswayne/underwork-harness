@@ -8,7 +8,7 @@ import {
   apply as applyInvariant, inject as invariantInject, name as invariantName,
 } from '../src/invariant.ts'
 import {
-  pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler, versionHandler,
+  entityHandler, pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler, versionHandler,
 } from '../src/index.ts'
 
 let dir: string | undefined
@@ -273,5 +273,33 @@ describe('versionHandler', () => {
     const noVersion = fakeRes()
     await versionHandler(fakePostReq('/uicp/preview/version', { cwd: app, action: 'restore' }), noVersion.res, join(app, '..'))
     expect(noVersion.captured.statusCode).toBe(400)
+  })
+})
+
+describe('entityHandler', () => {
+  it('serves CRUD against the workspace sandbox seeded with fixtures', async () => {
+    const app = await packageDir()
+    const list = fakeRes()
+    await entityHandler(fakeReq(`/uicp/preview/entity/order/page?cwd=${encodeURIComponent(app)}`), list.res, join(app, '..'))
+    const listBody = JSON.parse(list.captured.body) as { status: number; data: { total: number } }
+    expect(listBody.status).toBe(0)
+    expect(listBody.data.total).toBe(1)
+    const insert = fakeRes()
+    await entityHandler(
+      fakePostReq(`/uicp/preview/entity/order?cwd=${encodeURIComponent(app)}`, { orderNo: 'SO-002', amount: 3 }),
+      insert.res,
+      join(app, '..'),
+    )
+    expect(JSON.parse(insert.captured.body) as { status: number }).toMatchObject({ status: 0 })
+    const list2 = fakeRes()
+    await entityHandler(fakeReq(`/uicp/preview/entity/order/page?cwd=${encodeURIComponent(app)}`), list2.res, join(app, '..'))
+    expect((JSON.parse(list2.captured.body) as { data: { total: number } }).data.total).toBe(2)
+  })
+
+  it('rejects a cwd outside the root', async () => {
+    const app = await packageDir()
+    const bad = fakeRes()
+    await entityHandler(fakeReq('/uicp/preview/entity/order/list?cwd=/etc'), bad.res, join(app, '..'))
+    expect(bad.captured.statusCode).toBe(400)
   })
 })

@@ -290,6 +290,39 @@ export async function savePageHandler(
   }
 }
 
+/** One sandbox setup: router plus the loaded package for case generation. */
+interface SandboxSetup {
+  router: SandboxRouter
+  package: Awaited<ReturnType<typeof loadPackage>>
+  fixtures: ReturnType<typeof loadFixtures>
+}
+
+/** Build an in-process sandbox setup for one package, seeded with fixtures. */
+async function createSandboxSetup(dir: string): Promise<SandboxSetup> {
+  const pkg = loadPackage(dir)
+  const { entities, funcs } = pkg
+  const fixtures = loadFixtures(dir)
+  const store = new SandboxStore(new MemoryKvBackend(), entities)
+  for (const [identifier, records] of fixtures) {
+    for (const record of records) await store.insert(identifier, record)
+  }
+  const executor = new SandboxExecutor(store, funcs)
+  return { router: new SandboxRouter({ store, executor, entities, funcs }), package: pkg, fixtures }
+}
+
+/** Per-package preview routers so CRUD edits persist for the workspace session. */
+const previewRouters = new Map<string, Promise<SandboxSetup>>()
+
+/** Resolve the cached preview router for one package directory. */
+function getPreviewRouter(dir: string): Promise<SandboxRouter> {
+  let router = previewRouters.get(dir)
+  if (router === undefined) {
+    router = createSandboxSetup(dir)
+    previewRouters.set(dir, router)
+  }
+  return router.then(setup => setup.router)
+}
+
 /**
  * Run the generated app-package test suite against an in-process sandbox and
  * persist the cases to `tests/apppackage.cases.json`.
@@ -303,15 +336,8 @@ async function runPackageTests(dir: string): Promise<{
   failed: number
   results: CaseResult[]
 }> {
-  const { entities, funcs } = loadPackage(dir)
-  const fixtures = loadFixtures(dir)
-  const store = new SandboxStore(new MemoryKvBackend(), entities)
-  for (const [identifier, records] of fixtures) {
-    for (const record of records) await store.insert(identifier, record)
-  }
-  const executor = new SandboxExecutor(store, funcs)
-  const router = new SandboxRouter({ store, executor, entities, funcs })
-  const cases = generateCases(entities, funcs, fixtures)
+  const { router, package: pkg, fixtures } = await createSandboxSetup(dir)
+  const cases = generateCases(pkg.entities, pkg.funcs, fixtures)
   const results = await runSuite(router, cases)
   const passed = results.filter(result => result.passed).length
   const failed = results.length - passed
@@ -356,6 +382,56 @@ export async function testHandler(
   }
   try {
     json(200, { status: 0, data: await runPackageTests(dir) })
+  } catch (error) {
+    json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
+  }
+}
+
+/**
+ * Handle workspace sandbox data requests on `/uicp/preview/entity/<path>`:
+ * CRUD, query operators, stats/tree, and func execution against the current
+ * package's in-process sandbox, with `cwd` taken from the query string.
+ * @param req - the incoming request.
+ * @param res - the response.
+ * @param root - the app-packages root for path validation.
+ */
+export async function entityHandler(
+  req: IncomingMessage,
+  res: ServerResponse,
+  root: string,
+): Promise<void> {
+  const json = (status: number, body: unknown): void => {
+    res.writeHead(status, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(body))
+  }
+  try {
+    const url = new URL(req.url ?? '/', 'http://sandbox.local')
+    const dir = resolvePackageDir(root, url.searchParams.get('cwd') ?? undefined)
+    if (dir === undefined) {
+      json(400, { status: 400, msg: 'cwd must be an app-package directory under the app-packages root', data: null })
+      return
+    }
+    const query: Record<string, string | string[] | undefined> = {}
+    for (const key of url.searchParams.keys()) {
+      if (key === 'cwd') continue
+      const values = url.searchParams.getAll(key)
+      query[key] = values.length === 1 ? values[0] : values
+    }
+    let body: unknown
+    try {
+      body = await readJsonBody(req)
+    } catch {
+      body = undefined
+    }
+    const router = await getPreviewRouter(dir)
+    const response = await router.handle({
+      method: req.method ?? 'GET',
+      path: url.pathname.replace(/^\/uicp\/preview\/entity/, ''),
+      query,
+      body,
+      session: 'uicp_workspace',
+    })
+    json(response.statusCode, response.body)
   } catch (error) {
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
@@ -541,6 +617,11 @@ export function apply(ctx: Context, config: Config = {}): void {
           kind: 'exact',
           path: '/uicp/preview/version',
           handler: (req, res) => { void versionHandler(req, res, root) },
+        }),
+        ctx.webServer.register({
+          kind: 'prefix',
+          path: '/uicp/preview/entity',
+          handler: (req, res) => { void entityHandler(req, res, root) },
         }),
       ]
       return () => {
