@@ -81,3 +81,24 @@ BASE_URL=<平台服务地址> JWT=<平台Token> TENANT_ID=<租户ObjectId> app-p
 The script creates the example app package in "App → Entity → fields → functions → menu → page → fixture data" order and prints verification commands at the end. The platform-side manual happy-path fallback: open the order list page, query/create/delete, execute the order summary and mark-complete functions.
 
 The script is idempotent: it reuses existing records by identifier/path and only creates missing items; fixture data is written only when the entity has no records. To rebuild from scratch, delete the whole App first (`DELETE /app-package/:id` cascades to every product under it).
+
+## Upstream sync handbook
+
+The local app-package contract depends on three upstream sources; keep them in
+sync as follows.
+
+1. **Eureka page schema** (`data/eureka-schema.json` in `tool-apppackage-validate`):
+   after a Eureka upgrade run `pnpm --filter @deepseek-ai/dsh-tool-apppackage-validate sync:eureka-schema`
+   (`EUREKA_ROOT` overrides the checkout path), then re-run the validation
+   package tests. The synced version is recorded in `data/eureka-version.json`.
+2. **Page-schema divergences**: when a platform-produced page fails
+   `apppackage_validate`, file a report under the Eureka checkout
+   `doc/codex/YYYY-MM-DD-<topic>.md` (following the existing report format) for
+   the Eureka team, and apply the fix by syncing the updated schema.
+3. **Platform behavior divergences**: run the behavior matrix
+   (`packages/uicp/contract-matrix`) against the platform and report divergences
+   to the platform maintainers; the sandbox stays contract-faithful until the
+   platform converges.
+4. **Platform write boundary**: during development and verification, create
+   records only inside the test tenant's `dsh-test` app package; never operate
+   on other tenants.

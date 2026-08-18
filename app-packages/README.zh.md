@@ -81,3 +81,19 @@ BASE_URL=<平台服务地址> JWT=<平台Token> TENANT_ID=<租户ObjectId> app-p
 脚本按"App → Entity → 字段 → 函数 → 菜单 → 页面 → fixture 数据"顺序创建示例应用包，最后打印验证命令。平台侧人工走一遍快乐路径兜底：打开订单列表页、查询/新增/删除、执行订单汇总与标记完成函数。
 
 脚本幂等：按 identifier/路径复用已有记录，只创建缺失项；fixture 仅在实体无数据时写入。如需从零重建，先删除整个 App（`DELETE /app-package/:id` 级联删除下属产物）。
+
+## 上游同步手册
+
+本地应用包契约依赖三个上游来源，按以下方式保持同步。
+
+1. **Eureka 页面 schema**（`tool-apppackage-validate` 的 `data/eureka-schema.json`）：
+   Eureka 升级后运行 `pnpm --filter @deepseek-ai/dsh-tool-apppackage-validate sync:eureka-schema`
+   （`EUREKA_ROOT` 可覆盖检出路径），再重跑校验包测试；同步版本记录在
+   `data/eureka-version.json`。
+2. **页面 schema 差异**：当平台产出的页面无法通过 `apppackage_validate` 时，
+   在 Eureka 检出目录 `doc/codex/YYYY-MM-DD-<主题>.md` 按既有报告格式存档，
+   交由 Eureka 团队修复；修复后同步更新后的 schema 快照。
+3. **平台行为差异**：用行为矩阵（`packages/uicp/contract-matrix`）对比平台，
+   将差异反馈平台维护方；平台收敛前沙盒保持契约忠实。
+4. **平台写入边界**：开发与验证阶段只允许在测试租户的 `dsh-test` 应用包内
+   创建记录，绝不操作其他租户。
