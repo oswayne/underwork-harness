@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import { Readable } from 'node:stream'
@@ -8,7 +8,7 @@ import {
   apply as applyInvariant, inject as invariantInject, name as invariantName,
 } from '../src/invariant.ts'
 import {
-  pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler,
+  pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler,
 } from '../src/index.ts'
 
 let dir: string | undefined
@@ -41,6 +41,7 @@ async function packageDir(): Promise<string> {
   await mkdir(join(dir, 'pages'))
   await mkdir(join(dir, 'entities'))
   await mkdir(join(dir, 'data'))
+  await mkdir(join(dir, 'funcs'))
   await writeFile(join(dir, 'app.json'), JSON.stringify({
     name: 'App', identifier: basename(dir), description: '', version: '1.0.0', available: true, hidden: false,
     type: '官方', url: '', portable: true, category: '基础', runtime: '混合', requireRoles: '', requirePermissions: '',
@@ -198,5 +199,37 @@ describe('savePageHandler', () => {
     const badValue = fakeRes()
     await savePageHandler(fakePostReq('/uicp/preview/page', { cwd: app, page: 'order-list', value: { type: 'crud' } }), badValue.res, join(app, '..'))
     expect(badValue.captured.statusCode).toBe(400)
+  })
+})
+
+describe('testHandler', () => {
+  it('runs the generated suite against the local sandbox and persists the cases', async () => {
+    const app = await packageDir()
+    const { res, captured } = fakeRes()
+    await testHandler(fakePostReq('/uicp/preview/test', { cwd: app }), res, join(app, '..'))
+    expect(captured.statusCode).toBe(200)
+    const body = JSON.parse(captured.body) as {
+      status: number
+      data: { ok: boolean; cases: number; passed: number; failed: number }
+    }
+    expect(body.status).toBe(0)
+    expect(body.data.cases).toBeGreaterThan(0)
+    expect(body.data.passed).toBe(body.data.cases)
+    expect(body.data.ok).toBe(true)
+    const casesFile = join(app, 'tests', 'apppackage.cases.json')
+    expect(JSON.parse(await readFile(casesFile, 'utf8'))).toBeInstanceOf(Array)
+  })
+
+  it('rejects GET, a bad cwd, and a non-object body', async () => {
+    const app = await packageDir()
+    const get = fakeRes()
+    await testHandler(fakeReq('/uicp/preview/test'), get.res, join(app, '..'))
+    expect(get.captured.statusCode).toBe(405)
+    const badCwd = fakeRes()
+    await testHandler(fakePostReq('/uicp/preview/test', { cwd: '/etc' }), badCwd.res, join(app, '..'))
+    expect(badCwd.captured.statusCode).toBe(400)
+    const badBody = fakeRes()
+    await testHandler(fakePostReq('/uicp/preview/test', 'x'), badBody.res, join(app, '..'))
+    expect(badBody.captured.statusCode).toBe(400)
   })
 })

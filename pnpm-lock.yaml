@@ -8096,6 +8096,12 @@ importers:
       '@deepseek-ai/dsh-invariants':
         specifier: workspace:^
         version: link:../../runtime-diagnostics/invariants
+      '@deepseek-ai/dsh-sandbox-server':
+        specifier: workspace:^
+        version: link:../sandbox-server
+      '@deepseek-ai/dsh-tool-apppackage-test':
+        specifier: workspace:^
+        version: link:../tool-apppackage-test
       '@deepseek-ai/dsh-tool-apppackage-validate':
         specifier: workspace:^
         version: link:../tool-apppackage-validate

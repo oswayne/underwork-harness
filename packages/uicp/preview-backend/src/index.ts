@@ -8,13 +8,20 @@
  */
 
 import { createRequire } from 'node:module'
-import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
 import { basename, dirname, join, resolve, sep } from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-host-webserver'
 import { validatePackage, type Issue } from '@deepseek-ai/dsh-tool-apppackage-validate/src/validate.ts'
+import {
+  loadPackage, MemoryKvBackend, SandboxExecutor, SandboxRouter, SandboxStore,
+} from '@deepseek-ai/dsh-sandbox-server'
+import { generateCases } from '@deepseek-ai/dsh-tool-apppackage-test/src/cases.ts'
+import { runSuite } from '@deepseek-ai/dsh-tool-apppackage-test/src/runner.ts'
+import { loadFixtures } from '@deepseek-ai/dsh-tool-apppackage-test/src/index.ts'
+import type { CaseResult } from '@deepseek-ai/dsh-tool-apppackage-test/src/runner.ts'
 
 export const name = 'uicp-preview-backend'
 export const inject = ['webServer']
@@ -283,6 +290,77 @@ export async function savePageHandler(
   }
 }
 
+/**
+ * Run the generated app-package test suite against an in-process sandbox and
+ * persist the cases to `tests/apppackage.cases.json`.
+ * @param dir - the app-package directory.
+ * @returns pass counts plus per-case outcomes.
+ */
+async function runPackageTests(dir: string): Promise<{
+  ok: boolean
+  cases: number
+  passed: number
+  failed: number
+  results: CaseResult[]
+}> {
+  const { entities, funcs } = loadPackage(dir)
+  const fixtures = loadFixtures(dir)
+  const store = new SandboxStore(new MemoryKvBackend(), entities)
+  for (const [identifier, records] of fixtures) {
+    for (const record of records) await store.insert(identifier, record)
+  }
+  const executor = new SandboxExecutor(store, funcs)
+  const router = new SandboxRouter({ store, executor, entities, funcs })
+  const cases = generateCases(entities, funcs, fixtures)
+  const results = await runSuite(router, cases)
+  const passed = results.filter(result => result.passed).length
+  const failed = results.length - passed
+  await mkdir(join(dir, 'tests'), { recursive: true })
+  await writeFile(join(dir, 'tests', 'apppackage.cases.json'), `${JSON.stringify(cases, null, 2)}\n`)
+  return { ok: failed === 0, cases: cases.length, passed, failed, results }
+}
+
+/**
+ * Handle `POST /uicp/preview/test`: run the package test suite and answer
+ * `{ status, data: { ok, cases, passed, failed, results } }`.
+ * @param req - the incoming POST with `{ cwd }`.
+ * @param res - the response.
+ * @param root - the app-packages root for path validation.
+ */
+export async function testHandler(
+  req: IncomingMessage,
+  res: ServerResponse,
+  root: string,
+): Promise<void> {
+  const json = (status: number, body: unknown): void => {
+    res.writeHead(status, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(body))
+  }
+  if (req.method !== 'POST') {
+    json(405, { status: 405, msg: 'method not allowed', data: null })
+    return
+  }
+  let body: { cwd?: unknown }
+  try {
+    const parsed = await readJsonBody(req)
+    if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
+    body = parsed
+  } catch (error) {
+    json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
+    return
+  }
+  const dir = resolvePackageDir(root, typeof body.cwd === 'string' ? body.cwd : undefined)
+  if (dir === undefined) {
+    json(400, { status: 400, msg: 'cwd must be an app-package directory under the app-packages root', data: null })
+    return
+  }
+  try {
+    json(200, { status: 0, data: await runPackageTests(dir) })
+  } catch (error) {
+    json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
+  }
+}
+
 /** First page file in the app-package `pages/` directory. */
 async function firstPageFile(dir: string): Promise<string | undefined> {
   const pageDir = join(dir, 'pages')
@@ -331,6 +409,11 @@ export function apply(ctx: Context, config: Config = {}): void {
             if (req.method === 'POST') void savePageHandler(req, res, root)
             else void pageHandler(req, res, root)
           },
+        }),
+        ctx.webServer.register({
+          kind: 'exact',
+          path: '/uicp/preview/test',
+          handler: (req, res) => { void testHandler(req, res, root) },
         }),
       ]
       return () => {

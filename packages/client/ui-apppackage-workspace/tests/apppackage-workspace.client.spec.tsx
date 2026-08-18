@@ -8,6 +8,7 @@ import type { AppPackageWorkspaceInjected } from '../src/client/AppPackageWorksp
 import { PreviewPanel } from '../src/client/PreviewPanel.tsx'
 import { EditorPanel } from '../src/client/EditorPanel.tsx'
 import { JsonPanel } from '../src/client/JsonPanel.tsx'
+import { TestsPanel } from '../src/client/TestsPanel.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh] ?? key) as never
 
@@ -50,7 +51,8 @@ describe('AppPackageWorkspace', () => {
     expect(screen.getByRole('tab', { name: '预览' })).toBeTruthy()
     expect(screen.getByRole('tab', { name: '编辑' }).hasAttribute('disabled')).toBe(false)
     expect(screen.getByRole('tab', { name: 'JSON' }).hasAttribute('disabled')).toBe(false)
-    expect(screen.getByRole('tab', { name: '测试' }).hasAttribute('disabled')).toBe(true)
+    expect(screen.getByRole('tab', { name: '测试' }).hasAttribute('disabled')).toBe(false)
+    expect(screen.getByRole('tab', { name: '版本' }).hasAttribute('disabled')).toBe(true)
     await waitFor(() => {
       expect(mount).toHaveBeenCalled()
     })
@@ -241,5 +243,32 @@ describe('AppPackageWorkspace', () => {
     fireEvent.click(screen.getByRole('button', { name: '保存' }))
     expect(await screen.findByText('内容必须是 page schema')).toBeTruthy()
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'POST')).toBe(false)
+  })
+
+  it('runs the package test suite and lists each case outcome', async () => {
+    const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => new Response(JSON.stringify({
+      status: 0,
+      data: {
+        ok: false,
+        cases: 2,
+        passed: 1,
+        failed: 1,
+        results: [
+          { name: 'order: insert', passed: true, message: 'ok' },
+          { name: 'order: duplicate unique', passed: false, message: 'status 400 != 200' },
+        ],
+      },
+    })))
+    vi.stubGlobal('fetch', fetchMock)
+    render(<TestsPanel cwd="/root/cszh/dsh-test" t={t} />)
+    fireEvent.click(screen.getByRole('button', { name: '运行测试' }))
+    await waitFor(() => {
+      expect(screen.getByText(/通过 1\/2/)).toBeTruthy()
+    })
+    expect(screen.getByText(/order: duplicate unique/)).toBeTruthy()
+    const post = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')
+    expect(post).toBeDefined()
+    const raw = post?.[1]?.body
+    expect(JSON.parse(typeof raw === 'string' ? raw : '{}')).toEqual({ cwd: '/root/cszh/dsh-test' })
   })
 })

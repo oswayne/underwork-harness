@@ -4,6 +4,7 @@ import type { AppPackageKey } from '../locales.ts'
 import { PreviewPanel } from './PreviewPanel.tsx'
 import { EditorPanel } from './EditorPanel.tsx'
 import { JsonPanel } from './JsonPanel.tsx'
+import { TestsPanel } from './TestsPanel.tsx'
 import css from './AppPackageWorkspace.module.css'
 
 type TabId = 'preview' | 'editor' | 'json' | 'tests' | 'versions'
@@ -47,8 +48,8 @@ export function AppPackageWorkspace(
             role="tab"
             aria-selected={tab === item.id}
             className={tab === item.id ? css.tabActive : css.tab}
-            disabled={item.id !== 'preview' && item.id !== 'editor' && item.id !== 'json'}
-            title={item.id === 'preview' || item.id === 'editor' || item.id === 'json' ? undefined : t('workspace.m3')}
+            disabled={item.id === 'versions'}
+            title={item.id === 'versions' ? t('workspace.m3') : undefined}
             onClick={() => { setTab(item.id) }}
           >
             {t(item.key)}
@@ -74,6 +75,7 @@ export function AppPackageWorkspace(
     if (tab === 'preview') return <PreviewPanel cwd={cwd} t={t} />
     if (tab === 'editor') return <EditorPanel cwd={cwd} t={t} />
     if (tab === 'json') return <JsonPanel cwd={cwd} t={t} />
+    if (tab === 'tests') return <TestsPanel cwd={cwd} t={t} />
     return <div className={css.hint}>{t('workspace.m3')}</div>
   }
 }

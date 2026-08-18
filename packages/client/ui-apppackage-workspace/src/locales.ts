@@ -18,6 +18,11 @@ export const zh = {
   'editor.saveFailed': '保存失败',
   'json.parseError': 'JSON 解析失败',
   'json.pageError': '内容必须是 page schema',
+  'tests.run': '运行测试',
+  'tests.running': '正在运行…',
+  'tests.passed': '通过',
+  'tests.failed': '失败',
+  'tests.skipped': '跳过',
 }
 
 /** English dictionary. */
@@ -41,4 +46,9 @@ export const en: Record<AppPackageKey, string> = {
   'editor.saveFailed': 'Save failed',
   'json.parseError': 'Invalid JSON',
   'json.pageError': 'Content must be a page schema',
+  'tests.run': 'Run tests',
+  'tests.running': 'Running…',
+  'tests.passed': 'Passed',
+  'tests.failed': 'Failed',
+  'tests.skipped': 'Skipped',
 }

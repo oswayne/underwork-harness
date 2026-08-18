@@ -183,6 +183,41 @@
   white-space: pre;
 }
 
+.testList {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  padding: 8px 12px;
+  list-style: none;
+  font-size: 13px;
+  line-height: 22px;
+}
+
+.testPass,
+.testFail,
+.testSkip {
+  display: flex;
+  gap: 8px;
+}
+
+.testPass {
+  color: var(--dsw-alias-state-success-primary);
+}
+
+.testFail {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.testSkip {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.testMarker {
+  flex: none;
+  font-weight: 600;
+}
+
 .loading,
 .hint {
   padding: 24px;
