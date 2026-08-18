@@ -24,6 +24,9 @@
       "path": "../tool-apppackage-test"
     },
     {
+      "path": "../tool-apppackage-publish"
+    },
+    {
       "path": "../tool-apppackage-validate"
     }
   ]

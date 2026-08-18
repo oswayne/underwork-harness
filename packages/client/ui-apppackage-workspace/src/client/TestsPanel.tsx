@@ -2,6 +2,12 @@ import { useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
 import css from './AppPackageWorkspace.module.css'
 
+declare global {
+  interface Window {
+    __UICP_API_BASE__?: string
+  }
+}
+
 /** One generated case outcome from the workspace test seam. */
 interface CaseResult {
   name: string
@@ -36,12 +42,14 @@ export interface TestsPanelProps {
 export function TestsPanel({ cwd, t }: TestsPanelProps) {
   const [running, setRunning] = useState(false)
   const [result, setResult] = useState<TestResult>()
-  const [error, setError] = useState<string>()
+  const [feedback, setFeedback] = useState<{ text: string; ok: boolean }>()
+  const [confirming, setConfirming] = useState(false)
+  const [publishing, setPublishing] = useState(false)
 
   const run = async (): Promise<void> => {
     if (running) return
     setRunning(true)
-    setError(undefined)
+    setFeedback(undefined)
     setResult(undefined)
     try {
       const response = await fetch('/uicp/preview/test', {
@@ -50,12 +58,68 @@ export function TestsPanel({ cwd, t }: TestsPanelProps) {
         body: JSON.stringify({ cwd }),
       })
       const body = (await response.json()) as { status: number; data?: TestResult; msg?: string }
-      if (body.status !== 0 || body.data === undefined) setError(body.msg ?? 'test run failed')
-      else setResult(body.data)
+      if (body.status !== 0 || body.data === undefined) setFeedback({ text: body.msg ?? 'test run failed', ok: false })
+      else {
+        setResult(body.data)
+        setConfirming(false)
+      }
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason))
+      setFeedback({ text: reason instanceof Error ? reason.message : String(reason), ok: false })
     } finally {
       setRunning(false)
+    }
+  }
+
+  const publish = async (): Promise<void> => {
+    if (publishing) return
+    if (!confirming) {
+      setConfirming(true)
+      return
+    }
+    setConfirming(false)
+    setPublishing(true)
+    setFeedback(undefined)
+    let baseUrl = ''
+    let token: string | undefined
+    let tenantId: string | undefined
+    try {
+      baseUrl = window.__UICP_API_BASE__ ?? ''
+      token = window.localStorage.getItem('uicp.platform.token') ?? undefined
+      tenantId = window.localStorage.getItem('uicp.platform.tenant') ?? undefined
+    } catch {
+      // Storage unavailable: the auth checks below fail with the missing-auth copy.
+    }
+    if (baseUrl === '' || token === undefined || tenantId === undefined) {
+      setFeedback({ text: t('publish.missingAuth'), ok: false })
+      setPublishing(false)
+      return
+    }
+    try {
+      const response = await fetch('/uicp/preview/publish', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ cwd, baseUrl, token, tenantId, adopted: true }),
+      })
+      const body = (await response.json()) as {
+        status: number
+        data?: { ok: boolean; appId: string; created: Record<string, number | boolean> }
+        msg?: string
+      }
+      if (body.status !== 0 || body.data === undefined) {
+        setFeedback({ text: `${t('publish.failed')}: ${body.msg ?? ''}`, ok: false })
+      } else {
+        const created = body.data.created
+        setFeedback({
+          text: `${t('publish.saved')} app=${body.data.appId} `
+            + `created: app=${created.app} entities=${created.entities} fields=${created.fields} `
+            + `funcs=${created.funcs} menu=${created.menu} page=${created.page}`,
+          ok: true,
+        })
+      }
+    } catch (reason) {
+      setFeedback({ text: `${t('publish.failed')}: ${reason instanceof Error ? reason.message : String(reason)}`, ok: false })
+    } finally {
+      setPublishing(false)
     }
   }
 
@@ -70,12 +134,24 @@ export function TestsPanel({ cwd, t }: TestsPanelProps) {
         >
           {running ? t('tests.running') : t('tests.run')}
         </button>
+        {result?.ok === true && (
+          <button
+            type="button"
+            className={css.publishButton}
+            disabled={publishing}
+            onClick={() => { void publish() }}
+          >
+            {publishing ? t('publish.saving') : confirming ? t('publish.confirm') : t('publish.save')}
+          </button>
+        )}
         {result !== undefined && (
           <span className={result.ok ? css.resultOk : css.resultError}>
             {t('tests.passed')} {result.passed}/{result.cases}
           </span>
         )}
-        {error !== undefined && <span className={css.resultError}>{error}</span>}
+        {feedback !== undefined && (
+          <span className={feedback.ok ? css.resultOk : css.resultError}>{feedback.text}</span>
+        )}
       </div>
       {result !== undefined && (
         <ul className={css.testList}>

@@ -30,6 +30,12 @@ export const zh = {
   'versions.created': '已创建版本',
   'versions.files': '个文件',
   'versions.empty': '暂无版本快照',
+  'publish.save': '采纳并保存到平台',
+  'publish.confirm': '再次点击确认',
+  'publish.saving': '正在保存…',
+  'publish.saved': '已保存到平台',
+  'publish.failed': '保存失败',
+  'publish.missingAuth': '缺少登录信息，请重新登录',
 }
 
 /** English dictionary. */
@@ -65,4 +71,10 @@ export const en: Record<AppPackageKey, string> = {
   'versions.created': 'Created version',
   'versions.files': 'files',
   'versions.empty': 'No versions yet',
+  'publish.save': 'Adopt & save',
+  'publish.confirm': 'Confirm again',
+  'publish.saving': 'Saving…',
+  'publish.saved': 'Saved to platform',
+  'publish.failed': 'Save failed',
+  'publish.missingAuth': 'Sign in required',
 }

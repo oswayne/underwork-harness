@@ -12,6 +12,9 @@ import { publishPackage, type PublishSummary } from './publish.ts'
 export const name = 'tool-apppackage-publish'
 export const inject = ['tools']
 
+export { HttpPlatformClient } from './client.ts'
+export { publishPackage, type PublishSummary } from './publish.ts'
+
 /** Pure terminal presentation of the canonical result. */
 export function renderResult(value: PublishSummary): { type: 'text'; text: string }[] {
   const created = value.created

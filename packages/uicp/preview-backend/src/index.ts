@@ -21,6 +21,7 @@ import {
 import { generateCases } from '@deepseek-ai/dsh-tool-apppackage-test/src/cases.ts'
 import { runSuite } from '@deepseek-ai/dsh-tool-apppackage-test/src/runner.ts'
 import { loadFixtures } from '@deepseek-ai/dsh-tool-apppackage-test/src/index.ts'
+import { HttpPlatformClient, publishPackage } from '@deepseek-ai/dsh-tool-apppackage-publish'
 import type { CaseResult } from '@deepseek-ai/dsh-tool-apppackage-test/src/runner.ts'
 
 export const name = 'uicp-preview-backend'
@@ -559,6 +560,60 @@ export async function versionHandler(
   }
 }
 
+/**
+ * Handle `POST /uicp/preview/publish`: after explicit user adoption, upsert
+ * the app-package onto the platform idempotently (App → Entity → fields →
+ * funcs → menu → page; fixture data is never written).
+ * @param req - the incoming POST with `{ cwd, baseUrl, token, tenantId, adopted }`.
+ * @param res - the response.
+ * @param root - the app-packages root for path validation.
+ */
+export async function publishHandler(
+  req: IncomingMessage,
+  res: ServerResponse,
+  root: string,
+): Promise<void> {
+  const json = (status: number, body: unknown): void => {
+    res.writeHead(status, { 'content-type': 'application/json' })
+    res.end(JSON.stringify(body))
+  }
+  if (req.method !== 'POST') {
+    json(405, { status: 405, msg: 'method not allowed', data: null })
+    return
+  }
+  let body: { cwd?: unknown; baseUrl?: unknown; token?: unknown; tenantId?: unknown; adopted?: unknown }
+  try {
+    const parsed = await readJsonBody(req)
+    if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
+    body = parsed
+  } catch (error) {
+    json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
+    return
+  }
+  const dir = resolvePackageDir(root, typeof body.cwd === 'string' ? body.cwd : undefined)
+  if (dir === undefined) {
+    json(400, { status: 400, msg: 'cwd must be an app-package directory under the app-packages root', data: null })
+    return
+  }
+  if (body.adopted !== true) {
+    json(400, { status: 400, msg: '用户未采纳，拒绝写入平台', data: null })
+    return
+  }
+  const { baseUrl, token, tenantId } = body
+  if (typeof baseUrl !== 'string' || baseUrl === ''
+    || typeof token !== 'string' || token === ''
+    || typeof tenantId !== 'string' || tenantId === '') {
+    json(400, { status: 400, msg: 'baseUrl、token、tenantId 均为必填', data: null })
+    return
+  }
+  try {
+    const summary = await publishPackage(dir, new HttpPlatformClient(baseUrl, token, tenantId))
+    json(200, { status: 0, data: summary })
+  } catch (error) {
+    json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
+  }
+}
+
 /** First page file in the app-package `pages/` directory. */
 async function firstPageFile(dir: string): Promise<string | undefined> {
   const pageDir = join(dir, 'pages')
@@ -622,6 +677,11 @@ export function apply(ctx: Context, config: Config = {}): void {
           kind: 'prefix',
           path: '/uicp/preview/entity',
           handler: (req, res) => { void entityHandler(req, res, root) },
+        }),
+        ctx.webServer.register({
+          kind: 'exact',
+          path: '/uicp/preview/publish',
+          handler: (req, res) => { void publishHandler(req, res, root) },
         }),
       ]
       return () => {

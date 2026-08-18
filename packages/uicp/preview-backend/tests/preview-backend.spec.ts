@@ -8,7 +8,7 @@ import {
   apply as applyInvariant, inject as invariantInject, name as invariantName,
 } from '../src/invariant.ts'
 import {
-  entityHandler, pageHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler, versionHandler,
+  entityHandler, pageHandler, publishHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler, versionHandler,
 } from '../src/index.ts'
 
 let dir: string | undefined
@@ -301,5 +301,32 @@ describe('entityHandler', () => {
     const bad = fakeRes()
     await entityHandler(fakeReq('/uicp/preview/entity/order/list?cwd=/etc'), bad.res, join(app, '..'))
     expect(bad.captured.statusCode).toBe(400)
+  })
+})
+
+describe('publishHandler', () => {
+  it('rejects GET, missing adoption, missing credentials, and a bad cwd', async () => {
+    const app = await packageDir()
+    const get = fakeRes()
+    await publishHandler(fakeReq('/uicp/preview/publish'), get.res, join(app, '..'))
+    expect(get.captured.statusCode).toBe(405)
+    const noAdopt = fakeRes()
+    await publishHandler(
+      fakePostReq('/uicp/preview/publish', { cwd: app, baseUrl: 'x', token: 't', tenantId: 'id' }),
+      noAdopt.res,
+      join(app, '..'),
+    )
+    expect(noAdopt.captured.statusCode).toBe(400)
+    expect((JSON.parse(noAdopt.captured.body) as { msg: string }).msg).toContain('未采纳')
+    const noCreds = fakeRes()
+    await publishHandler(fakePostReq('/uicp/preview/publish', { cwd: app, adopted: true }), noCreds.res, join(app, '..'))
+    expect(noCreds.captured.statusCode).toBe(400)
+    const badCwd = fakeRes()
+    await publishHandler(
+      fakePostReq('/uicp/preview/publish', { cwd: '/etc', adopted: true, baseUrl: 'x', token: 't', tenantId: 'id' }),
+      badCwd.res,
+      join(app, '..'),
+    )
+    expect(badCwd.captured.statusCode).toBe(400)
   })
 })

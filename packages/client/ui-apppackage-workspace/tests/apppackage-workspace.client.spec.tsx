@@ -33,6 +33,8 @@ afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
   delete (window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview
+  delete (window as { __UICP_API_BASE__?: string }).__UICP_API_BASE__
+  window.localStorage.clear()
   document.head.querySelectorAll('script[data-uicp-preview], link[data-uicp-preview]').forEach((el) => {
     el.remove()
   })
@@ -298,5 +300,54 @@ describe('AppPackageWorkspace', () => {
     expect(await screen.findByText('v1')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: '恢复' }))
     expect(await screen.findByText('已恢复 4 个文件')).toBeTruthy()
+  })
+
+  it('publishes to the platform only after the two-step adoption confirm', async () => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url.includes('/uicp/preview/publish')) {
+        const raw = init?.body
+        const posted = JSON.parse(typeof raw === 'string' ? raw : '{}') as {
+          adopted: boolean
+          baseUrl: string
+          token: string
+          tenantId: string
+        }
+        expect(posted.adopted).toBe(true)
+        expect(posted.baseUrl).toBe('https://api.underwork.cn/uicp')
+        expect(posted.token).toBe('jwt')
+        expect(posted.tenantId).toBe('t1')
+        return new Response(JSON.stringify({
+          status: 0,
+          data: {
+            ok: true,
+            appId: 'app-1',
+            created: { app: true, entities: 1, fields: 2, funcs: 0, menu: true, page: true },
+          },
+        }))
+      }
+      return new Response(JSON.stringify({
+        status: 0,
+        data: {
+          ok: true,
+          cases: 1,
+          passed: 1,
+          failed: 0,
+          results: [{ name: 'order: insert', passed: true, message: 'ok' }],
+        },
+      }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    ;(window as { __UICP_API_BASE__?: string }).__UICP_API_BASE__ = 'https://api.underwork.cn/uicp'
+    window.localStorage.setItem('uicp.platform.token', 'jwt')
+    window.localStorage.setItem('uicp.platform.tenant', 't1')
+    render(<TestsPanel cwd="/root/cszh/dsh-test" t={t} />)
+    fireEvent.click(screen.getByRole('button', { name: '运行测试' }))
+    const save = await screen.findByRole('button', { name: '采纳并保存到平台' })
+    fireEvent.click(save)
+    expect(screen.getByRole('button', { name: '再次点击确认' })).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: '再次点击确认' }))
+    await waitFor(() => {
+      expect(screen.getByText(/已保存到平台 app=app-1/)).toBeTruthy()
+    })
   })
 })

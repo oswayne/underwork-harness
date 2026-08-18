@@ -136,6 +136,23 @@
   cursor: default;
 }
 
+.publishButton {
+  appearance: none;
+  border: 1px solid var(--dsw-alias-brand-primary);
+  border-radius: 8px;
+  background: transparent;
+  padding: 5px 14px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-brand-primary);
+  cursor: pointer;
+}
+
+.publishButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .resultOk {
   font-size: 13px;
   line-height: 20px;
