@@ -7,7 +7,7 @@ import type { PlatformClient } from './client.ts'
 export interface PublishSummary {
   ok: boolean
   appId: string
-  created: { app: boolean; entities: number; fields: number; funcs: number; menu: boolean; page: boolean }
+  created: { app: boolean; entities: number; fields: number; funcs: number; menu: number; page: number }
 }
 
 /**
@@ -19,7 +19,7 @@ export async function publishPackage(directory: string, client: PlatformClient):
   const { entities, funcs } = loadPackage(directory)
   const app = JSON.parse(readFileSync(`${directory}/app.json`, 'utf8')) as Record<string, unknown>
   const menus = JSON.parse(readFileSync(`${directory}/menus.json`, 'utf8')) as Record<string, unknown>[]
-  const created = { app: false, entities: 0, fields: 0, funcs: 0, menu: false, page: false }
+  const created = { app: false, entities: 0, fields: 0, funcs: 0, menu: 0, page: 0 }
 
   let appId = (await client.listApps()).find(record => record.identifier === app.identifier)?._id
   if (appId === undefined) {
@@ -58,17 +58,18 @@ export async function publishPackage(directory: string, client: PlatformClient):
     }
   }
 
-  let menuId = (await client.listMenus(appId)).find(record => record.path === menus[0]?.path)?._id
-  if (menuId === undefined) {
-    menuId = await client.createMenu({ ...menus[0], app: appId })
-    created.menu = true
-  }
-
-  const page = menus[0]?.page
-  if (typeof page === 'string' && (await client.getPage(menuId)) === null) {
-    const pageContent: unknown = JSON.parse(readFileSync(`${directory}/pages/${page}.json`, 'utf8'))
-    await client.createPage(menuId, pageContent)
-    created.page = true
+  for (const menu of menus) {
+    let menuId = (await client.listMenus(appId)).find(record => record.path === menu.path)?._id
+    if (menuId === undefined) {
+      menuId = await client.createMenu({ ...menu, app: appId })
+      created.menu += 1
+    }
+    const page = menu.page
+    if (typeof page === 'string' && (await client.getPage(menuId)) === null) {
+      const pageContent: unknown = JSON.parse(readFileSync(`${directory}/pages/${page}.json`, 'utf8'))
+      await client.createPage(menuId, pageContent)
+      created.page += 1
+    }
   }
 
   return { ok: true, appId, created }

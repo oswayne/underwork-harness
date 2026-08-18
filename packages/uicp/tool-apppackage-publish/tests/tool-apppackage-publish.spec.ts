@@ -65,17 +65,49 @@ describe('publishPackage', () => {
   it('upserts app, entity, fields, funcs, menu, and page idempotently', async () => {
     const client = memoryClient()
     const first = await publishPackage('app-packages/cszh/dsh-test', client)
-    expect(first.created).toMatchObject({ app: true, entities: 1, fields: 5, funcs: 2, menu: true, page: true })
+    expect(first.created).toMatchObject({ app: true, entities: 1, fields: 5, funcs: 2, menu: 1, page: 1 })
     expect(client.pages.size).toBe(1)
 
     const second = await publishPackage('app-packages/cszh/dsh-test', client)
-    expect(second.created).toMatchObject({ app: false, entities: 0, fields: 0, funcs: 0, menu: false, page: false })
+    expect(second.created).toMatchObject({ app: false, entities: 0, fields: 0, funcs: 0, menu: 0, page: 0 })
     expect(client.apps).toHaveLength(1)
     expect(client.entities).toHaveLength(1)
     expect(client.fields).toHaveLength(5)
     expect(client.funcs).toHaveLength(2)
     expect(client.menus).toHaveLength(1)
     expect(client.pages.size).toBe(1)
+  })
+
+  it('publishes every menu and its page, idempotently', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'uicp-publish-'))
+    try {
+      mkdirSync(join(dir, 'pages'), { recursive: true })
+      mkdirSync(join(dir, 'entities'), { recursive: true })
+      mkdirSync(join(dir, 'funcs'), { recursive: true })
+      writeFileSync(join(dir, 'app.json'), JSON.stringify({
+        name: 'App', identifier: 'multi', description: '', version: '1.0.0', available: true, hidden: false,
+        type: '官方', url: '', portable: true, category: '基础', runtime: '混合', requireRoles: '', requirePermissions: '',
+      }))
+      writeFileSync(join(dir, 'tenant.json'), JSON.stringify({ identifier: 'cszh', name: 'T', available: true }))
+      writeFileSync(join(dir, 'menus.json'), JSON.stringify([
+        { name: 'A', group: 'G', path: '/a', icon: 'icon-file', sort: 1, hidden: false, requireRoles: '', requirePermissions: '', page: 'a' },
+        { name: 'B', group: 'G', path: '/b', icon: 'icon-file', sort: 2, hidden: false, requireRoles: '', requirePermissions: '', page: 'b' },
+      ]))
+      writeFileSync(join(dir, 'pages', 'a.json'), JSON.stringify({ type: 'page', title: 'A', body: [] }))
+      writeFileSync(join(dir, 'pages', 'b.json'), JSON.stringify({ type: 'page', title: 'B', body: [] }))
+      writeFileSync(join(dir, 'entities', 'order.json'), JSON.stringify({
+        name: '订单', category: '', identifier: 'order', description: '', version: '1.0.0', tree: false, extra: {}, fields: [],
+      }))
+      const client = memoryClient()
+      const first = await publishPackage(dir, client)
+      expect(first.created).toMatchObject({ menu: 2, page: 2 })
+      expect(client.menus).toHaveLength(2)
+      expect(client.pages.size).toBe(2)
+      const second = await publishPackage(dir, client)
+      expect(second.created).toMatchObject({ menu: 0, page: 0 })
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
   })
 })
 
@@ -128,11 +160,11 @@ describe('index', () => {
     const text = renderResult({
       ok: true,
       appId: 'app-1',
-      created: { app: true, entities: 1, fields: 2, funcs: 1, menu: true, page: true },
+      created: { app: true, entities: 1, fields: 2, funcs: 1, menu: 1, page: 1 },
     })[0]!.text
     expect(text).toContain('app-1')
     expect(text).toContain('fields=2')
-    expect(renderResult({ ok: false, appId: 'x', created: { app: false, entities: 0, fields: 0, funcs: 0, menu: false, page: false } })[0]!.text).toContain('FAIL')
+    expect(renderResult({ ok: false, appId: 'x', created: { app: false, entities: 0, fields: 0, funcs: 0, menu: 0, page: 0 } })[0]!.text).toContain('FAIL')
 
     const registered = vi.fn()
     const ctx = { tools: { register: (definition: unknown) => { registered(definition); return definition } } } as never
@@ -168,7 +200,7 @@ describe('index', () => {
     definition.output.render({ directory: '/x' }, {
       ok: true,
       appId: 'app-1',
-      created: { app: false, entities: 0, fields: 0, funcs: 0, menu: false, page: false },
+      created: { app: false, entities: 0, fields: 0, funcs: 0, menu: 0, page: 0 },
     })
     vi.unstubAllGlobals()
   })
@@ -184,8 +216,8 @@ describe('index', () => {
       writeFileSync(join(dir, 'entities', 'a.json'), JSON.stringify({ identifier: 'a', fields: [] }))
       const client = memoryClient()
       const summary = await publishPackage(dir, client)
-      expect(summary.created).toMatchObject({ app: true, entities: 1, fields: 0, funcs: 0, menu: true, page: false })
-      expect(client.menus[0]).toBeTruthy()
+      expect(summary.created).toMatchObject({ app: true, entities: 1, fields: 0, funcs: 0, menu: 0, page: 0 })
+      expect(client.menus).toHaveLength(0)
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }
