@@ -3,6 +3,7 @@ import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots
 import type { AppPackageKey } from '../locales.ts'
 import { PreviewPanel } from './PreviewPanel.tsx'
 import { EditorPanel } from './EditorPanel.tsx'
+import { JsonPanel } from './JsonPanel.tsx'
 import css from './AppPackageWorkspace.module.css'
 
 type TabId = 'preview' | 'editor' | 'json' | 'tests' | 'versions'
@@ -46,8 +47,8 @@ export function AppPackageWorkspace(
             role="tab"
             aria-selected={tab === item.id}
             className={tab === item.id ? css.tabActive : css.tab}
-            disabled={item.id !== 'preview' && item.id !== 'editor'}
-            title={item.id === 'preview' || item.id === 'editor' ? undefined : t('workspace.m3')}
+            disabled={item.id !== 'preview' && item.id !== 'editor' && item.id !== 'json'}
+            title={item.id === 'preview' || item.id === 'editor' || item.id === 'json' ? undefined : t('workspace.m3')}
             onClick={() => { setTab(item.id) }}
           >
             {t(item.key)}
@@ -72,6 +73,7 @@ export function AppPackageWorkspace(
     if (cwd === undefined) return <div className={css.hint}>{t('workspace.noSession')}</div>
     if (tab === 'preview') return <PreviewPanel cwd={cwd} t={t} />
     if (tab === 'editor') return <EditorPanel cwd={cwd} t={t} />
+    if (tab === 'json') return <JsonPanel cwd={cwd} t={t} />
     return <div className={css.hint}>{t('workspace.m3')}</div>
   }
 }

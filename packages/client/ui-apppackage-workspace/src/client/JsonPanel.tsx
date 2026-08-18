@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
-import { loadPreviewBundle } from './preview-bundle.ts'
 import {
   PageInfo, postPageSave, SaveResult, SaveResultLine,
 } from './SaveResult.tsx'
 import css from './AppPackageWorkspace.module.css'
 
-/** Props for the editor seat. */
-export interface EditorPanelProps {
+/** Props for the JSON seat. */
+export interface JsonPanelProps {
   /** App-package directory of the current session (its workspace cwd). */
   cwd: string
   /** Localized copy. */
@@ -15,36 +14,23 @@ export interface EditorPanelProps {
 }
 
 /**
- * M3 eureka visual editor: loads the page schema through the workspace seam,
- * mounts the eureka editor, and writes the edited schema back to the local
- * page file with the static-validation findings shown in a status line.
+ * M3 JSON editor: shows the page schema as pretty-printed JSON, parses it on
+ * save, and writes it back through the workspace seam with the
+ * static-validation findings shown in a status line.
  * @param props - cwd and copy.
- * @returns the editor seat.
+ * @returns the JSON seat.
  */
-export function EditorPanel({ cwd, t }: EditorPanelProps) {
-  const host = useRef<HTMLDivElement>(null)
-  const handleRef = useRef<{ unmount: () => void; save: () => void }>()
+export function JsonPanel({ cwd, t }: JsonPanelProps) {
   const pageRef = useRef<string>()
+  const savingRef = useRef(false)
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [error, setError] = useState<string>()
   const [pages, setPages] = useState<PageInfo[]>([])
   const [currentPage, setCurrentPage] = useState<string>()
   const [wanted, setWanted] = useState<string>()
+  const [text, setText] = useState('')
   const [saving, setSaving] = useState(false)
-  const savingRef = useRef(false)
   const [result, setResult] = useState<SaveResult | string>()
-
-  const handleSave = async (value: unknown): Promise<void> => {
-    const page = pageRef.current
-    if (page === undefined || savingRef.current) return
-    savingRef.current = true
-    setSaving(true)
-    setResult(undefined)
-    const outcome = await postPageSave(cwd, page, value)
-    setResult(outcome.error !== undefined ? `${t('editor.saveFailed')}: ${outcome.error}` : outcome)
-    savingRef.current = false
-    setSaving(false)
-  }
 
   useEffect(() => {
     const cancelled = { value: false }
@@ -59,21 +45,16 @@ export function EditorPanel({ cwd, t }: EditorPanelProps) {
           msg?: string
         }
         if (body.status !== 0 || body.data === undefined) {
-          console.warn('uicp editor: page fetch failed', body)
-          throw new Error(body.msg ?? 'editor load failed')
+          console.warn('uicp json: page fetch failed', body)
+          throw new Error(body.msg ?? 'json load failed')
         }
-        const api = await loadPreviewBundle()
         if (cancelled.value) return
-        const container = host.current
-        if (container === null) return
         const page = wanted ?? body.data.pages?.[0]?.id
         pageRef.current = page
         setPages(body.data.pages ?? [])
         setCurrentPage(page)
+        setText(JSON.stringify(body.data.schema, null, 2))
         setResult(undefined)
-        handleRef.current = api.mountEurekaEditor(container, body.data.schema, {
-          onSave: (value: unknown) => { void handleSave(value) },
-        })
         setStatus('ready')
       } catch (reason) {
         if (!cancelled.value) {
@@ -82,12 +63,32 @@ export function EditorPanel({ cwd, t }: EditorPanelProps) {
         }
       }
     })()
-    return () => {
-      cancelled.value = true
-      handleRef.current?.unmount()
-      handleRef.current = undefined
-    }
+    return () => { cancelled.value = true }
   }, [cwd, wanted])
+
+  const handleSave = async (): Promise<void> => {
+    const page = pageRef.current
+    if (page === undefined || savingRef.current) return
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(text) as unknown
+    } catch {
+      setResult(t('json.parseError'))
+      return
+    }
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)
+      || (parsed as { type?: unknown }).type !== 'page') {
+      setResult(t('json.pageError'))
+      return
+    }
+    savingRef.current = true
+    setSaving(true)
+    setResult(undefined)
+    const outcome = await postPageSave(cwd, page, parsed)
+    setResult(outcome.error !== undefined ? `${t('editor.saveFailed')}: ${outcome.error}` : outcome)
+    savingRef.current = false
+    setSaving(false)
+  }
 
   if (status === 'error') {
     return <div className={css.error}>{error}</div>
@@ -96,9 +97,9 @@ export function EditorPanel({ cwd, t }: EditorPanelProps) {
     <div className={css.editorRoot}>
       {pages.length > 1 && (
         <div className={css.pageBar}>
-          <label className={css.pageLabel} htmlFor="uicp-editor-page">{t('preview.page')}</label>
+          <label className={css.pageLabel} htmlFor="uicp-json-page">{t('preview.page')}</label>
           <select
-            id="uicp-editor-page"
+            id="uicp-json-page"
             className={css.pageSelect}
             value={currentPage ?? ''}
             onChange={(event) => { setWanted(event.target.value) }}
@@ -114,14 +115,19 @@ export function EditorPanel({ cwd, t }: EditorPanelProps) {
           type="button"
           className={css.saveButton}
           disabled={saving}
-          onClick={() => { handleRef.current?.save() }}
+          onClick={() => { void handleSave() }}
         >
           {saving ? t('editor.saving') : t('editor.save')}
         </button>
         {result !== undefined && <SaveResultLine result={result} t={t} />}
       </div>
       {status === 'loading' && <div className={css.loading}>{t('preview.loading')}</div>}
-      <div ref={host} className={css.editorHost} />
+      <textarea
+        className={css.jsonInput}
+        value={text}
+        onChange={(event) => { setText(event.target.value) }}
+        spellCheck={false}
+      />
     </div>
   )
 }

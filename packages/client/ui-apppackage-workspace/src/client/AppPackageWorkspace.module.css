@@ -168,6 +168,21 @@
   min-height: 0;
 }
 
+.jsonInput {
+  flex: 1;
+  min-height: 0;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 12px;
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: pre;
+}
+
 .loading,
 .hint {
   padding: 24px;

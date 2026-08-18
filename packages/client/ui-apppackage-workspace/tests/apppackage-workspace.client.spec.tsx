@@ -7,6 +7,7 @@ import { AppPackageWorkspace } from '../src/client/AppPackageWorkspace.tsx'
 import type { AppPackageWorkspaceInjected } from '../src/client/AppPackageWorkspace.tsx'
 import { PreviewPanel } from '../src/client/PreviewPanel.tsx'
 import { EditorPanel } from '../src/client/EditorPanel.tsx'
+import { JsonPanel } from '../src/client/JsonPanel.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh] ?? key) as never
 
@@ -48,6 +49,8 @@ describe('AppPackageWorkspace', () => {
     render(<AppPackageWorkspace {...props('/root/cszh/dsh-test')} />)
     expect(screen.getByRole('tab', { name: '预览' })).toBeTruthy()
     expect(screen.getByRole('tab', { name: '编辑' }).hasAttribute('disabled')).toBe(false)
+    expect(screen.getByRole('tab', { name: 'JSON' }).hasAttribute('disabled')).toBe(false)
+    expect(screen.getByRole('tab', { name: '测试' }).hasAttribute('disabled')).toBe(true)
     await waitFor(() => {
       expect(mount).toHaveBeenCalled()
     })
@@ -185,5 +188,58 @@ describe('AppPackageWorkspace', () => {
     await waitFor(() => {
       expect(screen.getByText(/Eureka schema 校验失败/)).toBeTruthy()
     })
+  })
+
+  it('renders the page as JSON and saves parsed edits with validation feedback', async () => {
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
+      if (init?.method === 'POST') {
+        return new Response(JSON.stringify({ status: 0, data: { ok: true, issues: [] } }))
+      }
+      return new Response(JSON.stringify({
+        status: 0,
+        data: { schema: { type: 'page', title: '订单管理', body: [] }, pages: [{ id: 'order-list', title: '订单管理' }] },
+      }))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(<JsonPanel cwd="/root/cszh/dsh-test" t={t} />)
+    const textarea = await screen.findByRole('textbox')
+    expect((textarea as HTMLTextAreaElement).value).toBe(
+      JSON.stringify({ type: 'page', title: '订单管理', body: [] }, null, 2),
+    )
+    fireEvent.change(textarea, { target: { value: JSON.stringify({ type: 'page', title: '订单（改）', body: [] }) } })
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    await waitFor(() => {
+      expect(screen.getByText('已保存并通过校验')).toBeTruthy()
+    })
+    const post = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')
+    expect(post).toBeDefined()
+    const raw = post?.[1]?.body
+    const posted = JSON.parse(typeof raw === 'string' ? raw : '{}') as {
+      cwd: string
+      page: string
+      value: { type: string; title: string }
+    }
+    expect(posted).toEqual({
+      cwd: '/root/cszh/dsh-test',
+      page: 'order-list',
+      value: { type: 'page', title: '订单（改）', body: [] },
+    })
+  })
+
+  it('rejects invalid JSON and non-page content before saving', async () => {
+    const fetchMock = vi.fn(async (_url: string, _init?: RequestInit) => new Response(JSON.stringify({
+      status: 0,
+      data: { schema: { type: 'page' }, pages: [{ id: 'order-list', title: '订单管理' }] },
+    })))
+    vi.stubGlobal('fetch', fetchMock)
+    render(<JsonPanel cwd="/root/cszh/dsh-test" t={t} />)
+    const textarea = await screen.findByRole('textbox')
+    fireEvent.change(textarea, { target: { value: '{broken' } })
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    expect(await screen.findByText('JSON 解析失败')).toBeTruthy()
+    fireEvent.change(textarea, { target: { value: JSON.stringify({ type: 'crud' }) } })
+    fireEvent.click(screen.getByRole('button', { name: '保存' }))
+    expect(await screen.findByText('内容必须是 page schema')).toBeTruthy()
+    expect(fetchMock.mock.calls.some(([, init]) => init?.method === 'POST')).toBe(false)
   })
 })
