@@ -26,4 +26,4 @@
 
 - identifier 白名单检查目前只做外部依赖词汇检测；完整沙箱词汇强制由 M3 沙盒（`vm` 上下文注入）承担。
 - 依赖提取基于正则；动态拼接的 identifier 由模型报告并交用户发布前确认。
-- `data/eureka-schema.json` 是 Eureka `schema.json` 构建产物的内置快照，由 M4 同步脚本保持更新。
+- `data/eureka-schema.json` 是 Eureka `schema.json` 构建产物的内置快照；Eureka 升级后用 `pnpm --filter @deepseek-ai/dsh-tool-apppackage-validate sync:eureka-schema` 保持更新（`EUREKA_ROOT` 可覆盖检出路径）。

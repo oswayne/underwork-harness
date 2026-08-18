@@ -26,4 +26,4 @@ The tool description tells the model to run validation after generating or editi
 
 - The identifier whitelist check is limited to external-vocabulary detection; full sandbox-vocabulary enforcement lives in the M3 sandbox (`vm` context injection).
 - Dependency extraction is regex-based; dynamically concatenated identifiers are reported by the model for manual confirmation before publish.
-- `data/eureka-schema.json` is a vendored snapshot of the Eureka `schema.json` build product; the M4 sync script keeps it current.
+- `data/eureka-schema.json` is a vendored snapshot of the Eureka `schema.json` build product; keep it current after Eureka upgrades with `pnpm --filter @deepseek-ai/dsh-tool-apppackage-validate sync:eureka-schema` (`EUREKA_ROOT` overrides the checkout path).

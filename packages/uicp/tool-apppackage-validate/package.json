@@ -28,6 +28,9 @@
     "data/**"
   ],
   "license": "MIT",
+  "scripts": {
+    "sync:eureka-schema": "node --import tsx/esm scripts/sync-eureka-schema.ts"
+  },
   "dependencies": {
     "ajv": "^8.20.0"
   },
