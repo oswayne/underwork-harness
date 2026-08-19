@@ -1,9 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
-import { loadPreviewBundle } from './preview-bundle.ts'
-import {
-  PageInfo, postPageSave, SaveResult, SaveResultLine,
-} from './SaveResult.tsx'
+import { openEditorWindow } from './editor-window.ts'
 import css from './AppPackageWorkspace.module.css'
 
 /** Props for the editor seat. */
@@ -15,113 +12,33 @@ export interface EditorPanelProps {
 }
 
 /**
- * M3 eureka visual editor: loads the page schema through the workspace seam,
- * mounts the eureka editor, and writes the edited schema back to the local
- * page file with the static-validation findings shown in a status line.
+ * M3 eureka visual editor seat: opens the editor in a dedicated window (the
+ * editor is a full-page tool that does not fit the chat details column), with
+ * page switching and save handled inside that window.
  * @param props - cwd and copy.
  * @returns the editor seat.
  */
 export function EditorPanel({ cwd, t }: EditorPanelProps) {
-  const host = useRef<HTMLDivElement>(null)
-  const handleRef = useRef<{ unmount: () => void; save: () => void }>()
-  const pageRef = useRef<string>()
-  const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading')
   const [error, setError] = useState<string>()
-  const [pages, setPages] = useState<PageInfo[]>([])
-  const [currentPage, setCurrentPage] = useState<string>()
-  const [wanted, setWanted] = useState<string>()
-  const [saving, setSaving] = useState(false)
-  const savingRef = useRef(false)
-  const [result, setResult] = useState<SaveResult | string>()
-
-  const handleSave = async (value: unknown): Promise<void> => {
-    const page = pageRef.current
-    if (page === undefined || savingRef.current) return
-    savingRef.current = true
-    setSaving(true)
-    setResult(undefined)
-    const outcome = await postPageSave(cwd, page, value)
-    setResult(outcome.error !== undefined ? `${t('editor.saveFailed')}: ${outcome.error}` : outcome)
-    savingRef.current = false
-    setSaving(false)
-  }
-
-  useEffect(() => {
-    const cancelled = { value: false }
-    const query = new URLSearchParams({ cwd })
-    if (wanted !== undefined) query.set('page', wanted)
-    void (async () => {
-      try {
-        const response = await fetch(`/uicp/preview/page?${query}`)
-        const body = (await response.json()) as {
-          status: number
-          data?: { schema: unknown; pages?: PageInfo[] }
-          msg?: string
-        }
-        if (body.status !== 0 || body.data === undefined) {
-          console.warn('uicp editor: page fetch failed', body)
-          throw new Error(body.msg ?? 'editor load failed')
-        }
-        const api = await loadPreviewBundle()
-        if (cancelled.value) return
-        const container = host.current
-        if (container === null) return
-        const page = wanted ?? body.data.pages?.[0]?.id
-        pageRef.current = page
-        setPages(body.data.pages ?? [])
-        setCurrentPage(page)
-        setResult(undefined)
-        handleRef.current = api.mountEurekaEditor(container, body.data.schema, {
-          onSave: (value: unknown) => { void handleSave(value) },
-        })
-        setStatus('ready')
-      } catch (reason) {
-        if (!cancelled.value) {
-          setError(reason instanceof Error ? reason.message : String(reason))
-          setStatus('error')
-        }
-      }
-    })()
-    return () => {
-      cancelled.value = true
-      handleRef.current?.unmount()
-      handleRef.current = undefined
-    }
-  }, [cwd, wanted])
-
-  if (status === 'error') {
-    return <div className={css.error}>{error}</div>
+  const open = (): void => {
+    setError(undefined)
+    openEditorWindow(cwd, (reason) => {
+      setError(reason instanceof Error ? reason.message : String(reason))
+    })
   }
   return (
     <div className={css.editorRoot}>
-      {pages.length > 1 && (
-        <div className={css.pageBar}>
-          <label className={css.pageLabel} htmlFor="uicp-editor-page">{t('preview.page')}</label>
-          <select
-            id="uicp-editor-page"
-            className={css.pageSelect}
-            value={currentPage ?? ''}
-            onChange={(event) => { setWanted(event.target.value) }}
-          >
-            {pages.map(page => (
-              <option key={page.id} value={page.id}>{page.title}</option>
-            ))}
-          </select>
-        </div>
-      )}
       <div className={css.saveBar}>
         <button
           type="button"
           className={css.saveButton}
-          disabled={saving}
-          onClick={() => { handleRef.current?.save() }}
+          onClick={open}
         >
-          {saving ? t('editor.saving') : t('editor.save')}
+          {t('editor.open')}
         </button>
-        {result !== undefined && <SaveResultLine result={result} t={t} />}
+        <span className={css.hint}>{t('editor.inWindow')}</span>
       </div>
-      {status === 'loading' && <div className={css.loading}>{t('preview.loading')}</div>}
-      <div ref={host} className={css.editorHost} />
+      {error !== undefined && <div className={css.error}>{t('editor.openFailed')}：{error}</div>}
     </div>
   )
 }

@@ -1,8 +1,10 @@
 {
   "identifier": "default",
-  "windows": ["main"],
+  "windows": ["main", "uicp-editor"],
   "permissions": [
     "core:default",
+    "core:window:allow-close",
+    "allow-open-editor-window",
     "allow-get-token",
     "allow-set-token",
     "allow-clear-token",

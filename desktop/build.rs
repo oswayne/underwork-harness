@@ -6,6 +6,7 @@ fn main() {
                 "set_token",
                 "clear_token",
                 "app_packages_root",
+                "open_editor_window",
             ]),
         ),
     )

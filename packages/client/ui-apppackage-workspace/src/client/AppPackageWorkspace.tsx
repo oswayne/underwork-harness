@@ -6,6 +6,7 @@ import { EditorPanel } from './EditorPanel.tsx'
 import { JsonPanel } from './JsonPanel.tsx'
 import { TestsPanel } from './TestsPanel.tsx'
 import { VersionsPanel } from './VersionsPanel.tsx'
+import { openEditorWindow } from './editor-window.ts'
 import css from './AppPackageWorkspace.module.css'
 
 type TabId = 'preview' | 'editor' | 'json' | 'tests' | 'versions'
@@ -49,7 +50,10 @@ export function AppPackageWorkspace(
             role="tab"
             aria-selected={tab === item.id}
             className={tab === item.id ? css.tabActive : css.tab}
-            onClick={() => { setTab(item.id) }}
+            onClick={() => {
+              if (item.id === 'editor' && cwd !== undefined) openEditorWindow(cwd)
+              setTab(item.id)
+            }}
           >
             {t(item.key)}
           </button>

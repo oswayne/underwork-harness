@@ -110,6 +110,24 @@ fn clear_token(state: tauri::State<Token>) {
     state.clear()
 }
 
+/// Open (or focus) the standalone eureka editor window at the given URL.
+#[tauri::command]
+fn open_editor_window(app: tauri::AppHandle, url: String) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("uicp-editor") {
+        let _ = window.set_focus();
+        return Ok(())
+    }
+    let parsed = url
+        .parse::<tauri::Url>()
+        .map_err(|e| format!("invalid editor url {url}: {e}"))?;
+    tauri::WebviewWindowBuilder::new(&app, "uicp-editor", tauri::WebviewUrl::External(parsed))
+        .title("Underwork Harness · 页面编辑器")
+        .inner_size(1280.0, 800.0)
+        .build()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 /// Absolute root of app-package directories. Dev resolution: the nearest
 /// `app-packages` directory walking up from both the launch cwd and the
 /// executable's own directory (Finder launches run with a root cwd, but the
@@ -164,7 +182,9 @@ fn main() {
             child: Mutex::new(None),
             shutdown: AtomicBool::new(false),
         })
-        .invoke_handler(tauri::generate_handler![get_token, set_token, clear_token, app_packages_root])
+        .invoke_handler(tauri::generate_handler![
+            get_token, set_token, clear_token, app_packages_root, open_editor_window
+        ])
         .setup(|app| {
             // Persistent token file under the app data directory.
             let token_file = app.path().app_data_dir()

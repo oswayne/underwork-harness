@@ -180,11 +180,6 @@
   color: var(--dsw-alias-state-error-primary);
 }
 
-.editorHost {
-  flex: 1;
-  min-height: 0;
-}
-
 .jsonInput {
   flex: 1;
   min-height: 0;

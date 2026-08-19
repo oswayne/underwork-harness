@@ -34,6 +34,7 @@ afterEach(() => {
   vi.unstubAllGlobals()
   delete (window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview
   delete (window as { __UICP_API_BASE__?: string }).__UICP_API_BASE__
+  delete (window as { __TAURI__?: unknown }).__TAURI__
   window.localStorage.clear()
   document.head.querySelectorAll('script[data-uicp-preview], link[data-uicp-preview]').forEach((el) => {
     el.remove()
@@ -111,87 +112,39 @@ describe('AppPackageWorkspace', () => {
     })
   })
 
-  it('mounts the editor and writes the edited schema back with validation feedback', async () => {
-    type EditorMount = (
-      container: Element,
-      schema: unknown,
-      env: { onSave: (value: unknown) => void },
-    ) => { save: () => void; unmount: () => void }
-    let onSave: ((value: unknown) => void) | undefined
-    const mount = vi.fn<EditorMount>((_container, _schema, env) => {
-      onSave = env.onSave
-      return { save: () => { onSave?.({ type: 'page', title: '订单（改）', body: [] }) }, unmount: vi.fn() }
-    })
-    ;(window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview = { mountEurekaEditor: mount }
-    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
-      if (init?.method === 'POST') {
-        return new Response(JSON.stringify({ status: 0, data: { ok: true, issues: [] } }))
-      }
-      return new Response(JSON.stringify({
-        status: 0,
-        data: { schema: { type: 'page', title: '订单管理' }, pages: [{ id: 'order-list', title: '订单管理' }] },
-      }))
-    })
-    vi.stubGlobal('fetch', fetchMock)
+  it('opens the editor in a separate window from the editor tab', () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
     render(<AppPackageWorkspace {...props('/root/cszh/dsh-test')} />)
     fireEvent.click(screen.getByRole('tab', { name: '编辑' }))
-    await waitFor(() => {
-      expect(mount).toHaveBeenCalled()
-    })
-    fireEvent.click(screen.getByRole('button', { name: '保存' }))
-    await waitFor(() => {
-      expect(screen.getByText('已保存并通过校验')).toBeTruthy()
-    })
-    const post = fetchMock.mock.calls.find(([, init]) => init?.method === 'POST')
-    expect(post).toBeDefined()
-    const raw = post?.[1]?.body
-    const posted = JSON.parse(typeof raw === 'string' ? raw : '{}') as {
-      cwd: string
-      page: string
-      value: { type: string; title: string; body: unknown[] }
-    }
-    expect(posted).toEqual({
-      cwd: '/root/cszh/dsh-test',
-      page: 'order-list',
-      value: { type: 'page', title: '订单（改）', body: [] },
-    })
+    expect(open).toHaveBeenCalledWith(
+      expect.stringContaining(`/uicp/editor?cwd=${encodeURIComponent('/root/cszh/dsh-test')}`),
+      'uicp-editor',
+      expect.stringContaining('width=1280'),
+    )
+    expect(screen.getByText('编辑器已在独立窗口打开，页面切换与保存请在该窗口操作')).toBeTruthy()
   })
 
-  it('shows validation findings after a non-conforming save', async () => {
-    type EditorMount = (
-      container: Element,
-      schema: unknown,
-      env: { onSave: (value: unknown) => void },
-    ) => { save: () => void; unmount: () => void }
-    let onSave: ((value: unknown) => void) | undefined
-    const mount = vi.fn<EditorMount>((_container, _schema, env) => {
-      onSave = env.onSave
-      return { save: () => { onSave?.({ type: 'page' }) }, unmount: vi.fn() }
-    })
-    ;(window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview = { mountEurekaEditor: mount }
-    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) => {
-      if (init?.method === 'POST') {
-        return new Response(JSON.stringify({
-          status: 0,
-          data: {
-            ok: false,
-            issues: [{ severity: 'error', file: 'pages/order-list.json', rule: 'page.schema', message: 'Eureka schema 校验失败' }],
-          },
-        }))
-      }
-      return new Response(JSON.stringify({
-        status: 0,
-        data: { schema: { type: 'page' }, pages: [{ id: 'order-list', title: '订单管理' }] },
-      }))
-    })
-    vi.stubGlobal('fetch', fetchMock)
+  it('reopens the editor window from the editor seat', () => {
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
     render(<EditorPanel cwd="/root/cszh/dsh-test" t={t} />)
+    fireEvent.click(screen.getByRole('button', { name: '打开编辑器窗口' }))
+    expect(open).toHaveBeenCalledWith(
+      expect.stringContaining(`/uicp/editor?cwd=${encodeURIComponent('/root/cszh/dsh-test')}`),
+      'uicp-editor',
+      expect.stringContaining('width=1280'),
+    )
+  })
+
+  it('shows the shell failure when the editor window cannot open', async () => {
+    const invoke = vi.fn(async () => { throw new Error('not allowed') })
+    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
+    render(<EditorPanel cwd="/root/cszh/dsh-test" t={t} />)
+    fireEvent.click(screen.getByRole('button', { name: '打开编辑器窗口' }))
     await waitFor(() => {
-      expect(mount).toHaveBeenCalled()
+      expect(screen.getByText('打开编辑器窗口失败：not allowed')).toBeTruthy()
     })
-    fireEvent.click(screen.getByRole('button', { name: '保存' }))
-    await waitFor(() => {
-      expect(screen.getByText(/Eureka schema 校验失败/)).toBeTruthy()
+    expect(invoke).toHaveBeenCalledWith('open_editor_window', {
+      url: expect.stringContaining(`/uicp/editor?cwd=${encodeURIComponent('/root/cszh/dsh-test')}`),
     })
   })
 

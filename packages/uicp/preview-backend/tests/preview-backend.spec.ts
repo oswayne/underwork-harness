@@ -8,7 +8,15 @@ import {
   apply as applyInvariant, inject as invariantInject, name as invariantName,
 } from '../src/invariant.ts'
 import {
-  entityHandler, pageHandler, publishHandler, resolveAppPackagesRoot, resolvePackageDir, savePageHandler, testHandler, versionHandler,
+  editorWindowPage,
+  entityHandler,
+  pageHandler,
+  publishHandler,
+  resolveAppPackagesRoot,
+  resolvePackageDir,
+  savePageHandler,
+  testHandler,
+  versionHandler,
 } from '../src/index.ts'
 
 let dir: string | undefined
@@ -94,6 +102,17 @@ describe('resolvePackageDir', () => {
     expect(resolvePackageDir('/root', '/root/../etc')).toBeUndefined()
     expect(resolvePackageDir('/root', '/etc')).toBeUndefined()
     expect(resolvePackageDir('/root', undefined)).toBeUndefined()
+  })
+})
+
+describe('editorWindowPage', () => {
+  it('serves the standalone editor window with the preview bundle and mount call', async () => {
+    const { res, captured } = fakeRes()
+    await editorWindowPage(res)
+    expect(captured.statusCode).toBe(200)
+    expect(captured.body).toContain('/uicp/preview/bundle.js')
+    expect(captured.body).toContain('/uicp/preview/bundle.css')
+    expect(captured.body).toContain('mountEurekaEditor')
   })
 })
 
