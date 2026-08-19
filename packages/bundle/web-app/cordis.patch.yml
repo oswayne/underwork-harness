@@ -84,11 +84,11 @@
     - id: session-stats
       name: '@deepseek-ai/dsh-session-stats'
 
-    # UICP M0: the browse backend (Node stdlib) is pinned so the uicp tenant
-    # switch can programmatically create app-package directories before
-    # adopting them as Workspaces (the native dialog backend cannot).
+    # Resolve bind host, SSH launch, and display once at boot, then mount the
+    # matching dual-face directory picker. Mount -native or -browse directly in
+    # an overlay to pin the interaction.
     - id: directory-picker
-      name: '@deepseek-ai/dsh-host-directory-picker-browse'
+      name: '@deepseek-ai/dsh-host-directory-picker-auto'
 
     # Read-only projection of current Loader entries for trusted client RPCs.
     - id: plugin-inventory
@@ -118,20 +118,6 @@
       config:
         host: !!js ctx.webStartup.host ?? '127.0.0.1'
         port: !!js ctx.webStartup.port ?? 3080
-
-    # Same-origin platform API proxy: the browser page is served from
-    # http://127.0.0.1:<port> and the platform does not answer browser CORS
-    # for that origin, so /uicp-api/* forwards to the platform with the page's
-    # Authorization/Tenant headers.
-    - id: uicp-api-proxy
-      name: '@deepseek-ai/dsh-uicp-api-proxy'
-      config:
-        upstream: https://api.underwork.cn/uicp
-
-    # M2 preview seam: serves the self-contained eureka preview bundle and
-    # read-only page/fixture data for the app-package workspace preview tab.
-    - id: uicp-preview-backend
-      name: '@deepseek-ai/dsh-uicp-preview-backend'
 
     # Web glue owned by this bundle: resolves the built frontend dist (an
     # assembly fact of dsh-web-app, never user config), mounts the
@@ -230,20 +216,8 @@
       name: '@deepseek-ai/dsh-client-ui-deliverables'
 
 
-    # UICP M0: the sidebar hands `sidebar.workspaces` back to the native
-    # workspace browser; app packages are adopted as Workspaces by the
-    # uicp tenant switch, so the upstream occupant must stay loaded.
     - id: ui-workspace
       name: '@deepseek-ai/dsh-client-ui-workspace'
-
-    - id: ui-uicp-nav
-      name: '@deepseek-ai/dsh-client-ui-uicp-nav'
-
-    # M2: app-package product workspace replaces the upstream details seat
-    # (single-slot shadowing via negative priority); preview tab renders the
-    # eureka page with fixture data.
-    - id: ui-apppackage-workspace
-      name: '@deepseek-ai/dsh-client-ui-apppackage-workspace'
 
     # Input triggers: the '/' | '@' pipeline (ui-input-trigger), the command surface over
     # it (ui-commands), and the two reference sources (ui-skill / ui-subagent).

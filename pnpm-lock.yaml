@@ -294,6 +294,9 @@ importers:
       '@deepseek-ai/dsh-tool-workflow':
         specifier: workspace:^
         version: link:../../packages/workflow/tool-workflow
+      '@deepseek-ai/dsh-uicp-web-app':
+        specifier: workspace:^
+        version: link:../../packages/bundle/uicp-web-app
       '@deepseek-ai/dsh-web-app':
         specifier: workspace:^
         version: link:../../packages/bundle/web-app
@@ -1256,6 +1259,52 @@ importers:
         specifier: workspace:^
         version: link:../../core/session
 
+  packages/bundle/uicp-web-app:
+    dependencies:
+      '@deepseek-ai/cordis-plugin-hmr':
+        specifier: workspace:^
+        version: link:../../../vendor/hmr
+      '@deepseek-ai/dsh-client-ui-apppackage-workspace':
+        specifier: workspace:^
+        version: link:../../client/ui-apppackage-workspace
+      '@deepseek-ai/dsh-client-ui-uicp-nav':
+        specifier: workspace:^
+        version: link:../../client/ui-uicp-nav
+      '@deepseek-ai/dsh-eureka-preview-host':
+        specifier: workspace:^
+        version: link:../../uicp/eureka-preview-host
+      '@deepseek-ai/dsh-host-directory-picker-browse':
+        specifier: workspace:^
+        version: link:../../host/directory-picker-browse
+      '@deepseek-ai/dsh-sandbox-server':
+        specifier: workspace:^
+        version: link:../../uicp/sandbox-server
+      '@deepseek-ai/dsh-tool-apppackage-publish':
+        specifier: workspace:^
+        version: link:../../uicp/tool-apppackage-publish
+      '@deepseek-ai/dsh-tool-apppackage-test':
+        specifier: workspace:^
+        version: link:../../uicp/tool-apppackage-test
+      '@deepseek-ai/dsh-tool-apppackage-validate':
+        specifier: workspace:^
+        version: link:../../uicp/tool-apppackage-validate
+      '@deepseek-ai/dsh-uicp-api-proxy':
+        specifier: workspace:^
+        version: link:../../uicp/api-proxy
+      '@deepseek-ai/dsh-uicp-preview-backend':
+        specifier: workspace:^
+        version: link:../../uicp/preview-backend
+      '@deepseek-ai/dsh-web-app':
+        specifier: workspace:^
+        version: link:../web-app
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+
   packages/bundle/web-app:
     dependencies:
       '@deepseek-ai/dsh-agent-presets':
@@ -1285,9 +1334,6 @@ importers:
       '@deepseek-ai/dsh-client-ui-agent-preset':
         specifier: workspace:^
         version: link:../../client/ui-agent-preset
-      '@deepseek-ai/dsh-client-ui-apppackage-workspace':
-        specifier: workspace:^
-        version: link:../../client/ui-apppackage-workspace
       '@deepseek-ai/dsh-client-ui-commands':
         specifier: workspace:^
         version: link:../../client/ui-commands
@@ -1363,9 +1409,6 @@ importers:
       '@deepseek-ai/dsh-client-ui-trajectory':
         specifier: workspace:^
         version: link:../../client/ui-trajectory
-      '@deepseek-ai/dsh-client-ui-uicp-nav':
-        specifier: workspace:^
-        version: link:../../client/ui-uicp-nav
       '@deepseek-ai/dsh-client-ui-user-questions':
         specifier: workspace:^
         version: link:../../client/ui-user-questions
@@ -1429,15 +1472,6 @@ importers:
       '@deepseek-ai/dsh-storage-json':
         specifier: workspace:^
         version: link:../../storage/storage-json
-      '@deepseek-ai/dsh-tool-apppackage-validate':
-        specifier: workspace:^
-        version: link:../../uicp/tool-apppackage-validate
-      '@deepseek-ai/dsh-uicp-api-proxy':
-        specifier: workspace:^
-        version: link:../../uicp/api-proxy
-      '@deepseek-ai/dsh-uicp-preview-backend':
-        specifier: workspace:^
-        version: link:../../uicp/preview-backend
       '@deepseek-ai/dsh-web-frontend':
         specifier: workspace:^
         version: link:../../../apps/web

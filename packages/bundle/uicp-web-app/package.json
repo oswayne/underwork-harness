@@ -1,0 +1,63 @@
+{
+  "name": "@deepseek-ai/dsh-uicp-web-app",
+  "description": "The UICP web-surface bundle: the UICP patch layer over dsh-web-app (platform API proxy, app-package preview seam, uicp sidebar navigation, app-package workspace)",
+  "version": "0.1.0-rc.5",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "directory": "packages/bundle/uicp-web-app"
+  },
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/invariant.js",
+    "cordis.patch.yml",
+    "lib/types/**/*.d.ts"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/cordis-plugin-hmr": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-apppackage-workspace": "workspace:^",
+    "@deepseek-ai/dsh-client-ui-uicp-nav": "workspace:^",
+    "@deepseek-ai/dsh-eureka-preview-host": "workspace:^",
+    "@deepseek-ai/dsh-host-directory-picker-browse": "workspace:^",
+    "@deepseek-ai/dsh-sandbox-server": "workspace:^",
+    "@deepseek-ai/dsh-tool-apppackage-publish": "workspace:^",
+    "@deepseek-ai/dsh-tool-apppackage-test": "workspace:^",
+    "@deepseek-ai/dsh-tool-apppackage-validate": "workspace:^",
+    "@deepseek-ai/dsh-uicp-api-proxy": "workspace:^",
+    "@deepseek-ai/dsh-uicp-preview-backend": "workspace:^"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@deepseek-ai/dsh-web-app": "workspace:^"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
+  }
+}

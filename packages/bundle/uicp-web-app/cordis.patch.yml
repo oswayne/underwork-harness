@@ -1,0 +1,42 @@
+# The dsh-uicp-web-app bundle patch: the UICP surface over the dsh-web-app
+# layer. Applied after dsh-web-app's insert; rows here override web-app rows
+# by id, with the profile's own cordis.patch.yml and any --patch overlays
+# still to come.
+#
+# A patch replaces the targeted row's whole `config`, so each row below
+# restates every key it owns.
+
+# UICP M0: same-origin platform API proxy. The browser page is served from
+# http://127.0.0.1:<port> and the platform does not answer browser CORS for
+# that origin, so /uicp-api/* forwards to the platform with the page's
+# Authorization/Tenant headers.
+- insert:
+    - id: uicp-api-proxy
+      name: '@deepseek-ai/dsh-uicp-api-proxy'
+      config:
+        upstream: https://api.underwork.cn/uicp
+
+    # M2 preview seam: serves the self-contained eureka preview bundle and
+    # read-only page/fixture data for the app-package workspace preview tab.
+    - id: uicp-preview-backend
+      name: '@deepseek-ai/dsh-uicp-preview-backend'
+
+    - id: ui-uicp-nav
+      name: '@deepseek-ai/dsh-client-ui-uicp-nav'
+
+    # M2: app-package product workspace replaces the upstream details seat
+    # (single-slot shadowing via negative priority); preview tab renders the
+    # eureka page with fixture data.
+    - id: ui-apppackage-workspace
+      name: '@deepseek-ai/dsh-client-ui-apppackage-workspace'
+
+# UICP M0: pin the directory-picker browse backend (Node stdlib) so the uicp
+# tenant switch can programmatically create app-package directories before
+# adopting them as Workspaces. The adaptive chooser resolves to the native
+# dialog backend on a local macOS host, and that backend cannot create
+# directories programmatically.
+- id: directory-picker
+  disabled: true
+- insert:
+    - id: uicp-directory-picker
+      name: '@deepseek-ai/dsh-host-directory-picker-browse'
