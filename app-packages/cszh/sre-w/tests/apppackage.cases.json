@@ -1,0 +1,526 @@
+[
+  {
+    "name": "sre-assets-device-rack: insert",
+    "method": "POST",
+    "path": "/sre-assets-device-rack",
+    "body": {
+      "name": "2414",
+      "status": "0",
+      "head": "67659429a464ccf47598bebd",
+      "type": "1",
+      "address": "大撒大声地",
+      "equ_no": "123124124",
+      "contact": "13657845474",
+      "installation_time": "2025-05-16T07:10:32.483Z",
+      "fault_phenomenon": "",
+      "last_maintenance_time": "2025-05-16T00:00:00.000Z",
+      "enable_time": "2025-05-16T07:10:32.483Z",
+      "cabinet": "测试",
+      "remark": "",
+      "entered_by": "67659429a464ccf47598bebd",
+      "supplier": "rwerwerw1234124"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-device-rack: list",
+    "method": "GET",
+    "path": "/sre-assets-device-rack/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-device-rack: page",
+    "method": "GET",
+    "path": "/sre-assets-device-rack/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-assets-device-rack: preventListAll",
+    "method": "GET",
+    "path": "/sre-assets-device-rack/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-bill: insert",
+    "method": "POST",
+    "path": "/sre-assets-maintaining-bill",
+    "body": {
+      "plan_no": "fdsf",
+      "equ_name": "",
+      "maintenance_time": "2025-05-16T16:12:36.000Z",
+      "equ_no": "123124124",
+      "sheet_no": "214wrwer",
+      "equ_id": "6826b80f94c09033363fc15a",
+      "frequency": 1,
+      "last_maintenance_time": "2025-05-16T00:00:00.000Z",
+      "maintenance_person": "67659429a464ccf47598bebd",
+      "maintenance_required_time": "",
+      "remark": "",
+      "status": "0",
+      "maintenance_project": "",
+      "maintenance_content": "",
+      "result": "0",
+      "fault_phenomenon": ""
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-bill: list",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-bill/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-bill: page",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-bill/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-bill: preventListAll",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-bill/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-bill: gt frequency",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-bill/list",
+    "query": {
+      "frequency": "gt>1"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-plan: insert",
+    "method": "POST",
+    "path": "/sre-assets-maintaining-plan",
+    "body": {
+      "plan_no": "fdsf",
+      "name": "恶趣味",
+      "first_date": "2025-05-16T00:00:00.000Z",
+      "maintenance_plan_detailss": [
+        {
+          "project": "qwe",
+          "content": "eqwe",
+          "required_time": 1
+        }
+      ],
+      "frequency": 1,
+      "head": "677348a1f1105174cf215e35",
+      "equipments": "6826b80f94c09033363fc15a"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-plan: list",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-plan/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-plan: page",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-plan/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-plan: preventListAll",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-plan/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-assets-maintaining-plan: gt frequency",
+    "method": "GET",
+    "path": "/sre-assets-maintaining-plan/list",
+    "query": {
+      "frequency": "gt>1"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-dictionary-value: insert",
+    "method": "POST",
+    "path": "/sre-dictionary-value",
+    "body": {
+      "remarks": "",
+      "identifier": "spzt",
+      "type": "",
+      "label": "已撤销",
+      "value": "已撤销"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-dictionary-value: list",
+    "method": "GET",
+    "path": "/sre-dictionary-value/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-dictionary-value: page",
+    "method": "GET",
+    "path": "/sre-dictionary-value/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-dictionary-value: preventListAll",
+    "method": "GET",
+    "path": "/sre-dictionary-value/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-inspection-content-plan: insert",
+    "method": "POST",
+    "path": "/sre-inspection-content-plan",
+    "body": {
+      "inspection_contentplans_detailss": [
+        {
+          "project": "1",
+          "method": "2",
+          "criterion_standard": "3",
+          "required_time": 4
+        },
+        {
+          "project": "5",
+          "method": "6",
+          "criterion_standard": "7",
+          "required_time": 8
+        }
+      ],
+      "required_time_sum": 12,
+      "createdBy": "677348a1f1105174cf215e35",
+      "no": "dsf123",
+      "name": "ccc"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-inspection-content-plan: list",
+    "method": "GET",
+    "path": "/sre-inspection-content-plan/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-inspection-content-plan: page",
+    "method": "GET",
+    "path": "/sre-inspection-content-plan/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-inspection-content-plan: preventListAll",
+    "method": "GET",
+    "path": "/sre-inspection-content-plan/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-inspection-content-plan: gt required_time_sum",
+    "method": "GET",
+    "path": "/sre-inspection-content-plan/list",
+    "query": {
+      "required_time_sum": "gt>12"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-inspection-device-bill: insert",
+    "method": "POST",
+    "path": "/sre-inspection-device-bill",
+    "body": {
+      "details_resultss": "",
+      "time_plan_name": "日巡检",
+      "name": "巡检单",
+      "time": "2025-05-19T06:37:34.946Z",
+      "executor": "677348a1f1105174cf215e35",
+      "time_plan_id": "682a962f93f3d468b98661c5",
+      "content_name": "ccc",
+      "equ_name": "",
+      "plan_id": "",
+      "inspection_times": 2,
+      "equ_status": "",
+      "createdBy": "",
+      "no": "",
+      "task_status": "",
+      "remark": "",
+      "plan_name": "测试12312",
+      "content_id": "682a93fd93f3d468b98661ad",
+      "equ_id": "6826b80f94c09033363fc15a",
+      "result": "",
+      "fault_phenomenon": ""
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-inspection-device-bill: list",
+    "method": "GET",
+    "path": "/sre-inspection-device-bill/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-inspection-device-bill: page",
+    "method": "GET",
+    "path": "/sre-inspection-device-bill/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-inspection-device-bill: preventListAll",
+    "method": "GET",
+    "path": "/sre-inspection-device-bill/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-inspection-device-bill: gt inspection_times",
+    "method": "GET",
+    "path": "/sre-inspection-device-bill/list",
+    "query": {
+      "inspection_times": "gt>2"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-service-audit: insert",
+    "method": "POST",
+    "path": "/sre-service-audit",
+    "body": {
+      "type": "0",
+      "approve_no": "",
+      "app_person": "fasfz",
+      "app_email": "czxc",
+      "work_no": "fasf",
+      "amt_info": "zcx",
+      "material": "czxc",
+      "amt_type": "报销",
+      "amt_time": "2025-05-20T02:22:13.083Z",
+      "status": "已通过",
+      "approved_email": "dasdas",
+      "approved_time": "2025-05-20T02:22:13.083Z",
+      "material_file": "",
+      "app_time": "2025-05-20T02:22:13.083Z",
+      "material_info": "zczxc",
+      "remark": "",
+      "opinion": "fdvdg",
+      "approved_persson": "adsdas"
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-service-audit: list",
+    "method": "GET",
+    "path": "/sre-service-audit/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-service-audit: page",
+    "method": "GET",
+    "path": "/sre-service-audit/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-service-audit: preventListAll",
+    "method": "GET",
+    "path": "/sre-service-audit/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  },
+  {
+    "name": "sre-work-work-order: insert",
+    "method": "POST",
+    "path": "/sre-work-work-order",
+    "body": {
+      "equ_addr": "",
+      "custom_email": "",
+      "work_no": "456456dasdas1",
+      "dispatch_notes": "",
+      "type": "",
+      "report_person_phone": "135245877",
+      "report_person": "67659429a464ccf47598bebd",
+      "equ_name": "",
+      "equ_type": "",
+      "app_type": "0",
+      "worker_name": "",
+      "complete_time": "2025-05-20T01:28:34.858Z",
+      "report_time": "2025-05-20T01:28:34.858Z",
+      "urgency": "0",
+      "dispatch_time": "2025-05-20T01:28:34.858Z",
+      "worker_remark": "",
+      "worker_phone": "",
+      "working_hours": "",
+      "satisfaction": "",
+      "status": "待分配",
+      "worker_email": "",
+      "equ_id": "6826b7db94c09033363fc147",
+      "work_person_id": ""
+    },
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-work-work-order: list",
+    "method": "GET",
+    "path": "/sre-work-work-order/list",
+    "expect": {
+      "status": 0
+    }
+  },
+  {
+    "name": "sre-work-work-order: page",
+    "method": "GET",
+    "path": "/sre-work-work-order/page",
+    "query": {
+      "page": "1",
+      "perPage": "5"
+    },
+    "expect": {
+      "status": 0,
+      "data": {
+        "page": 1
+      }
+    }
+  },
+  {
+    "name": "sre-work-work-order: preventListAll",
+    "method": "GET",
+    "path": "/sre-work-work-order/list",
+    "query": {
+      "_preventListAll": "true"
+    },
+    "expect": {
+      "status": 400
+    }
+  }
+]

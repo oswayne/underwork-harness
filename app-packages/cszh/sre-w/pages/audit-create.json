@@ -14,7 +14,7 @@
     {
       "type": "form",
       "data": {},
-      "mode": "horizontal",
+      "mode": "normal",
       "title": "新增审批记录表",
       "body": [
         {
@@ -25,8 +25,7 @@
           "placeholder": "自动生成，无需填写",
           "disabled": true,
           "id": "u:6252fc6f6dd2",
-          "mode": "normal",
-          "size": "lg",
+          "size": "full",
           "themeCss": {
             "labelClassName": {
               "font:default": {
@@ -51,7 +50,6 @@
             }
           ],
           "id": "u:6f3fea59f8c3",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -73,7 +71,6 @@
             "maxLength": "长度超出限制"
           },
           "id": "u:ac5db5c7e756",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -647,7 +644,6 @@
             "maxLength": "长度超出限制"
           },
           "id": "u:5492facea951",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -670,7 +666,6 @@
             "maxLength": "长度超出限制"
           },
           "id": "u:19afe42537b6",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -703,7 +698,6 @@
           "validations": {},
           "validationErrors": {},
           "id": "u:c5c47f0d197e",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -723,7 +717,6 @@
           "options": [],
           "source": "app://dictionary/running/list?level=2&encoded=amt_type",
           "id": "u:58faf0a2ddb8",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -746,7 +739,6 @@
             "maxLength": "长度超出限制"
           },
           "id": "u:fd79355347f0",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -769,7 +761,6 @@
             "maxLength": "长度超出限制"
           },
           "id": "u:d5fa04e4e8e7",
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -801,7 +792,6 @@
           "useChunk": false,
           "drag": false,
           "bos": "default",
-          "mode": "normal",
           "themeCss": {
             "labelClassName": {
               "font:default": {
@@ -840,8 +830,7 @@
               }
             }
           },
-          "size": "lg",
-          "mode": "normal"
+          "size": "lg"
         },
         {
           "type": "textarea",
@@ -854,7 +843,6 @@
           "id": "u:16b210aa3f0e",
           "minRows": 3,
           "maxRows": 20,
-          "mode": "normal",
           "size": "lg",
           "themeCss": {
             "labelClassName": {
@@ -917,7 +905,9 @@
         "margin": "0px auto"
       },
       "debug": false,
-      "feat": "Insert"
+      "feat": "Insert",
+      "dsType": "api",
+      "columnCount": 1
     }
   ],
   "config": {
