@@ -2,29 +2,27 @@
 
 > 状态：基于 [UPGRADE.md](UPGRADE.md)（预定稿）的实现指导；本文档中的技术断言均经代码调研验证（2026-08-16）；未配对工作文档，不进入 docs/ 站点。
 > 标记约定：【已验证】= 经代码核实的事实（附代码位置）；【实现要点】= 基于已验证机制的落地做法；【验收】= 里程碑验收标准。
+> **方案修订（2026-08-19）**：放弃桌面壳（Tauri），产品形态改为 B/S（`dsh web` + 浏览器，localStorage 持久 Token）；`desktop/` 已删除；UICP 组装为独立 bundle `@deepseek-ai/dsh-uicp-web-app`。第 1 章架构、第 11 章已按 B/S 改写。
 
 ## 0. 文档定位
 
 - 与方案的关系：UPGRADE.md 定义"做什么与决策"（D1–D22），本文档定义"怎么做"（架构、规格、任务、验收）。
 - 阅读对象：实现工程师与开发 agent；按里程碑（M0–M4）推进，技术规格按模块查阅。
-- 范围：dsh 改造为低代码平台桌面版生成驱动器，含壳、UI 集成、本地沙盒、校验/测试、API 保存、上游同步。
+- 范围：dsh 改造为低代码平台 B/S 版生成驱动器，含 UI 集成、本地沙盒、校验/测试、API 保存、上游同步。
 
 ## 1. 实现总览
 
 ### 1.1 目标架构
 
 ```text
-Tauri 壳（macOS / Windows，未来 Linux）
-  ├─ 拉起并守护 dsh 本地进程（sidecar，localhost HTTP）
-  ├─ 原生桥面：凭证存储（Keychain/DPAPI）、Passkey（可选）、托盘/通知、外链
-  └─ 嵌入式 webview → http://127.0.0.1:<port>
-
-一个本地 HTTP 服务三合一（D19）
+一个本地 HTTP 服务三合一（D19，B/S 产品本体）
   ├─ dsh Web UI（基于 dsh Web UI + 最小改造，D18）
   │    ├─ 新增 client 插件：登录、租户/应用包/会话导航、会话头切换、产物工作区、eureka 预览/编辑
   │    └─ 适配层 our-ui/adapter（上游 import 收口）
   ├─ RPC（/api）+ 事件流（WS downlink）——UI ↔ 核心
   └─ 沙盒 API（/app-package/entity/...）——eureka 页面本地预览的数据源
+
+浏览器 → http://127.0.0.1:3080（固定端口；localStorage 持久 Token）
 ```
 
 ### 1.2 组件地图
@@ -40,7 +38,8 @@ Tauri 壳（macOS / Windows，未来 Linux）
 | client 插件 | 登录、导航、会话切换、产物工作区、eureka 视图 | `packages/client/ui-uicp-*`（新包）；eureka 预览宿主为 `packages/uicp/eureka-preview-host`（双 React 隔离 bundle） | 8 |
 | 配置层 | agent preset（交付物 = AppPackage） | `apps/cli/config/agent-presets/uicp/` | 8.4 |
 | 配置层 | skill（平台契约词汇） | `packages/skill/*` 或独立 skill 包 | 8.4 |
-| 壳工程 | Tauri v2 桌面壳 | 仓库外独立工程（如 `desktop/`） | 11 |
+| B/S 组装 | UICP Web 组装 bundle | `packages/bundle/uicp-web-app`（独立 bundle，位于 web-app 之后） | 11 |
+| 启动入口 | `dsh web`（固定端口 3080） | `apps/cli`（既有）+ 启动脚本 | 11 |
 | 上游同步 | 共享文件补丁 + 适配层脚本 | `scripts/uicp-*` | 12 |
 
 **host 组成（保留的 dsh 包）**：core（agent、agent-loop、session、system-prompt、tools、scope）、session 持久化、fs、subprocess/shell、credentials、jobs、app-boot/boot、webserver、connection（host 半）、dsh Web UI 栈（apps/web、client 包、frontend-static）、沙盒（自研 host 插件）。
@@ -49,11 +48,11 @@ Tauri 壳（macOS / Windows，未来 Linux）
 
 | 里程碑 | 目标 | 本文档章节 |
 | --- | --- | --- |
-| M0 | 壳 + dsh Web UI 加载 + JWT 登录 + 租户/应用包/会话导航 | 8 / 10 / 11 |
+| M0 | B/S 加载 + JWT 登录 + 租户/应用包/会话导航 | 8 / 10 / 11 |
 | M1 | 应用包目录契约冻结 + 示例应用包 | 3 |
 | M2 | 知识注入 + 校验 + eureka 预览 | 8.2 / 8.4 / 5 |
 | M3 | 沙盒 + 编辑器 + 自动测试 + 版本 + API 保存（完整闭环） | 4 / 6 / 7 / 9 |
-| M4 | 契约保真、快照测试、版本同步脚本、打包分发 | 4.7 / 11 / 12 |
+| M4 | 契约保真、快照测试、版本同步脚本、B/S 硬化 | 4.7 / 11 / 12 |
 
 ### 1.4 决策溯源（UPGRADE.md D1–D22 → 实现章节）
 
@@ -65,7 +64,7 @@ Tauri 壳（macOS / Windows，未来 Linux）
 | D4 知识注入（preset + skill） | 8.4 |
 | D5 Token 自动恢复 + 失效重输 | 11.3 / 14（M0） |
 | D6 认证（JWT 主路径，Passkey 可选） | 2.5 / 11.3 |
-| D7 桌面壳 Tauri v2 | 11 |
+| D7 B/S 形态（废止桌面壳） | 11 |
 | D8 租户 → 应用包 → 会话 | 8.2 / 8.3 / 10 |
 | D10 沙盒镜像 CRUD + 函数执行 | 4 |
 | D11 自动测试（不只快乐路径） | 6 |
@@ -77,7 +76,7 @@ Tauri 壳（macOS / Windows，未来 Linux）
 | D17 壳导航（零修改妥协版） | 8.2 |
 | D18 dsh Web UI 最小改造 | 8 |
 | D19 localhost HTTP 三合一 | 1.1 / 11.1 |
-| D20 壳原生桥面 | 11.3 |
+| D20 凭证存储改 localStorage（废止壳桥） | 11.3 |
 | D21 进程生命周期 | 11.2 |
 | D22 打包与分发 | 11.4 |
 
@@ -342,36 +341,38 @@ app-packages/<tenant-identifier>/<app-identifier>/
 - 会话 = 数据边界：创建会话（cwd = 应用包目录）→ fixture 初始化会话沙盒数据区 → 会话内测试/迭代 → 删除会话联动清理沙盒数据。
 - 删除能力由我们的 host 插件提供（4.6），侧栏删除动作触发。
 
-## 11. 桌面壳（Tauri）
+## 11. B/S 组装与启动（2026-08-19 修订：废止桌面壳）
 
-### 11.1 工程结构与加载
+### 11.1 产品形态与加载
 
 【实现要点】
 
-- 壳工程（独立目录）spawn dsh 本地进程（sidecar，`dsh web` 链路）；端口可配 0（OS 分配，`webStartup.port ?? 3080`）；等端口就绪（健康探测）后 webview 指向 `http://127.0.0.1:<port>`。
-- 加载方式：localhost HTTP 三合一（dsh Web UI + RPC/事件流 + 沙盒 API）。
+- 产品本体 = `dsh web`：一个本地 HTTP 服务三合一（dsh Web UI + RPC/事件流 + 沙盒 API），浏览器访问 `http://127.0.0.1:<port>`。
+- **端口固定（默认 3080）**：localStorage 按 origin（host:port）隔离，固定端口才能让 Token 跨重启持久（`webStartup.port ?? 3080`，见 `packages/bundle/web-app`）。
 - 界面沿用 dsh Web UI 原生风格（放弃 Codex 风格）；不引入独立视觉体系。
 
-### 11.2 进程生命周期
+### 11.2 进程与凭证
 
-- 启动序列：spawn → 就绪探测 → 加载 UI；崩溃自动重启（指数退避）；退出联动（SIGTERM → 超时强制）；孤儿保护；单实例（Tauri single-instance）；日志落壳日志文件。
+- 启动：`dsh web`（前台）或启动脚本/服务包装（后台）；无 sidecar spawn、无单实例、无托盘。
+- Token 持久化：浏览器 localStorage（`uicp.platform.token`）+ 启动时 `/user/user/self` 校验（D5），失效才要求重新输入/登录。
+- Passkey（可选增强）：浏览器原生 WebAuthn，不依赖壳桥。
+- 应用包根目录：由服务端 `GET /uicp/preview/root` 解析（`resolveAppPackagesRoot`，cwd 向上找 `app-packages` 或 `appPackagesRoot` 配置），前端不再依赖壳传入。
 
-### 11.3 原生桥面（Tauri commands）
+### 11.3 UICP Web 组装（独立 bundle）
 
-- 凭证存储：Token 安全存取（macOS Keychain / Windows DPAPI / 未来 Linux Secret Service）；仅 set/get/delete；启动时自动读取并校验（D5），失效才要求重新输入/登录。
-- Passkey（可选增强）：native WebAuthn（macOS AuthenticationServices / Windows WebAuthn），credential 交 Web UI 提交平台；平台约束见 2.5。
-- 托盘与通知、外链打开（tauri-plugin-opener）。
-- 目录选择不做（工作区由 dsh 自动管理）。
+- UICP 插件行（`uicp-api-proxy`、`uicp-preview-backend`、`ui-uicp-nav`、`ui-apppackage-workspace`、directory-picker browse 钉定）全部位于独立 bundle `@deepseek-ai/dsh-uicp-web-app`（`packages/bundle/uicp-web-app/cordis.patch.yml`）。
+- profile 模板：`PROFILE_TEMPLATES.web = [base, web-app, uicp-web-app]`（`packages/boot/app-boot/src/profile.ts` 一行）。
+- 上游 `dsh-web-app` 的 patch 与 package.json 保持零改动；上游更新该 bundle 不与 UICP 行冲突。
 
-### 11.4 打包与分发
+### 11.4 分发
 
-- macOS：Developer ID 签名 + 公证 → dmg；Windows：Authenticode → NSIS/MSI；Tauri updater。
-- dsh 作为 sidecar 资源随壳打包（Node 22 运行时，arm64/x64 双架构），壳版本与内置 dsh 版本绑定发布；每次上游同步后重建。
+- B/S 无应用打包、签名、公证、更新通道；上游同步后重新 `pnpm install && pnpm run build` 即可使用。
 
 ## 12. 上游同步操作手册
 
 - 同步范围：核心 + Web UI（跟随上游）；我们的功能全部为新增插件/配置，不改上游文件。
-- 共享文件清单（确需修改的最小集）：pnpm-workspace.yaml、tsconfig.host.json / tsconfig.client.json、根 package.json、docs 导航；改动保持最小并记录。
+- 共享文件清单（确需修改的最小集）：pnpm-workspace.yaml、tsconfig.host.json / tsconfig.client.json、根 package.json、docs 导航、`packages/boot/app-boot/src/profile.ts`（profile 模板一行）；改动保持最小并记录。
+- UICP Web 组装层是独立 bundle `packages/bundle/uicp-web-app/`，不修改上游 `packages/bundle/web-app/cordis.patch.yml`。
 - 冲突预案：先取上游 → 重放本地补丁（脚本化、可重放）；import 经适配层（8.5）收口。
 - 依赖隔离：eureka 私有 registry 依赖只出现在新增包中，不写入上游包 package.json。
 - 同步流程：`git fetch upstream` → 合并到维护分支 → 修适配层/重放补丁 → 跑 `pnpm install && pnpm run typecheck && pnpm run test` + 本项目 smoke；合并与提交前征求用户同意。
@@ -384,20 +385,20 @@ app-packages/<tenant-identifier>/<app-identifier>/
 - 平台侧行为问题：由平台维护方负责修复（平台已通过线上验证），不作为 dsh 风险项。
 - 平台侧发布回滚：暂不考虑。
 - 单机单用户模型：不涉及多人/多机协作。
-- 工程验收项：Tauri sidecar 打包（M0）、eureka 构建嵌入（M2，含独立 webview 降级预案）。
+- 工程验收项：eureka 构建嵌入（M2，编辑器独立浏览器窗口）；无桌面打包。
 - 长期观察项：上游 client 接口演进（适配层与补丁重放兜底）。
 - 用户协作即持续验证：用户实际使用产物并反馈，覆盖行为矩阵之外的行为。
 - 发布后平台侧人工快乐路径兜底（非自动化，覆盖范围有限）。
 
 ## 14. 里程碑验收清单
 
-### M0：壳 + UI 集成原型
+### M0：B/S 形态 + UI 集成原型
 
-- [x] Tauri 壳拉起 dsh 进程、端口就绪、webview 加载 localhost。
+- [x] `dsh web` 本地服务 + 浏览器加载（B/S 形态）。
 - [x] JWT 输入 → 校验 → 列租户（`GET /systemctl/tenant/list`，available=true）→ 进入租户 → 列/新建应用包 → 开始对话。
 - [x] 侧栏浏览区（租户 → 应用包 → 会话）替换 `sidebar.workspaces` 生效；会话头切换按钮生效。
-- [x] 进程守护基础：拉起 / 就绪 / 退出联动 / 单实例。
-- [x] 单机模型确认：无目录选择入口。
+- [x] 进程基础：启动 / 停止（`dsh web` 前台或脚本后台）。
+- [x] 单机模型确认：目录由服务端 `app-packages` 根统一管理。
 
 ### M1：契约冻结
 
@@ -423,7 +424,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 - [ ] 快照测试（待补）；契约保真与测试用例沉淀。
 - [x] 文档：上游同步手册与里程碑验收清单。
 - [ ] 无头渲染校验（可选，CI 补充）。
-- [ ] 壳打包（签名/公证/安装包/更新）与 sidecar 双架构构建。
+- [x] 废止壳打包（签名/公证/安装包/更新）——B/S 形态无桌面分发。
 - [x] schema 与 eureka 版本同步脚本；上游同步手册可执行。
 
 ## 附录 A：已验证代码位置索引
