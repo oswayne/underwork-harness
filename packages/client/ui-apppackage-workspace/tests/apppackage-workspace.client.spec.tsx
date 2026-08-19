@@ -33,8 +33,6 @@ afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
   delete (window as { UicpEurekaPreview?: unknown }).UicpEurekaPreview
-  delete (window as { __UICP_API_BASE__?: string }).__UICP_API_BASE__
-  delete (window as { __TAURI__?: unknown }).__TAURI__
   window.localStorage.clear()
   document.head.querySelectorAll('script[data-uicp-preview], link[data-uicp-preview]').forEach((el) => {
     el.remove()
@@ -135,16 +133,12 @@ describe('AppPackageWorkspace', () => {
     )
   })
 
-  it('shows the shell failure when the editor window cannot open', async () => {
-    const invoke = vi.fn(async () => { throw new Error('not allowed') })
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
+  it('shows the failure when the editor popup is blocked', async () => {
+    vi.spyOn(window, 'open').mockImplementation(() => null)
     render(<EditorPanel cwd="/root/cszh/dsh-test" t={t} />)
     fireEvent.click(screen.getByRole('button', { name: '打开编辑器窗口' }))
     await waitFor(() => {
-      expect(screen.getByText('打开编辑器窗口失败：not allowed')).toBeTruthy()
-    })
-    expect(invoke).toHaveBeenCalledWith('open_editor_window', {
-      url: expect.stringContaining(`/uicp/editor?cwd=${encodeURIComponent('/root/cszh/dsh-test')}`),
+      expect(screen.getByText('打开编辑器窗口失败：popup blocked')).toBeTruthy()
     })
   })
 
@@ -261,12 +255,10 @@ describe('AppPackageWorkspace', () => {
         const raw = init?.body
         const posted = JSON.parse(typeof raw === 'string' ? raw : '{}') as {
           adopted: boolean
-          baseUrl: string
           token: string
           tenantId: string
         }
         expect(posted.adopted).toBe(true)
-        expect(posted.baseUrl).toBe('https://api.underwork.cn/uicp')
         expect(posted.token).toBe('jwt')
         expect(posted.tenantId).toBe('t1')
         return new Response(JSON.stringify({
@@ -290,7 +282,6 @@ describe('AppPackageWorkspace', () => {
       }))
     })
     vi.stubGlobal('fetch', fetchMock)
-    ;(window as { __UICP_API_BASE__?: string }).__UICP_API_BASE__ = 'https://api.underwork.cn/uicp'
     window.localStorage.setItem('uicp.platform.token', 'jwt')
     window.localStorage.setItem('uicp.platform.tenant', 't1')
     render(<TestsPanel cwd="/root/cszh/dsh-test" t={t} />)

@@ -9,14 +9,6 @@ import { TenantSwitch } from '../src/client/TenantSwitch.tsx'
 
 const t = ((key: string) => zh[key as keyof typeof zh]) as never
 
-function shellInvoke() {
-  return vi.fn(async (cmd: string) => {
-    if (cmd === 'get_token') return 'tok'
-    if (cmd === 'app_packages_root') return '/root'
-    return undefined
-  })
-}
-
 function navProps(wide = true, workspaces: Array<{ workspaceId: string; path: string }> = []) {
   const useWorkspaces = ((sel: (s: unknown) => unknown) => sel({
     items: workspaces, archivedSessionIds: [], state: 'idle', phase: 'pending',
@@ -30,6 +22,7 @@ describe('TenantSwitch', () => {
     resetNav()
     resetAuth()
     window.localStorage.clear()
+    window.localStorage.setItem('uicp.platform.token', 'tok')
     setPackagesRoot('/root')
     setNavActions({
       openSession: vi.fn(),
@@ -45,18 +38,17 @@ describe('TenantSwitch', () => {
     cleanup()
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
-    delete (window as { __TAURI__?: unknown }).__TAURI__
   })
 
   it('renders nothing while no token is stored', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => undefined) } }
+    window.localStorage.clear()
+    resetAuth()
     render(<TenantSwitch {...navProps()} />)
     await new Promise(resolve => setTimeout(resolve, 0))
     expect(screen.queryByRole('button')).toBeNull()
   })
 
   it('lists tenants and registers the default tenant app packages as workspaces', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const register = vi.fn(async () => undefined)
     setNavActions({
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
@@ -85,7 +77,6 @@ describe('TenantSwitch', () => {
   })
 
   it('registers the newly selected tenant app packages', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const register = vi.fn(async () => undefined)
     setNavActions({
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
@@ -113,7 +104,6 @@ describe('TenantSwitch', () => {
   })
 
   it('shows a loading state and masks the sidebar while the tenant switch is in flight', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     let release: (() => void) | undefined
     const gate = new Promise<void>((resolve) => { release = resolve })
     const register = vi.fn(async () => { await gate })
@@ -148,7 +138,6 @@ describe('TenantSwitch', () => {
   })
 
   it('prunes other tenants app-package workspaces when switching tenants', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const del = vi.fn(async () => undefined)
     setNavActions({
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
@@ -184,9 +173,6 @@ describe('TenantSwitch', () => {
 
   it('skips workspace registration when the packages root is unknown', async () => {
     resetNav()
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = {
-      core: { invoke: vi.fn(async (cmd: string) => (cmd === 'get_token' ? 'tok' : undefined)) },
-    }
     const register = vi.fn(async () => undefined)
     setNavActions({
       openSession: vi.fn(), createSession: vi.fn(async () => undefined),
@@ -211,7 +197,6 @@ describe('TenantSwitch', () => {
   })
 
   it('surfaces real registration failures with their detail', async () => {
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: shellInvoke() } }
     const register = vi.fn(async () => {
       throw new Error('disk full')
     })

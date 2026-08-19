@@ -1,24 +1,10 @@
 /**
- * Platform token access for the M0 shell: the webview's localStorage is the
- * app's local store (SharedPreferences-style), mirrored through the Tauri
- * shell commands to a file in the app data directory. The mirror matters
- * because the desktop sidecar serves on an OS-assigned port that changes
- * between launches, and localStorage is origin-scoped by port. In-memory
- * fallback keeps the web UI usable in a plain browser during development.
- * Sign-in phase is decided by validating the stored token against
- * `/user/user/self` on entry.
+ * Platform token access for the web app: localStorage is the local store
+ * (SharedPreferences-style), kept under one key so the token survives
+ * reloads on the fixed server origin. In-memory fallback keeps non-browser
+ * runs usable. Sign-in phase is decided by validating the stored token
+ * against `/user/user/self` on entry.
  */
-declare global {
-  interface Window {
-    __TAURI__?: {
-      core?: {
-        invoke: (cmd: string, args?: Record<string, unknown>) => Promise<unknown>
-      }
-    }
-    __UICP_API_BASE__?: string
-  }
-}
-
 let memoryToken: string | undefined
 /** localStorage key for the platform token. */
 const TOKEN_KEY = 'uicp.platform.token'
@@ -132,33 +118,11 @@ export function resetAuth(): void {
 export async function getToken(): Promise<string | undefined> {
   const local = readLocalToken()
   if (local !== undefined) return local
-  const core = window.__TAURI__?.core
-  if (core !== undefined) {
-    try {
-      const stored = await core.invoke('get_token')
-      if (typeof stored === 'string' && stored !== '') {
-        writeLocalToken(stored)
-        return stored
-      }
-    } catch (error) {
-      // Shell command not permitted (M0 capability gap): fall through to the
-      // in-memory token so the browser flow stays usable.
-      console.error('uicp-nav: get_token failed', error)
-    }
-  }
   return memoryToken
 }
 
 export async function setToken(token: string): Promise<void> {
   writeLocalToken(token)
-  const core = window.__TAURI__?.core
-  if (core !== undefined) {
-    try {
-      await core.invoke('set_token', { token })
-    } catch (error) {
-      console.error('uicp-nav: set_token failed, keeping in-memory token', error)
-    }
-  }
   memoryToken = token
   setState({ status: 'checking', token, invalid: false })
   if (!(await validateToken(token))) {
@@ -171,23 +135,15 @@ export async function setToken(token: string): Promise<void> {
 
 export async function clearToken(): Promise<void> {
   writeLocalToken(undefined)
-  const core = window.__TAURI__?.core
-  if (core !== undefined) {
-    try {
-      await core.invoke('clear_token')
-    } catch (error) {
-      console.error('uicp-nav: clear_token failed', error)
-    }
-  }
   memoryToken = undefined
   setState({ status: 'anonymous', token: undefined, invalid: false })
 }
 
 /**
- * Platform API base. In the browser (shell / `dsh web`) the page is served
+ * Platform API base. In the browser (`dsh web`) the page is served
  * from the local host, so platform calls go through the same-origin
  * `/uicp-api` proxy; elsewhere (tests/scripts) fall back to the direct URL.
  */
 export const API_BASE = typeof window === 'undefined'
   ? 'https://api.underwork.cn/uicp'
-  : window.__UICP_API_BASE__ ?? '/uicp-api'
+  : '/uicp-api'

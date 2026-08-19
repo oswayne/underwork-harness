@@ -2,12 +2,6 @@ import { useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
 import css from './AppPackageWorkspace.module.css'
 
-declare global {
-  interface Window {
-    __UICP_API_BASE__?: string
-  }
-}
-
 /** One generated case outcome from the workspace test seam. */
 interface CaseResult {
   name: string
@@ -79,17 +73,15 @@ export function TestsPanel({ cwd, t }: TestsPanelProps) {
     setConfirming(false)
     setPublishing(true)
     setFeedback(undefined)
-    let baseUrl = ''
     let token: string | undefined
     let tenantId: string | undefined
     try {
-      baseUrl = window.__UICP_API_BASE__ ?? ''
       token = window.localStorage.getItem('uicp.platform.token') ?? undefined
       tenantId = window.localStorage.getItem('uicp.platform.tenant') ?? undefined
     } catch {
       // Storage unavailable: the auth checks below fail with the missing-auth copy.
     }
-    if (baseUrl === '' || token === undefined || tenantId === undefined) {
+    if (token === undefined || tenantId === undefined) {
       setFeedback({ text: t('publish.missingAuth'), ok: false })
       setPublishing(false)
       return
@@ -98,7 +90,7 @@ export function TestsPanel({ cwd, t }: TestsPanelProps) {
       const response = await fetch('/uicp/preview/publish', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ cwd, baseUrl, token, tenantId, adopted: true }),
+        body: JSON.stringify({ cwd, token, tenantId, adopted: true }),
       })
       const body = (await response.json()) as {
         status: number

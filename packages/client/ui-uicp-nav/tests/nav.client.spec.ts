@@ -12,10 +12,10 @@ const APP = { _id: 'a1', name: '应用', identifier: 'app-x' }
 describe('ui-uicp-nav nav state', () => {
   beforeEach(() => {
     resetNav()
-    delete (window as { __TAURI__?: unknown }).__TAURI__
   })
   afterEach(() => {
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('selects tenant and app and derives cwd from the packages root', () => {
@@ -59,23 +59,15 @@ describe('ui-uicp-nav nav state', () => {
     expect(del).toHaveBeenCalledWith('ws-1')
   })
 
-  it('resolves the packages root from the shell when present', async () => {
-    const invoke = vi.fn(async () => '/shell/root')
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
+  it('resolves the packages root from the web server when present', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 0, data: { root: '/root' } }))))
     await resolvePackagesRoot()
-    expect(packagesRoot()).toBe('/shell/root')
-    expect(invoke).toHaveBeenCalledWith('app_packages_root')
+    expect(packagesRoot()).toBe('/root')
+    expect(fetch).toHaveBeenCalledWith('/uicp/preview/root')
   })
 
-  it('prefers the app-packages root passed through the page URL', async () => {
-    window.history.replaceState({}, '', '/?uicp-app-packages-root=/url/root')
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => '/shell/root') } }
-    await resolvePackagesRoot()
-    expect(packagesRoot()).toBe('/url/root')
-    window.history.replaceState({}, '', '/')
-  })
-
-  it('keeps the root unset without a shell bridge', async () => {
+  it('keeps the root unset when the web server is unavailable', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('unreachable') }))
     await resolvePackagesRoot()
     expect(packagesRoot()).toBeUndefined()
   })

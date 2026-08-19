@@ -16,7 +16,7 @@ The platform token lives in the webview's localStorage (the app's local store, S
 
 ## Session creation
 
-Session creation goes through the workspace registry: `ctx.workspaces.create({ path })` registers the app-package directory idempotently, then `ctx.workspaces.startSession(workspaceId)` opens a session whose cwd is that directory. The app-packages root comes from the shell `app_packages_root` command.
+Session creation goes through the workspace registry: `ctx.workspaces.create({ path })` registers the app-package directory idempotently, then `ctx.workspaces.startSession(workspaceId)` opens a session whose cwd is that directory. The app-packages root comes from the web server (`GET /uicp/preview/root`).
 
 ## Model Experience
 

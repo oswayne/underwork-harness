@@ -16,7 +16,7 @@
 
 ## 会话创建
 
-会话创建走 workspace 注册表：`ctx.workspaces.create({ path })` 幂等注册应用包目录，再 `ctx.workspaces.startSession(workspaceId)` 开启 cwd 为该目录的会话。应用包根目录来自壳的 `app_packages_root` 命令。
+会话创建走 workspace 注册表：`ctx.workspaces.create({ path })` 幂等注册应用包目录，再 `ctx.workspaces.startSession(workspaceId)` 开启 cwd 为该目录的会话。应用包根目录来自 Web 服务（`GET /uicp/preview/root`）。
 
 ## Model Experience
 

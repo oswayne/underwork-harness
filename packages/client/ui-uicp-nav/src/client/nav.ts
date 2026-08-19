@@ -98,46 +98,26 @@ export function setPackagesRoot(root: string): void {
   state.packagesRoot = root
 }
 
-/** App-packages root passed by the desktop shell through the page URL. */
-function queryPackagesRoot(): string | undefined {
-  try {
-    const value = new URLSearchParams(window.location.search).get('uicp-app-packages-root')
-    return value !== null && value !== '' ? value : undefined
-  } catch {
-    // Non-browser environment: no URL to parse.
-    return undefined
-  }
-}
-
 /**
- * Resolve the app-packages root from the shell, remembering it locally.
- * The desktop shell passes it through the page URL; the Tauri bridge is a
- * fallback for plain-browser development. A failed invoke is retried; an
- * unavailable shell leaves the root unset.
- * @returns the resolved root, or undefined when the shell is unavailable.
+ * Resolve the app-packages root from the web server, remembering it locally.
+ * The preview seam answers `/uicp/preview/root` with the root the server
+ * resolved from its own cwd; an unavailable seam leaves the root unset.
+ * @returns the resolved root, or undefined when the seam is unavailable.
  */
 export async function resolvePackagesRoot(): Promise<string | undefined> {
-  const fromQuery = queryPackagesRoot()
-  if (fromQuery !== undefined) {
-    setPackagesRoot(fromQuery)
-    return fromQuery
-  }
-  const core = window.__TAURI__?.core
-  if (core !== undefined) {
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      try {
-        const root = await core.invoke('app_packages_root')
-        if (typeof root === 'string' && root !== '') {
-          setPackagesRoot(root)
-          return root
-        }
-      } catch {
-        // Bridge not ready yet: wait and retry below.
-      }
-      await new Promise(resolve => setTimeout(resolve, 300))
+  if (state.packagesRoot !== undefined) return state.packagesRoot
+  try {
+    const res = await fetch('/uicp/preview/root')
+    const body = await res.json() as { status?: number; data?: { root?: string } }
+    if (res.ok && body.status === 0 && typeof body.data?.root === 'string' && body.data.root !== '') {
+      setPackagesRoot(body.data.root)
+      return body.data.root
     }
+    return undefined
+  } catch {
+    // Transport failure: the web seam is not reachable yet.
+    return undefined
   }
-  return state.packagesRoot
 }
 
 export function packagesRoot(): string | undefined {

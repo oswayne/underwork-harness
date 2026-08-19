@@ -31,9 +31,13 @@ export const inject = ['webServer']
 export interface Config {
   /** App-packages root; defaults to the nearest `app-packages` walking up from cwd. */
   appPackagesRoot?: string
+  /** Platform API base; defaults to the production UICP endpoint. */
+  platformBase?: string
 }
 
 const require = createRequire(import.meta.url)
+/** Production UICP platform base when the deployment names no override. */
+const DEFAULT_PLATFORM_BASE = 'https://api.underwork.cn/uicp'
 const PREVIEW_HOST_PKG = require.resolve('@deepseek-ai/dsh-eureka-preview-host/package.json')
 const PREVIEW_DIST = join(dirname(PREVIEW_HOST_PKG), 'dist')
 const BUNDLE_JS = join(PREVIEW_DIST, 'uicp-eureka-preview.js')
@@ -151,11 +155,7 @@ const EDITOR_WINDOW_HTML = `<!doctype html>
       save.addEventListener('click', () => {
         try { handle?.save() } catch (error) { setStatus(String(error), false) }
       })
-      document.getElementById('close').addEventListener('click', () => {
-        const tauri = window.__TAURI__
-        if (tauri?.window !== undefined) void tauri.window.getCurrentWindow().close()
-        else window.close()
-      })
+      document.getElementById('close').addEventListener('click', () => { window.close() })
       load(params.get('page') ?? undefined).catch(error => setStatus(String(error), false))
     })()
   </script>
@@ -694,6 +694,7 @@ export async function publishHandler(
   req: IncomingMessage,
   res: ServerResponse,
   root: string,
+  platformBase: string = DEFAULT_PLATFORM_BASE,
 ): Promise<void> {
   const json = (status: number, body: unknown): void => {
     res.writeHead(status, { 'content-type': 'application/json' })
@@ -703,7 +704,7 @@ export async function publishHandler(
     json(405, { status: 405, msg: 'method not allowed', data: null })
     return
   }
-  let body: { cwd?: unknown; baseUrl?: unknown; token?: unknown; tenantId?: unknown; adopted?: unknown }
+  let body: { cwd?: unknown; token?: unknown; tenantId?: unknown; adopted?: unknown }
   try {
     const parsed = await readJsonBody(req)
     if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
@@ -721,15 +722,14 @@ export async function publishHandler(
     json(400, { status: 400, msg: '用户未采纳，拒绝写入平台', data: null })
     return
   }
-  const { baseUrl, token, tenantId } = body
-  if (typeof baseUrl !== 'string' || baseUrl === ''
-    || typeof token !== 'string' || token === ''
+  const { token, tenantId } = body
+  if (typeof token !== 'string' || token === ''
     || typeof tenantId !== 'string' || tenantId === '') {
-    json(400, { status: 400, msg: 'baseUrl、token、tenantId 均为必填', data: null })
+    json(400, { status: 400, msg: 'token、tenantId 均为必填', data: null })
     return
   }
   try {
-    const summary = await publishPackage(dir, new HttpPlatformClient(baseUrl, token, tenantId))
+    const summary = await publishPackage(dir, new HttpPlatformClient(platformBase, token, tenantId))
     json(200, { status: 0, data: summary })
   } catch (error) {
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
@@ -783,6 +783,14 @@ export function apply(ctx: Context, config: Config = {}): void {
         }),
         ctx.webServer.register({
           kind: 'exact',
+          path: '/uicp/preview/root',
+          handler: (_req, res) => {
+            res.writeHead(200, { 'content-type': 'application/json' })
+            res.end(JSON.stringify({ status: 0, data: { root } }))
+          },
+        }),
+        ctx.webServer.register({
+          kind: 'exact',
           path: '/uicp/preview/bundle.js',
           handler: (_req, res) => { void serveFile(res, BUNDLE_JS, 'application/javascript') },
         }),
@@ -817,7 +825,7 @@ export function apply(ctx: Context, config: Config = {}): void {
         ctx.webServer.register({
           kind: 'exact',
           path: '/uicp/preview/publish',
-          handler: (req, res) => { void publishHandler(req, res, root) },
+          handler: (req, res) => { void publishHandler(req, res, root, config.platformBase ?? DEFAULT_PLATFORM_BASE) },
         }),
       ]
       return () => {

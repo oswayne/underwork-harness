@@ -10,7 +10,6 @@ const t = ((key: string) => zh[key as keyof typeof zh]) as never
 describe('LoginPage', () => {
   beforeEach(() => {
     resetAuth()
-    delete (window as { __TAURI__?: unknown }).__TAURI__
     window.localStorage.clear()
     vi.unstubAllGlobals()
   })
@@ -19,7 +18,6 @@ describe('LoginPage', () => {
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
     window.localStorage.clear()
-    delete (window as { __TAURI__?: unknown }).__TAURI__
   })
 
   /** Platform self endpoint answering success for any token. */
@@ -35,9 +33,7 @@ describe('LoginPage', () => {
   it('shows a checking seat while validating a stored token', async () => {
     let resolveFetch: (value: Response) => void = () => undefined
     vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>((resolve) => { resolveFetch = resolve })))
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = {
-      core: { invoke: vi.fn(async (cmd: string) => (cmd === 'get_token' ? 'tok' : undefined)) },
-    }
+    window.localStorage.setItem('uicp.platform.token', 'tok')
     render(<LoginPage t={t} />)
     expect(await screen.findByText('Underwork Harness')).toBeTruthy()
     expect(screen.getByText('正在验证 Token…')).toBeTruthy()
@@ -50,9 +46,7 @@ describe('LoginPage', () => {
 
   it('hides the gate once a stored token validates', async () => {
     selfOk()
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = {
-      core: { invoke: vi.fn(async (cmd: string) => (cmd === 'get_token' ? 'tok' : undefined)) },
-    }
+    window.localStorage.setItem('uicp.platform.token', 'tok')
     render(<LoginPage t={t} />)
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: '登录' })).toBeNull()
@@ -61,20 +55,17 @@ describe('LoginPage', () => {
 
   it('signs in through the form and stores the token', async () => {
     selfOk()
-    const invoke = vi.fn(async () => undefined)
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke } }
     render(<LoginPage t={t} />)
     fireEvent.change(await screen.findByLabelText('登录'), { target: { value: 'jwt-1' } })
     fireEvent.submit(screen.getByRole('button', { name: '登录' }))
     await waitFor(() => {
       expect(screen.queryByRole('button', { name: '登录' })).toBeNull()
     })
-    expect(invoke).toHaveBeenCalledWith('set_token', { token: 'jwt-1' })
+    expect(window.localStorage.getItem('uicp.platform.token')).toBe('jwt-1')
   })
 
   it('keeps the gate and explains when the token is invalid', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 401, msg: 'bad' }), { status: 401 })))
-    ;(window as { __TAURI__?: unknown }).__TAURI__ = { core: { invoke: vi.fn(async () => undefined) } }
     render(<LoginPage t={t} />)
     fireEvent.change(await screen.findByLabelText('登录'), { target: { value: 'expired' } })
     fireEvent.submit(screen.getByRole('button', { name: '登录' }))
