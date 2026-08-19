@@ -7,7 +7,8 @@
   },
   "regions": [
     "body",
-    "toolbar"
+    "toolbar",
+    "header"
   ],
   "body": [
     {
