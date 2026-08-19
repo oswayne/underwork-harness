@@ -1,1 +1,0 @@
-{"default":{"identifier":"default","description":"","remote":{"urls":["http://127.0.0.1:*","http://localhost:*"]},"local":true,"windows":["main","uicp-editor"],"permissions":["core:default","core:window:allow-close","allow-open-editor-window","allow-get-token","allow-set-token","allow-clear-token","allow-app-packages-root"]}}

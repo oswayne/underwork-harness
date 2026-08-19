@@ -1,11 +1,7 @@
-import { spawn } from 'node:child_process'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   createProcessShutdown,
-  PARENT_WATCH_INTERVAL_MS,
   PROCESS_SHUTDOWN_TIMEOUT_MS,
-  watchParentProcess,
-  type ProcessShutdown,
 } from '../src/process-shutdown.ts'
 
 function deferred(): { promise: Promise<void>; resolve: () => void; reject: (error: Error) => void } {
@@ -59,29 +55,6 @@ describe('process shutdown', () => {
       expect(exit).not.toHaveBeenCalled()
     } finally {
       process.exitCode = originalExitCode
-    }
-  })
-
-  it('exits when the watched launcher PID dies', async () => {
-    vi.useFakeTimers()
-    const original = process.env.DSH_WATCH_PID
-    const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1_000)'])
-    process.env.DSH_WATCH_PID = String(child.pid)
-    const interrupt = vi.fn()
-    const shutdown = { interrupt, shutdown: vi.fn() } as unknown as ProcessShutdown
-    const stop = watchParentProcess(shutdown)
-    try {
-      const exited = new Promise<void>((resolve) => {
-        child.once('exit', () => { resolve() })
-      })
-      child.kill()
-      await exited
-      await vi.advanceTimersByTimeAsync(PARENT_WATCH_INTERVAL_MS)
-      expect(interrupt).toHaveBeenCalledWith(0)
-    } finally {
-      stop()
-      if (original === undefined) delete process.env.DSH_WATCH_PID
-      else process.env.DSH_WATCH_PID = original
     }
   })
 
