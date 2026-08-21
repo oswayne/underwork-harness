@@ -16,7 +16,19 @@
 
 ## 模型体验
 
-工具描述指导模型在平台同步或采纳发布前打快照；恢复后重新跑 `apppackage_validate` 与 `apppackage_test`。
+### apppackage_version
+
+#### What the model sees
+
+工具描述指导模型在平台同步或采纳发布前打快照；恢复后重新跑 `apppackage_validate` 与 `apppackage_test`；终端渲染报告操作结果。
+
+#### Token effect
+
+每次调用产生一条工具调用记录；除工具自身描述与结果外不增加请求前缀。
+
+#### KV Cache effect
+
+不使主请求失效；工具调用不改变对话的提示前缀。
 
 ## 已知局限与延后工作
 

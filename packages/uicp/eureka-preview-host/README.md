@@ -19,6 +19,14 @@ Self-contained Eureka page preview for the UICP low-code driver. The bundle carr
 
 `pnpm run build:preview` emits `dist/uicp-eureka-preview.js` (IIFE, `UicpEurekaPreview`) plus its CSS assets. The React 19 runtime is bundled inside; nothing is shared with the hosting app's React 18.
 
+## Model Experience
+
+None, as the browser preview bundle renders page JSON in the client and registers nothing model-facing.
+
+#### KV Cache effect
+
+None; the bundle neither assembles nor sends a provider request.
+
 ## Known Limitations and Deferred Work
 
 - The preview renders with the caller's fetcher; the sandbox data path (`/app-package/entity/...`) is wired in M3.

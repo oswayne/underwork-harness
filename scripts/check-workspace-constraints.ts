@@ -146,6 +146,10 @@ const packageFileExtras: Readonly<Record<string, readonly string[]>> = {
   '@deepseek-ai/dsh-sandbox-windows-acl': ['lib/runner.js', 'lib/types-*.js'],
   '@deepseek-ai/dsh-skill-badge': ['assets'],
   '@deepseek-ai/dsh-subprocess-local': ['scripts/ensure-spawn-helper.mjs'],
+  // The self-contained preview bundle ships beside the lib for runtime loading.
+  '@deepseek-ai/dsh-eureka-preview-host': ['dist/**'],
+  // The vendored Eureka schema snapshot ships beside the lib for validation.
+  '@deepseek-ai/dsh-tool-apppackage-validate': ['data/**'],
 }
 
 function sameStringList(actual: readonly string[] | undefined, expected: readonly string[]): boolean {

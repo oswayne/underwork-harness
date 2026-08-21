@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write packages/uicp/eureka-preview-host/README.md
-README.md: 44594b9be1aca7721661848a170792a7fc9e506f
-README.zh.md: a87827dba977f72a180b3da34d85afa2082abc89
+README.md: 22433e91bbb500afecb1dc101e997fc0446bcc24
+README.zh.md: 46bc0e83c0a42a67f79e967228f69d19ac788f03

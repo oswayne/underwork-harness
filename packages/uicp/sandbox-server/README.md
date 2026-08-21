@@ -24,6 +24,14 @@ Local uicp data sandbox for the UICP low-code driver. The host plugin serves `/a
 
 `packageDir` is required. `backendName` selects the `ctx.storage` backend exposing the KV facet (default `json`); a backend without the facet fails load.
 
+## Model Experience
+
+None, as the local data sandbox answers HTTP data routes and registers nothing model-facing.
+
+#### KV Cache effect
+
+None; the sandbox neither assembles nor sends a provider request.
+
 ## Known Limitations and Deferred Work
 
 - The behavior-matrix contract tests against a real platform benchmark are the M4 fidelity gate; this package is the local mirror.

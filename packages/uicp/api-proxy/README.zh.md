@@ -22,3 +22,11 @@ plugins:
 ```
 
 `upstream` 字段必填；为空时插件加载失败。
+
+## Model Experience
+
+None，因为该代理转发已组装好的平台请求，不注册任何模型面向的内容。
+
+#### KV Cache effect
+
+无；该代理既不组装也不发送 provider 请求。

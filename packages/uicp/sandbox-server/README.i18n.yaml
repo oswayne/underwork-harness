@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write packages/uicp/sandbox-server/README.md
-README.md: 11b67fa40a30b3d3badee20e778c1f30a4fe2ba2
-README.zh.md: c885a7b16aabcdf23d9866db276f0f7133ed3b44
+README.md: a63da21e917caece549224c39f28493bb8478689
+README.zh.md: 236d083f55c5a27318060dcd35661ebe2172131a

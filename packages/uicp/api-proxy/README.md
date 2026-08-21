@@ -22,3 +22,11 @@ plugins:
 ```
 
 The `upstream` field is required; an empty value fails the plugin load.
+
+## Model Experience
+
+None, as the proxy forwards already-composed platform requests and registers nothing model-facing.
+
+#### KV Cache effect
+
+None; the proxy neither assembles nor sends a provider request.

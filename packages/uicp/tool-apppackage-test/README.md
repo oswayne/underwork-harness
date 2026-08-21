@@ -17,7 +17,19 @@ The canonical value is `{ ok, cases, passed, failed, results: [{ name, passed, s
 
 ## Model Experience
 
-The tool description directs the model to run tests after `apppackage_validate` and before adoption. The terminal render lists one `PASS` / `FAIL` / `SKIP` line per case with the failing assertion.
+### apppackage_test
+
+#### What the model sees
+
+The tool description directs the model to run tests after `apppackage_validate` and before adoption; the terminal render lists one `PASS` / `FAIL` / `SKIP` line per case with the failing assertion.
+
+#### Token effect
+
+The tool adds one tool-call entry per invocation; no request prefix is added beyond the tool's own description and result.
+
+#### KV Cache effect
+
+No main-request invalidation; the tool call does not change the conversation's prompt prefix.
 
 ## Known Limitations and Deferred Work
 

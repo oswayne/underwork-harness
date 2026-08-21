@@ -23,8 +23,9 @@
   },
   "files": [
     "lib/index.js",
-    "lib/types/**/*.d.ts",
-    "dist/**"
+    "lib/invariant.js",
+    "dist/**",
+    "lib/types/**/*.d.ts"
   ],
   "license": "MIT",
   "scripts": {
@@ -42,7 +43,11 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "workspace:^"
+  },
   "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:^",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "vite": "^7.0.0"

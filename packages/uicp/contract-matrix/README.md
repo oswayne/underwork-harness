@@ -17,10 +17,6 @@ Behavior-matrix contract corpus and dual-target runner for the uicp data sandbox
 - `buildReferenceTarget()` constructs a fresh in-process sandbox with deterministic seed ids (`seed-1..3`, `tree-1..2`) as the local reference.
 - `runMatrix(target, cases)` reports per-case pass/fail; `diffMatrix(left, right, cases)` reports divergences for the sandbox-vs-platform comparison once a platform benchmark endpoint is wired.
 
-## Known Limitations and Deferred Work
-
-- The platform-side target adapter is pending the benchmark environment; the diff runner is ready and unit-tested against fake targets.
-
 ## First platform run (2026-08-16)
 
 Running the corpus against the live platform (dsh-test) yields **37/45 consistent**; the 8 divergences are all platform-side behavior gaps where the sandbox follows the contract:
@@ -30,3 +26,15 @@ Running the corpus against the live platform (dsh-test) yields **37/45 consisten
 - `ge` / `le` emit the invalid Mongo operators `$ge` / `$le`, failing with HTTP 500.
 
 These are platform-side defects to report to the platform maintainers; the sandbox stays contract-faithful and the matrix keeps flagging them until the platform converges.
+
+## Model Experience
+
+None, as the corpus runs outside model requests and registers nothing model-facing.
+
+#### KV Cache effect
+
+None; the matrix neither assembles nor sends a provider request.
+
+## Known Limitations and Deferred Work
+
+- The platform-side target adapter is pending the benchmark environment; the diff runner is ready and unit-tested against fake targets.

@@ -20,7 +20,19 @@ The canonical value is `{ ok, issues: [{ severity, file, rule, message }], depen
 
 ## Model Experience
 
-The tool description tells the model to run validation after generating or editing an app package, before adoption or publish. The terminal render lists every finding as `[severity] file (rule) message` and every cross-app reference as `identifier (kind): references`.
+### apppackage_validate
+
+#### What the model sees
+
+The tool description tells the model to run validation after generating or editing an app package, before adoption or publish; the terminal render lists every finding as `[severity] file (rule) message` and every cross-app reference as `identifier (kind): references`.
+
+#### Token effect
+
+The tool adds one tool-call entry per invocation; no request prefix is added beyond the tool's own description and result.
+
+#### KV Cache effect
+
+No main-request invalidation; the tool call does not change the conversation's prompt prefix.
 
 ## Known Limitations and Deferred Work
 

@@ -17,7 +17,19 @@ The four publication gates (static validation, automated tests, sandbox-platform
 
 ## Model Experience
 
-The tool description tells the model that API save is the last step and requires the user's adoption; the terminal render reports what was created versus reused.
+### apppackage_publish
+
+#### What the model sees
+
+The tool description tells the model that API save is the last step and requires the user's explicit adoption; the terminal render prints one summary line of the form `created: app=<bool> entities=<n> fields=<n> funcs=<n> menu=<n> page=<n>`, reporting what was created versus reused so the model can confirm the result with the user.
+
+#### Token effect
+
+The tool adds one tool-call entry per invocation; no request prefix is added beyond the tool's own description and result.
+
+#### KV Cache effect
+
+No main-request invalidation; the tool call does not change the conversation's prompt prefix.
 
 ## Known Limitations and Deferred Work
 

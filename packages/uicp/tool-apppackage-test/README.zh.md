@@ -17,7 +17,19 @@
 
 ## 模型体验
 
-工具描述指导模型在 `apppackage_validate` 之后、采纳之前运行测试。终端渲染每个用例一行 `PASS` / `FAIL` / `SKIP`，失败附带断言信息。
+### apppackage_test
+
+#### What the model sees
+
+工具描述指导模型在 `apppackage_validate` 之后、采纳之前运行测试；终端渲染每个用例一行 `PASS` / `FAIL` / `SKIP`，失败附带断言信息。
+
+#### Token effect
+
+每次调用产生一条工具调用记录；除工具自身描述与结果外不增加请求前缀。
+
+#### KV Cache effect
+
+不使主请求失效；工具调用不改变对话的提示前缀。
 
 ## 已知局限与延后工作
 

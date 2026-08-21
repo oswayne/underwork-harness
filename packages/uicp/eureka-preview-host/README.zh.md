@@ -19,6 +19,14 @@ UICP 低代码驱动器的自包含 Eureka 页面预览。该 bundle 自带 Reac
 
 `pnpm run build:preview` 产出 `dist/uicp-eureka-preview.js`（IIFE，`UicpEurekaPreview`）及其 CSS 资源。React 19 运行时内置其中，与宿主应用的 React 18 完全隔离。
 
+## Model Experience
+
+None，因为浏览器预览 bundle 在客户端渲染页面 JSON，不注册任何模型面向的内容。
+
+#### KV Cache effect
+
+无；该 bundle 既不组装也不发送 provider 请求。
+
 ## 已知局限与延后工作
 
 - 预览使用调用方的 fetcher；沙盒数据路径（`/app-package/entity/...`）在 M3 接通。

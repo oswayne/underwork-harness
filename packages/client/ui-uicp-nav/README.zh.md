@@ -21,3 +21,7 @@
 ## Model Experience
 
 无。本插件为浏览器界面，不触及任何模型请求。
+
+#### KV Cache effect
+
+无；本插件既不组装也不发送 provider 请求。

@@ -16,7 +16,19 @@ The canonical value is `{ ok, action, version?, versions?, restored? }`. Snapsho
 
 ## Model Experience
 
-The tool description directs the model to snapshot before platform sync or an adopted publish, and to re-validate after a restore (`apppackage_validate`) and re-run tests (`apppackage_test`).
+### apppackage_version
+
+#### What the model sees
+
+The tool description directs the model to snapshot before platform sync or an adopted publish, and to re-validate after a restore (`apppackage_validate`) and re-run tests (`apppackage_test`); the terminal render reports the action outcome.
+
+#### Token effect
+
+The tool adds one tool-call entry per invocation; no request prefix is added beyond the tool's own description and result.
+
+#### KV Cache effect
+
+No main-request invalidation; the tool call does not change the conversation's prompt prefix.
 
 ## Known Limitations and Deferred Work
 

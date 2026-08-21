@@ -21,3 +21,7 @@ Session creation goes through the workspace registry: `ctx.workspaces.create({ p
 ## Model Experience
 
 None, as the plugin is browser chrome; nothing here reaches a model request.
+
+#### KV Cache effect
+
+None; the plugin neither assembles nor sends a provider request.

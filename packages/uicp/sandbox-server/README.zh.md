@@ -24,6 +24,14 @@ UICP 低代码驱动器的本地数据沙盒。host 插件在 `ctx.webServer` �
 
 `packageDir` 必填。`backendName` 选择暴露 KV facet 的 `ctx.storage` 后端（默认 `json`）；无 facet 的后端加载即失败。
 
+## Model Experience
+
+None，因为本地数据沙盒只应答 HTTP 数据路由，不注册任何模型面向的内容。
+
+#### KV Cache effect
+
+无；沙盒既不组装也不发送 provider 请求。
+
 ## 已知局限与延后工作
 
 - 对真实平台基准的行为矩阵契约测试是 M4 保真闸门；本包是本地镜像。
