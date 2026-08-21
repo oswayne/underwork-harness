@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-面向模型的应用包目录静态校验工具。工具通过 `ctx.fs` 读取一个应用包目录（契约见 [app-packages/README.md](../../../app-packages/README.md)），沙箱策略生效，返回结构化问题与派生出的跨应用依赖。
+面向模型的应用包目录静态校验工具。工具通过 `ctx.fs` 读取一个应用包目录（契约见 [app-packages/README.md](../../../app-packages/README.zh.md)），沙箱策略生效，返回结构化问题与派生出的跨应用依赖。
 
 ## 工具
 

@@ -3,4 +3,4 @@
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-08-16-uicp-app-package-directory-contract.md
 2026-08-16-uicp-app-package-directory-contract.md: 5a0f63c1adb8cc64eca9febadec7864c107358ea
-2026-08-16-uicp-app-package-directory-contract.zh.md: cfa0dd0bfcaf44efe128153193a5af0f0edf5357
+2026-08-16-uicp-app-package-directory-contract.zh.md: 5dcada8f9ea8853fbdd0b6450c3aa71efc28111b

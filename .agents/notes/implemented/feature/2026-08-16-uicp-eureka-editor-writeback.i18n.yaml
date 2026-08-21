@@ -3,4 +3,4 @@
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-16-uicp-eureka-editor-writeback.md
 2026-08-16-uicp-eureka-editor-writeback.md: 26436a27839885315d03c843d87fbc5b488c1c2c
-2026-08-16-uicp-eureka-editor-writeback.zh.md: 74bf18d78e3119f7e35aec880b42ad52b3f8a710
+2026-08-16-uicp-eureka-editor-writeback.zh.md: 237ccae8ef10cf768a90d83ed3b135579b2d27a2

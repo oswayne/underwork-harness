@@ -7,6 +7,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 // so the guard service below typechecks against the cordis Context.
 import type {} from '@deepseek-ai/dsh-client-ui-workspace/client'
 import { en, zh, type NavKey } from '../locales.ts'
+import { UnderworkBrandMark, UnderworkBrandName } from './Brand.tsx'
 import { TenantSwitch } from './TenantSwitch.tsx'
 import { LoginPage } from './LoginPage.tsx'
 import { SessionSwitchAction } from './SessionSwitchAction.tsx'
@@ -75,11 +76,14 @@ export function apply(ctx: ClientContext): void {
   })
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-uicp-nav: dictionaries')
   ctx.effect(
-    () => ctx.reflect.provide('brand', {
-      logo: '/app-icon.svg',
-      name: 'Underwork Harness',
-    }, undefined),
-    'ui-uicp-nav: application brand',
+    () => ctx.slots.inject('sidebar.brand.mark', () =>
+      ctx.slots.inject('sidebar.brand.name', () =>
+        ctx.slots.inject('conversation.hero.brand.mark', function* () {
+          yield ctx.slots.register({ name: 'sidebar.brand.mark' }, UnderworkBrandMark)
+          yield ctx.slots.register({ name: 'sidebar.brand.name' }, UnderworkBrandName)
+          yield ctx.slots.register({ name: 'conversation.hero.brand.mark' }, UnderworkBrandMark)
+        }))),
+    'ui-uicp-nav: Underwork brand occupants',
   )
   ctx.effect(
     () => ctx.reflect.provide('managedWorkspaces', {

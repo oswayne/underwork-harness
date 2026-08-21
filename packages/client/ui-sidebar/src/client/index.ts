@@ -7,8 +7,8 @@ import { SidebarRoot } from './SidebarRoot.tsx'
 import { en, zh, type SidebarKey } from './locales.ts'
 
 export type {
-  Brand, SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarRootInjected,
-  SidebarSectionOwnerProps, SidebarSettingsOwnerProps,
+  SidebarBrandMarkOwnerProps, SidebarBrandNameOwnerProps, SidebarFooterActionOwnerProps,
+  SidebarRootComponentProps, SidebarRootInjected, SidebarSectionOwnerProps, SidebarSettingsOwnerProps,
 } from './contract/slots.ts'
 export type { SidebarKey } from './locales.ts'
 
@@ -31,16 +31,12 @@ export const inject = ['slots', 'layout', 'sessions', 'workspaces', 'locale']
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-sidebar: dictionaries')
 
-  const injectProps = (): SidebarRootInjected => {
-    const brand = ctx.get('brand')
-    return {
-      // The shell's New Session button rides the runtime's shared action
-      // (current Session Workspace, then recent Workspace).
-      startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
-      toggleSidebar: () => { ctx.layout.toggleSidebar() },
-      ...(brand === undefined ? {} : { brand }),
-    }
-  }
+  const injectProps = (): SidebarRootInjected => ({
+    // The shell's New Session button rides the runtime's shared action
+    // (current Session Workspace, then recent Workspace).
+    startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
+    toggleSidebar: () => { ctx.layout.toggleSidebar() },
+  })
   ctx.effect(
     () => ctx.slots.register({
       name: 'sidebar',
@@ -49,6 +45,8 @@ export function apply(ctx: ClientContext): void {
       // region (header, search, session list, workspace dialogs), ui-settings
       // registers the foot trigger + settings panel.
       children: {
+        'sidebar.brand.mark': { kind: 'single', scope: 'root' },
+        'sidebar.brand.name': { kind: 'single', scope: 'root' },
         'sidebar.workspaces': { kind: 'single', scope: 'root' },
         'sidebar.settings': { kind: 'single', scope: 'root' },
         'sidebar.footer.action': { kind: 'list', scope: 'root' },

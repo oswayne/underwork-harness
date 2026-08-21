@@ -10,7 +10,7 @@ M3 需要本地执行环境，在用户采纳前验证生成的应用包：数�
 
 ## 决策
 
-[`@deepseek-ai/dsh-sandbox-server`](../../../../packages/uicp/sandbox-server/README.md) 是 host 插件，在 `ctx.webServer` 上提供与平台一致的 `/app-package/entity/...` REST 路径。store 按会话把记录持久化到 `ctx.storage` 的 KV facet（`backendName`，默认 `json`）；查询引擎镜像 `DataQueryApp` / `Field`（操作符、类型转换、`_sort`、`_preventListAll`、分页、stats、树形组装与分支前缀）；执行器在 vm 上下文运行 body，只注入内部词汇，并镜像构造函数生命周期语义；上传返回 mock。`packageDir` 是必填配置，指向应用包目录。
+[`@deepseek-ai/dsh-sandbox-server`](../../../../packages/uicp/sandbox-server/README.zh.md) 是 host 插件，在 `ctx.webServer` 上提供与平台一致的 `/app-package/entity/...` REST 路径。store 按会话把记录持久化到 `ctx.storage` 的 KV facet（`backendName`，默认 `json`）；查询引擎镜像 `DataQueryApp` / `Field`（操作符、类型转换、`_sort`、`_preventListAll`、分页、stats、树形组装与分支前缀）；执行器在 vm 上下文运行 body，只注入内部词汇，并镜像构造函数生命周期语义；上传返回 mock。`packageDir` 是必填配置，指向应用包目录。
 
 ## 曾考虑的替代方案
 

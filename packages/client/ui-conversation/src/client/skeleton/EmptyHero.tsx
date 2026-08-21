@@ -7,9 +7,8 @@
 import { useId } from 'react'
 import type { ReactNode, RefObject } from 'react'
 import {
-  AppLogo, IconChevronDownOutline14, IconFolderClose16, IconFolderOpen16,
+  FishLogo, IconChevronDownOutline14, IconFolderClose16, IconFolderOpen16,
 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { Brand } from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import { workspaceTitleOf } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSlotProps } from '../contract/slots.ts'
 import css from './HeroShell.module.css'
@@ -103,8 +102,8 @@ export function HeroGlow({ className }: { className?: string | undefined }) {
 export interface HeroShellProps {
   /** The owner's locale seat, passed down as a plain prop. */
   t: HeroTranslate
-  /** The composed application brand; absent renders no leading logo. */
-  brand?: Brand
+  /** Authorized renderer for the hero brand-mark slot. */
+  renderSlot: ConversationSlotProps['renderSlot']
   /** Overlay content after the stack (modals). */
   children?: ReactNode
 }
@@ -115,17 +114,17 @@ export interface HeroShellProps {
  * @param props - see {@link HeroShellProps}.
  * @returns the centered hero element tree.
  */
-export function HeroShell({ t, brand, children }: HeroShellProps) {
+export function HeroShell({ t, renderSlot, children }: HeroShellProps) {
   return (
     <div className={css.root}>
       <div className={css.stack}>
         <div className={css.headline}>
-          {/* figma 34:10412: brand mark 34×25 leading the headline, gap 10. */}
-          {brand !== undefined && (
-            <span className={css.fishHitbox}>
-              <AppLogo size={34} className={css.fish} src={brand.logo} />
-            </span>
-          )}
+          {/* figma 34:10412: fish 34×25 leading the headline, gap 10. */}
+          <span className={css.fishHitbox}>
+            {renderSlot('conversation.hero.brand.mark', { size: 34, className: css.fish }, {
+              fallback: <FishLogo size={34} className={css.fish} />,
+            })}
+          </span>
           <span className={css.headlineText}>{t('hero.headline')}</span>
           <span className={css.previewBadge}>{t('hero.preview')}</span>
         </div>

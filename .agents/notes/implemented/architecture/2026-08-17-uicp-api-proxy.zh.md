@@ -10,9 +10,9 @@ dsh Web UI 运行在 `http://127.0.0.1:<port>`，而 uicp 平台 API 只对已�
 
 ## 决策
 
-[`@deepseek-ai/dsh-uicp-api-proxy`](../../../../packages/uicp/api-proxy/README.md) 在 dsh web 服务器上注册 `/uicp-api` 前缀：浏览器以同源请求携带 `Authorization` / `Tenant` / `content-type` 头，宿主端把方法、请求体与这些头转发到配置的 `upstream`（`https://api.underwork.cn/uicp`），并原样回传 JSON 响应；上游失败映射为 502 JSON。
+[`@deepseek-ai/dsh-uicp-api-proxy`](../../../../packages/uicp/api-proxy/README.zh.md) 在 dsh web 服务器上注册 `/uicp-api` 前缀：浏览器以同源请求携带 `Authorization` / `Tenant` / `content-type` 头，宿主端把方法、请求体与这些头转发到配置的 `upstream`（`https://api.underwork.cn/uicp`），并原样回传 JSON 响应；上游失败映射为 502 JSON。
 
-客户端 `API_BASE`（[`ui-uicp-nav`](../../../../packages/client/ui-uicp-nav/README.md)）在浏览器中默认取 `/uicp-api`，支持 `window.__UICP_API_BASE__` 覆盖，非浏览器环境回退到平台直连地址。该插件行挂在 web-app bundle patch 中，因此每次 `dsh web` 会话都带有此路由；upstream 是可校验的 `Config` 字段而非硬编码常量。
+客户端 `API_BASE`（[`ui-uicp-nav`](../../../../packages/client/ui-uicp-nav/README.zh.md)）在浏览器中默认取 `/uicp-api`，支持 `window.__UICP_API_BASE__` 覆盖，非浏览器环境回退到平台直连地址。该插件行挂在 web-app bundle patch 中，因此每次 `dsh web` 会话都带有此路由；upstream 是可校验的 `Config` 字段而非硬编码常量。
 
 ## 备选方案
 

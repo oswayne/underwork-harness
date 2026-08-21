@@ -13,27 +13,19 @@ import type { PropsLocale, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/d
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 
-/**
- * The composed application's brand: the logo mark URL and product name.
- * Absent means the shell renders no brand art (the brand row keeps only the
- * fold toggle and the hero headline drops its leading mark).
- */
-export interface Brand {
-  /** Logo mark image URL (web asset path). */
-  logo: string
-  /** Product name shown next to the logo. */
-  name: string
-}
-
-declare module '@deepseek-ai/cordis' {
-  interface Context {
-    /** Optional application brand consumed by the shell's brand row and rail. */
-    brand?: Brand
-  }
-}
-
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
+    /**
+     * Brand mark rendered in the expanded brand row and collapsed rail.
+     * Declared by this package's `sidebar` entry; deployments may replace
+     * the shell's fish fallback without replacing the surrounding controls.
+     */
+    'sidebar.brand.mark': { kind: 'single'; scope: 'root'; owner: SidebarBrandMarkOwnerProps }
+    /**
+     * Brand name rendered beside the expanded mark. Declared by this
+     * package's `sidebar` entry; the shell supplies a generic text fallback.
+     */
+    'sidebar.brand.name': { kind: 'single'; scope: 'root'; owner: SidebarBrandNameOwnerProps }
     /**
      * The workspace/session browsing region: section header, search, the
      * grouped/flat session list, and every workspace dialog. Declared by this
@@ -53,6 +45,18 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'sidebar.footer.action': { kind: 'list'; scope: 'root'; owner: SidebarFooterActionOwnerProps }
   }
+}
+
+/** Geometry supplied to the sidebar brand-mark occupant. */
+export interface SidebarBrandMarkOwnerProps {
+  /** Requested square edge in pixels. */
+  size: number
+}
+
+/** Empty owner share for the sidebar brand-name occupant. */
+export interface SidebarBrandNameOwnerProps {
+  /** Marker field: the occupant owns its own content and width. */
+  children?: never
 }
 
 /**
@@ -95,8 +99,6 @@ export type SidebarRootInjected = {
   startSession: (workspaceId?: WorkspaceId) => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
-  /** The composed application brand; absent renders no brand art. */
-  brand?: Brand
 }
 
 /**
@@ -106,5 +108,11 @@ export type SidebarRootInjected = {
  */
 export type SidebarRootComponentProps =
   PropsRuntime<'sidebar'>
-  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
+  & PropsRenderSlots<
+    | 'sidebar.brand.mark'
+    | 'sidebar.brand.name'
+    | 'sidebar.workspaces'
+    | 'sidebar.settings'
+    | 'sidebar.footer.action'
+  >
   & SidebarRootInjected & PropsLocale<'sidebar'>

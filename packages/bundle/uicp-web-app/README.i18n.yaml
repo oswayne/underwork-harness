@@ -3,4 +3,4 @@
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write packages/bundle/uicp-web-app/README.md
 README.md: 5bd6cd569dd4957e58f26fc80582ef5282f6cd9d
-README.zh.md: 79ad62b51d3677b7fc2855da2da57423d1a12cdc
+README.zh.md: 51eb2411f5a503e69ebc9f2edd85ca13375e7433

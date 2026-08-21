@@ -3,4 +3,4 @@
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-16-uicp-apppackage-publish.md
 2026-08-16-uicp-apppackage-publish.md: 466f2de4d5f7372cd156ba1c056fa23eda12be2c
-2026-08-16-uicp-apppackage-publish.zh.md: b24840ce9099471b47a43eea891dad697f506a70
+2026-08-16-uicp-apppackage-publish.zh.md: ff71d72ae32418c38ac1c9d592b41fa6f51bad8e

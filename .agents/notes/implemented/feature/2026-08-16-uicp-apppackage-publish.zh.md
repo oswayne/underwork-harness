@@ -10,7 +10,7 @@ M3 验收要求跑通"生成 → 校验 → 预览 → 自动测试 → 采纳 �
 
 ## 决策
 
-[`@deepseek-ai/dsh-tool-apppackage-publish`](../../../../packages/uicp/tool-apppackage-publish/README.md) 注册 `apppackage_publish`：要求 `adopted: true`，然后经轻量 HTTP 客户端（`Authorization` + `Tenant` 头）按 App → Entity → 字段 → 函数 → 菜单 → 页面顺序 upsert，先查后建、只创建缺失记录。fixture 数据绝不写入。HTTP 客户端可注入，测试跑在内存平台实现上。
+[`@deepseek-ai/dsh-tool-apppackage-publish`](../../../../packages/uicp/tool-apppackage-publish/README.zh.md) 注册 `apppackage_publish`：要求 `adopted: true`，然后经轻量 HTTP 客户端（`Authorization` + `Tenant` 头）按 App → Entity → 字段 → 函数 → 菜单 → 页面顺序 upsert，先查后建、只创建缺失记录。fixture 数据绝不写入。HTTP 客户端可注入，测试跑在内存平台实现上。
 
 ## 曾考虑的替代方案
 

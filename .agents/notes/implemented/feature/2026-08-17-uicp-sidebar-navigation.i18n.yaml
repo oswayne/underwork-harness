@@ -3,4 +3,4 @@
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-17-uicp-sidebar-navigation.md
 2026-08-17-uicp-sidebar-navigation.md: ac45b9ba13dcc6d047f79dd7a4d4373e95680780
-2026-08-17-uicp-sidebar-navigation.zh.md: 2e3f1f7fda451cbbefe2155cdc0f310ec24b0434
+2026-08-17-uicp-sidebar-navigation.zh.md: 4b74e686685ca4c225a3e9cbef9a47f74140175a

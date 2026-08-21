@@ -10,7 +10,7 @@ M3 验收要求自动测试覆盖正例、反例与边界，不只快乐路径�
 
 ## 决策
 
-[`@deepseek-ai/dsh-tool-apppackage-test`](../../../../packages/uicp/tool-apppackage-test/README.md) 注册 `apppackage_test`：从应用包目录构建进程内沙盒（`loadPackage` + 基于 `MemoryKvBackend` 的 `SandboxStore` + `SandboxExecutor` + `SandboxRouter`），写入 fixture 数据，按 Entity/函数生成用例（CRUD、唯一重复、分页、`_preventListAll`、数字过滤、树形、静态/对象/构造函数、外部依赖词汇跳过），执行套件，并经 `ctx.fs` 把用例沉淀到 `tests/apppackage.cases.json`。规范输出为 `{ ok, cases, passed, failed, results }`。
+[`@deepseek-ai/dsh-tool-apppackage-test`](../../../../packages/uicp/tool-apppackage-test/README.zh.md) 注册 `apppackage_test`：从应用包目录构建进程内沙盒（`loadPackage` + 基于 `MemoryKvBackend` 的 `SandboxStore` + `SandboxExecutor` + `SandboxRouter`），写入 fixture 数据，按 Entity/函数生成用例（CRUD、唯一重复、分页、`_preventListAll`、数字过滤、树形、静态/对象/构造函数、外部依赖词汇跳过），执行套件，并经 `ctx.fs` 把用例沉淀到 `tests/apppackage.cases.json`。规范输出为 `{ ok, cases, passed, failed, results }`。
 
 沙盒包现在导出 `MemoryKvBackend` 与沙盒类供复用，`tsconfig.base.json` 为 `@deepseek-ai/dsh-sandbox-server` 增加显式路径条目（通配条目早于 `uicp/` 组嵌套，未覆盖新包）。
 

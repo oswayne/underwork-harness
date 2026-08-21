@@ -10,7 +10,7 @@ M3 需要本地版本快照，让草稿在采纳前可审阅、可切换、可�
 
 ## 决策
 
-[`@deepseek-ai/dsh-tool-apppackage-version`](../../../../packages/uicp/tool-apppackage-version/README.md) 注册 `apppackage_version`，提供 `snapshot` / `list` / `restore` 动作，全部走 `ctx.fs`。快照把产物文件（app.json / tenant.json / menus.json / entities / funcs / pages / data fixture）拷贝到 `versions/<name>/`，排除 `tests/`、`versions/` 与 `data/<session>/` 下的会话数据。
+[`@deepseek-ai/dsh-tool-apppackage-version`](../../../../packages/uicp/tool-apppackage-version/README.zh.md) 注册 `apppackage_version`，提供 `snapshot` / `list` / `restore` 动作，全部走 `ctx.fs`。快照把产物文件（app.json / tenant.json / menus.json / entities / funcs / pages / data fixture）拷贝到 `versions/<name>/`，排除 `tests/`、`versions/` 与 `data/<session>/` 下的会话数据。
 
 ## 曾考虑的替代方案
 

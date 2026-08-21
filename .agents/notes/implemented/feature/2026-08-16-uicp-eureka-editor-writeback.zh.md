@@ -10,7 +10,7 @@ M3 要求通过 eureka-editor 做局部干预：编辑结果写回应用包目�
 
 ## 决策
 
-[`@deepseek-ai/dsh-eureka-preview-host`](../../../../packages/uicp/eureka-preview-host/README.md) 新增 `mountEurekaEditor`（镜像平台 `uicp-web-editor` 集成：`<Editor value onChange preview isMobile />`）与 `savePageSchema(fs, directory, pageIdentifier, schema)`。纯编辑状态（`createEditorHandle`）与写回逻辑已单测覆盖；渲染适配排除在每文件覆盖率之外（客户端通道欠债，`vitest.config.ts`），待浏览器级测试环境就绪。`eureka-editor` / `eureka-editor-core` 8.14.6 加入 bundle 的 React 19 依赖集。
+[`@deepseek-ai/dsh-eureka-preview-host`](../../../../packages/uicp/eureka-preview-host/README.zh.md) 新增 `mountEurekaEditor`（镜像平台 `uicp-web-editor` 集成：`<Editor value onChange preview isMobile />`）与 `savePageSchema(fs, directory, pageIdentifier, schema)`。纯编辑状态（`createEditorHandle`）与写回逻辑已单测覆盖；渲染适配排除在每文件覆盖率之外（客户端通道欠债，`vitest.config.ts`），待浏览器级测试环境就绪。`eureka-editor` / `eureka-editor-core` 8.14.6 加入 bundle 的 React 19 依赖集。
 
 ## 曾考虑的替代方案
 

@@ -10,7 +10,7 @@ UICP 桌面驱动器方案把本地应用包目录作为 dsh 与用户协作的�
 
 ## 决策
 
-契约位于 [app-packages/README.md](../../../../app-packages/README.md)，示例位于 `app-packages/cszh/dsh-test/`（测试租户 `cszh`、App `dsh` / `dsh-test`、1 个 Entity、2 个函数、1 个列表页、1 个菜单挂载、fixture 数据）。本地记录之间只用 identifier 引用，绝不携带平台 ObjectId；保存工具在发布时把 identifier 映射为 ObjectId。Entity 文件把字段以 `fields` 数组内嵌，尽管平台把字段存为独立记录；每个函数把 `.js` body 与 `.meta.json` 侧文件配对（`identifier` / `name` / `type` / `comment`）。菜单是扁平记录，带可选的 `page` 挂载引用。
+契约位于 [app-packages/README.md](../../../../app-packages/README.zh.md)，示例位于 `app-packages/cszh/dsh-test/`（测试租户 `cszh`、App `dsh` / `dsh-test`、1 个 Entity、2 个函数、1 个列表页、1 个菜单挂载、fixture 数据）。本地记录之间只用 identifier 引用，绝不携带平台 ObjectId；保存工具在发布时把 identifier 映射为 ObjectId。Entity 文件把字段以 `fields` 数组内嵌，尽管平台把字段存为独立记录；每个函数把 `.js` body 与 `.meta.json` 侧文件配对（`identifier` / `name` / `type` / `comment`）。菜单是扁平记录，带可选的 `page` 挂载引用。
 
 契约记录了六处经源码核对的、对设计文档的修正：App 领域对象没有 `trade` 字段（行业是 `category`）；`Schema.tree` 是布尔数据树开关，不是字段结构；Func 沙箱注入的是 `__funcExecutor`（不是 `executeFunc`）；Func 创建 API 以 `entity` 传 schema id；菜单记录是扁平的；Page 创建 API 的请求体就是页面 JSON 本身。
 

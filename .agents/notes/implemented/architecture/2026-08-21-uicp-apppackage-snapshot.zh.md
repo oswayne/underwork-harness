@@ -10,7 +10,7 @@ M4 验收清单的未决项是 UICP 驱动器组装面的无密钥快照：工�
 
 ## 决策
 
-[`examples/uicp-agent`](../../../../examples/uicp-agent/README.md) 拥有一个无头组合（agent 主干 + 三个 AppPackage 工具 + JSONL 持久化）与回放套件：通过 `llm-replay` 为每个工具编排一次模型调用，对复制的 `sre-w` 演示包（外加一个静态函数，使沙盒测试工具有可加载的 `funcs/` 树）执行真实工具，并钉住规范化后的流与持久化会话日志。场景还断言版本快照物化了产品文件且排除了 `tests/` 与 `versions/` 树。
+[`examples/uicp-agent`](../../../../examples/uicp-agent/README.zh.md) 拥有一个无头组合（agent 主干 + 三个 AppPackage 工具 + JSONL 持久化）与回放套件：通过 `llm-replay` 为每个工具编排一次模型调用，对复制的 `sre-w` 演示包（外加一个静态函数，使沙盒测试工具有可加载的 `funcs/` 树）执行真实工具，并钉住规范化后的流与持久化会话日志。场景还断言版本快照物化了产品文件且排除了 `tests/` 与 `versions/` 树。
 
 ## 备选方案
 

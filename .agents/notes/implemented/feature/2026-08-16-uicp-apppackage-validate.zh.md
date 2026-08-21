@@ -10,11 +10,11 @@ M2 让 agent 按冻结的目录契约生成应用包，但没有校验回路时�
 
 ## 决策
 
-新增 `uicp/` 包组，交付 [`@deepseek-ai/dsh-tool-apppackage-validate`](../../../../packages/uicp/tool-apppackage-validate/README.md)：`apppackage_validate` 工具经 `ctx.fs` 读取一个应用包目录（沙箱策略生效），按[应用包契约](../../../../app-packages/README.md)执行静态校验矩阵——包记录、Entity identifier 与字段、函数 meta 配对加 `vm.Script` 编译与外部依赖词汇检测、Eureka `schema.json` 页面校验、菜单挂载、fixture 字段/类型检查，以及基于正则的跨应用依赖提取（`getColl` / `__funcExecutor` / 页面实体 URL）。规范输出为 `{ ok, issues, dependencies }`；error 阻止发布，warning 需要审阅。
+新增 `uicp/` 包组，交付 [`@deepseek-ai/dsh-tool-apppackage-validate`](../../../../packages/uicp/tool-apppackage-validate/README.zh.md)：`apppackage_validate` 工具经 `ctx.fs` 读取一个应用包目录（沙箱策略生效），按[应用包契约](../../../../app-packages/README.zh.md)执行静态校验矩阵——包记录、Entity identifier 与字段、函数 meta 配对加 `vm.Script` 编译与外部依赖词汇检测、Eureka `schema.json` 页面校验、菜单挂载、fixture 字段/类型检查，以及基于正则的跨应用依赖提取（`getColl` / `__funcExecutor` / 页面实体 URL）。规范输出为 `{ ok, issues, dependencies }`；error 阻止发布，warning 需要审阅。
 
 [uicp agent preset](../../../../apps/cli/config/agent-presets/uicp/agent.cordis.yml) 复制 `standard` 并追加工具行与 AppPackage 交付物 persona；[uicp-contract skill](../../../../.agents/skills/uicp-contract/SKILL.md) 提供速查摘要。新组登记在 `packages/README.md` 与 `tsconfig.host.json`；Eureka schema 以内置 `data/eureka-schema.json` 快照在运行时加载。
 
-eureka 预览随 [`@deepseek-ai/dsh-eureka-preview-host`](../../../../packages/uicp/eureka-preview-host/README.md) 交付：自包含 React 19 IIFE bundle（eureka 8.14.6 要求 React 19，2026-08-16 实测确认，而 dsh Web UI 保持 React 18），宿主应用加载后直接挂载到页面 DOM，不使用 iframe。编辑器写回仍在 M3。
+eureka 预览随 [`@deepseek-ai/dsh-eureka-preview-host`](../../../../packages/uicp/eureka-preview-host/README.zh.md) 交付：自包含 React 19 IIFE bundle（eureka 8.14.6 要求 React 19，2026-08-16 实测确认，而 dsh Web UI 保持 React 18），宿主应用加载后直接挂载到页面 DOM，不使用 iframe。编辑器写回仍在 M3。
 
 M2 范围刻意部分交付：identifier 白名单目前只做外部依赖词汇检测（完整沙箱词汇强制由 M3 沙盒 `vm` 上下文承担），依赖提取基于正则（动态拼接的 identifier 交人工确认）。
 
