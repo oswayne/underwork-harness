@@ -39,6 +39,10 @@
 | `@deepseek-ai/dsh-tool-subagent-report` | `report` | `ctx.subagents`、`ctx.systemPrompt`、`a live continuable in-process child Agent` | `tool/call`、`tool/result`、`a user-role message in the direct parent session` | - | 按可继续的进程内子级注册，而非全局注册，因此该 schema 仅在这种子级内部可见，并且不受其全局 `toolFilter` 影响。同一份贡献还会安装子级作用域的 `tool:report` 系统提示词 section，本目录不渲染该 section。面向父级的 `send_message` 工具单独安装。 |
 | `@deepseek-ai/dsh-tool-jobs` | `job_kill`、`job_list`、`job_output` | `ctx.tools`、`ctx.jobs`、`ctx.systemPrompt` | `tool/call`、`tool/result`、`user/message via agent.inject() for background completion notices` | - | 与任务种类无关的后台任务控制器：后台 bash 命令、PTY 发送和 subagent 都通过相同的 3 个工具读取、列出和终止。加载该插件会挂接控制器，从而启用生产方的 `ctx.jobs.start()`。 |
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`、`owning Agent session` | `tool/call`、`todo/write`、`tool/result` | - | todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。 |
+| `@deepseek-ai/dsh-tool-apppackage-validate` | `apppackage_validate` | `ctx.tools`、`ctx.fs` | `tool/call`、`tool/result` | - | apppackage_validate 针对应用包契约（含 Eureka schema）对应用包目录做静态校验，并报告结构化问题与跨应用依赖。 |
+| `@deepseek-ai/dsh-tool-apppackage-test` | `apppackage_test` | `ctx.tools`、`ctx.fs` | `tool/call`、`tool/result`、`tests/apppackage.cases.json` | - | apppackage_test 从应用包目录构建进程内沙盒、播种 fixture、生成正/反/边界用例，并报告通过/失败/跳过。 |
+| `@deepseek-ai/dsh-tool-apppackage-version` | `apppackage_version` | `ctx.tools`、`ctx.fs` | `tool/call`、`versions/<version>/** product files`、`tool/result` | - | apppackage_version 对本地应用包版本做快照、列表与恢复；快照从不触碰平台历史。 |
+| `@deepseek-ai/dsh-tool-apppackage-publish` | `apppackage_publish` | `ctx.tools` | `tool/call`、`platform records via POST/PATCH (after adoption)`、`tool/result` | - | apppackage_publish 将已采纳的应用包目录幂等地 upsert 到 uicp 平台；fixture 数据绝不写入。 |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`、`ctx.workflowEngine`、`ctx.systemPrompt`、`a calling Agent (exec.agent parents the script children)` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`、`web_search` | `ctx.tools`、`ctx.web`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | web_search 和 web_fetch 将提供方选择置于 ctx.web 之后，使模型可见 schema 在更换后端时保持稳定。 |
 
@@ -1732,6 +1736,147 @@ lsp 工具将提供方选择和语言服务器子进程置于 ctx.lsp 之后，�
 来源：[`packages/todo/tool-todo/src/index.ts`](../packages/todo/tool-todo/src/index.ts)
 
 todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。
+
+<a id="deepseek-aidsh-tool-apppackage-validate"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-validate`
+
+### `apppackage_validate`
+
+针对应用包契约（app-packages/README.md）对应用包目录做静态校验，并报告结构化问题与跨应用依赖。在生成或编辑应用包后、采纳或发布前运行。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory, e.g. app-packages/<tenant>/<app>."
+    }
+  },
+  "required": [
+    "directory"
+  ]
+}
+```
+
+来源：[`packages/uicp/tool-apppackage-validate/src/index.ts`](../packages/uicp/tool-apppackage-validate/src/index.ts)
+
+apppackage_validate 针对应用包契约（含 Eureka schema）对应用包目录做静态校验，并报告结构化问题与跨应用依赖。
+
+<a id="deepseek-aidsh-tool-apppackage-test"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-test`
+
+### `apppackage_test`
+
+针对应用包目录在本地沙盒中生成并运行自动化测试（正例、反例与边界用例），然后报告结构化结果。在 apppackage_validate 之后、采纳之前运行。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory, e.g. app-packages/<tenant>/<app>."
+    }
+  },
+  "required": [
+    "directory"
+  ]
+}
+```
+
+来源：[`packages/uicp/tool-apppackage-test/src/index.ts`](../packages/uicp/tool-apppackage-test/src/index.ts)
+
+apppackage_test 从应用包目录构建进程内沙盒、播种 fixture、生成正/反/边界用例，并报告通过/失败/跳过。
+
+<a id="deepseek-aidsh-tool-apppackage-version"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-version`
+
+### `apppackage_version`
+
+管理本地应用包版本：将产品文件快照到 versions/、列出快照，或将某个版本恢复到工作目录。在平台同步前或已采纳的发布前运行快照。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory."
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "snapshot",
+        "list",
+        "restore"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "description": "Version id for restore; optional for snapshot (defaults to a timestamp)."
+    }
+  },
+  "required": [
+    "directory",
+    "action"
+  ]
+}
+```
+
+来源：[`packages/uicp/tool-apppackage-version/src/index.ts`](../packages/uicp/tool-apppackage-version/src/index.ts)
+
+apppackage_version 对本地应用包版本做快照、列表与恢复；快照从不触碰平台历史。
+
+<a id="deepseek-aidsh-tool-apppackage-publish"></a>
+
+## `@deepseek-ai/dsh-tool-apppackage-publish`
+
+### `apppackage_publish`
+
+在用户采纳后将应用包目录保存到 uicp 平台。按 App → Entity → fields → funcs → menu → page 顺序幂等 upsert；测试数据绝不写入。要求 adopted=true。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Absolute path of the app-package directory."
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Platform API base URL, e.g. https://api.underwork.cn/uicp."
+    },
+    "token": {
+      "type": "string",
+      "description": "Platform JWT for the Authorization header."
+    },
+    "tenantId": {
+      "type": "string",
+      "description": "Tenant ObjectId for the Tenant header."
+    },
+    "adopted": {
+      "type": "boolean",
+      "description": "Must be true: the user explicitly adopted this package for publication."
+    }
+  },
+  "required": [
+    "directory",
+    "baseUrl",
+    "token",
+    "tenantId",
+    "adopted"
+  ]
+}
+```
+
+来源：[`packages/uicp/tool-apppackage-publish/src/index.ts`](../packages/uicp/tool-apppackage-publish/src/index.ts)
+
+apppackage_publish 将已采纳的应用包目录幂等地 upsert 到 uicp 平台；fixture 数据绝不写入。
 
 <a id="deepseek-aidsh-tool-workflow"></a>
 
