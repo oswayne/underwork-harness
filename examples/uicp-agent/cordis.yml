@@ -1,0 +1,97 @@
+# One-shot UICP low-code driver agent: the AppPackage generation surface behind
+# `apppackage_validate` / `apppackage_test` / `apppackage_version`. The app bin
+# loads the gitignored root `.env` into the process environment; entry configs
+# here are the composition base, while user-plane values resolve per request
+# through the two providers below.
+
+# User-settings document (`$DSH_HOME/settings.yaml`, hot-reloaded): a
+# `llm-deepseek:` section there overrides the adapter entry below without a
+# restart.
+- id: settings
+  name: '@deepseek-ai/dsh-settings-file'
+
+# Credential store: the live process environment over `$DSH_HOME/.credentials.yaml`
+# (owner-only file, hot-reloaded). The adapter resolves `DEEPSEEK_API_KEY`
+# through it at each request, so no key is inlined in this file.
+- id: credentials
+  name: '@deepseek-ai/dsh-credentials-local'
+
+# The DeepSeek adapter, disabled by the replay counterpart and replaced with
+# keyless `llm-replay`.
+- id: llm-deepseek
+  name: '@deepseek-ai/dsh-llm-deepseek'
+  config:
+    thinking: enabled
+    reasoningEffort: max
+    models:
+      - id: deepseek-v4-pro
+        contextWindow: 128000
+      - id: deepseek-v4-flash
+        contextWindow: 128000
+
+# Managed child-process groups for the bash executor (spawn/kill/output plumbing).
+- id: subprocess
+  name: '@deepseek-ai/dsh-subprocess-local'
+
+- id: bash
+  name: '@deepseek-ai/dsh-bash-local'
+  config:
+    timeoutMs: 60000
+
+# The example composition pre-creates one fresh `main` agent for its test driver.
+- id: agent-spine
+  name: '@deepseek-ai/dsh-agent-spine-demo'
+  config:
+    agents:
+      - id: main
+        provider: deepseek-official
+        model: deepseek-v4-flash
+        cwd: !!js process.cwd()
+    workspaceContext:
+      maxBytes: 65536
+    persona: |
+      You are the UICP low-code platform generation driver powered by the {{model}} model. Your working directory is {{cwd}}. Your deliverable is an AppPackage: the app-packages/<tenant>/<app>/ directory holding app.json, tenant.json, entities/, funcs/, pages/, menus.json, and data/ fixtures. Design Entity fields and Functions per the platform contract, generate Eureka page JSON, validate with apppackage_validate, run apppackage_test, and snapshot drafts with apppackage_version. Keep answers brief and factual.
+
+- id: persistence
+  name: '@deepseek-ai/dsh-session-persistence-jsonl'
+  config:
+    root: './.sessions'
+    compression: !!js "process.env.DSH_SNAPSHOT === undefined ? 'zstd' : 'none'"
+
+- id: checkpoint-policy
+  name: '@deepseek-ai/dsh-session-checkpoint-policy'
+
+- id: token-meter
+  name: '@deepseek-ai/dsh-token-meter'
+
+- id: compaction-basic
+  name: '@deepseek-ai/dsh-compaction-basic'
+  config:
+    thresholdRatio: 0.8
+    retainRatio: 0.16
+    maxTokens: 8192
+    compactionRetries: 1
+
+# Policy loads before the model-facing filesystem tools so writes and edits
+# require an observed file. Relative paths resolve from the process cwd.
+- id: fs-local
+  name: '@deepseek-ai/dsh-fs-local'
+  config:
+    cwd: !!js process.cwd()
+
+- id: fs-observation-policy
+  name: '@deepseek-ai/dsh-fs-observation-policy'
+
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+# UICP driver tools: static validation, automated tests, and local version
+# snapshots over one app-package directory.
+- id: tool-apppackage-validate
+  name: '@deepseek-ai/dsh-tool-apppackage-validate'
+
+- id: tool-apppackage-test
+  name: '@deepseek-ai/dsh-tool-apppackage-test'
+
+- id: tool-apppackage-version
+  name: '@deepseek-ai/dsh-tool-apppackage-version'

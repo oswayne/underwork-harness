@@ -421,7 +421,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 
 ### M4：硬化
 
-- [ ] 快照测试（待补）；契约保真与测试用例沉淀。
+- [x] 快照测试：`examples/uicp-agent` keyless 装配快照（`apppackage_validate`/`apppackage_test`/`apppackage_version` 三工具闭环，沙盒用例 37/37 全绿，版本快照物化断言）；契约保真与测试用例沉淀。
 - [x] 文档：上游同步手册与里程碑验收清单。
 - [x] 无头渲染校验（可选，CI 补充）：`eureka-preview-host` 在 `pnpm run test` 中 jsdom 无头渲染 `sre-w` demo 列表页（`preserve-list`），断言页面标题与列头落地。
 - [x] 废止壳打包（签名/公证/安装包/更新）——B/S 形态无桌面分发。

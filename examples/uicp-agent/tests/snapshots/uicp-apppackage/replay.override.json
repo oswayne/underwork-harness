@@ -1,0 +1,42 @@
+[
+  {
+    "kind": "chunks",
+    "chunks": [
+      { "type": "block-start", "index": 0, "blockType": "tool-call" },
+      { "type": "tool-call-delta", "index": 0, "id": "call_apppackage_validate", "name": "apppackage_validate", "argumentsDelta": "{\"directory\":\"app-packages/cszh/sre-w\"}" },
+      { "type": "block-end", "index": 0, "block": { "type": "tool-call", "id": "call_apppackage_validate", "name": "apppackage_validate", "arguments": "{\"directory\":\"app-packages/cszh/sre-w\"}" } },
+      { "type": "usage", "usage": { "inputTokens": 40, "outputTokens": 8 } },
+      { "type": "finish", "reason": { "kind": "tool-calls" } }
+    ]
+  },
+  {
+    "kind": "chunks",
+    "chunks": [
+      { "type": "block-start", "index": 0, "blockType": "tool-call" },
+      { "type": "tool-call-delta", "index": 0, "id": "call_apppackage_test", "name": "apppackage_test", "argumentsDelta": "{\"directory\":\"app-packages/cszh/sre-w\"}" },
+      { "type": "block-end", "index": 0, "block": { "type": "tool-call", "id": "call_apppackage_test", "name": "apppackage_test", "arguments": "{\"directory\":\"app-packages/cszh/sre-w\"}" } },
+      { "type": "usage", "usage": { "inputTokens": 60, "outputTokens": 10 } },
+      { "type": "finish", "reason": { "kind": "tool-calls" } }
+    ]
+  },
+  {
+    "kind": "chunks",
+    "chunks": [
+      { "type": "block-start", "index": 0, "blockType": "tool-call" },
+      { "type": "tool-call-delta", "index": 0, "id": "call_apppackage_version", "name": "apppackage_version", "argumentsDelta": "{\"directory\":\"app-packages/cszh/sre-w\",\"action\":\"snapshot\",\"version\":\"v1\"}" },
+      { "type": "block-end", "index": 0, "block": { "type": "tool-call", "id": "call_apppackage_version", "name": "apppackage_version", "arguments": "{\"directory\":\"app-packages/cszh/sre-w\",\"action\":\"snapshot\",\"version\":\"v1\"}" } },
+      { "type": "usage", "usage": { "inputTokens": 80, "outputTokens": 12 } },
+      { "type": "finish", "reason": { "kind": "tool-calls" } }
+    ]
+  },
+  {
+    "kind": "chunks",
+    "chunks": [
+      { "type": "block-start", "index": 0, "blockType": "text" },
+      { "type": "text-delta", "index": 0, "text": "UICP_APP_PACKAGE_OK: validation passed, all automated tests passed, snapshot v1 created." },
+      { "type": "block-end", "index": 0, "block": { "type": "text", "text": "UICP_APP_PACKAGE_OK: validation passed, all automated tests passed, snapshot v1 created." } },
+      { "type": "usage", "usage": { "inputTokens": 100, "outputTokens": 16 } },
+      { "type": "finish", "reason": { "kind": "stop" } }
+    ]
+  }
+]

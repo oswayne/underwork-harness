@@ -1,0 +1,7 @@
+{
+  "name": "uicp-agent-example",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Runnable demo: one complete headless UICP low-code driver turn (validate + test + version)"
+}

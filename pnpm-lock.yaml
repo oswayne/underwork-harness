@@ -659,6 +659,15 @@ importers:
       '@deepseek-ai/dsh-token-meter':
         specifier: workspace:*
         version: link:../packages/llm/token-meter
+      '@deepseek-ai/dsh-tool-apppackage-test':
+        specifier: workspace:*
+        version: link:../packages/uicp/tool-apppackage-test
+      '@deepseek-ai/dsh-tool-apppackage-validate':
+        specifier: workspace:*
+        version: link:../packages/uicp/tool-apppackage-validate
+      '@deepseek-ai/dsh-tool-apppackage-version':
+        specifier: workspace:*
+        version: link:../packages/uicp/tool-apppackage-version
       '@deepseek-ai/dsh-tool-ask-user':
         specifier: workspace:*
         version: link:../packages/interaction/tool-ask-user

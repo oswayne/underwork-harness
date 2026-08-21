@@ -1,0 +1,8 @@
+{
+  "steps": [
+    {
+      "op": "prompt",
+      "text": "Validate the app package at app-packages/cszh/sre-w with apppackage_validate, run its automated tests with apppackage_test, snapshot it as v1 with apppackage_version, then reply with exactly UICP_APP_PACKAGE_OK."
+    }
+  ]
+}
