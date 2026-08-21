@@ -46,6 +46,9 @@ describe('ui-uicp-nav apply', () => {
     expect(b.slots.entries('sidebar.footer.action')[0]!.component).toBe(TenantSwitch)
     const action = b.slots.entries('conversation.session.header.actions')[0]!
     expect(action.component).toBe(SessionSwitchAction)
+    // The test lane never runs browser-language detection, so the runtime
+    // opens on the fallback locale (en); state the asserted locale explicitly.
+    b.locale.setLocale('zh')
     expect(b.locale.bind('nav')('login.title')).toBe('登录')
   })
 

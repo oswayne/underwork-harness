@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-tool-apppackage-version",
   "description": "Model-facing local version snapshots for UICP app packages",
-  "version": "0.1.0-rc.5",
+  "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },

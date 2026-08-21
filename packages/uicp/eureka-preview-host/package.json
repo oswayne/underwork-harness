@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-eureka-preview-host",
   "description": "Self-contained Eureka page preview bundle (React 19) for the UICP low-code driver",
-  "version": "0.1.0-rc.5",
+  "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },

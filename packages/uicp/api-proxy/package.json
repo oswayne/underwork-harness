@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-uicp-api-proxy",
   "description": "Same-origin proxy from the local dsh web host to the uicp platform API",
-  "version": "0.1.0-rc.5",
+  "version": "0.1.1-rc.2",
   "publishConfig": {
     "access": "public"
   },

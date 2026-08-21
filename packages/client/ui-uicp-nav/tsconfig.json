@@ -36,7 +36,7 @@
       "path": "../ui-workspace"
     },
     {
-      "path": "../web-react"
+      "path": "../ui-renderer"
     }
   ]
 }
