@@ -423,7 +423,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 
 - [ ] 快照测试（待补）；契约保真与测试用例沉淀。
 - [x] 文档：上游同步手册与里程碑验收清单。
-- [ ] 无头渲染校验（可选，CI 补充）。
+- [x] 无头渲染校验（可选，CI 补充）：`eureka-preview-host` 在 `pnpm run test` 中 jsdom 无头渲染 `sre-w` demo 列表页（`preserve-list`），断言页面标题与列头落地。
 - [x] 废止壳打包（签名/公证/安装包/更新）——B/S 形态无桌面分发。
 - [x] schema 与 eureka 版本同步脚本；上游同步手册可执行。
 

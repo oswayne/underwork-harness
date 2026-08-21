@@ -55,6 +55,18 @@ describe('mountEurekaPreview', () => {
     handle.unmount()
   }, 30000)
 
+  it('renders the committed sre-w demo list page headlessly', async () => {
+    const { mountEurekaPreview } = await import('../src/index.ts')
+    document.body.innerHTML = '<div id="root"></div>'
+    const schema = JSON.parse(readFileSync('app-packages/cszh/sre-w/pages/preserve-list.json', 'utf8')) as unknown
+    const handle = mountEurekaPreview(document.getElementById('root')!, schema, fixtureEnv())
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    const text = document.getElementById('root')!.textContent ?? ''
+    expect(text).toContain('保养单')
+    expect(text).toContain('保养计划编码')
+    handle.unmount()
+  }, 30000)
+
   it('honours explicit theme/locale and optional callbacks', async () => {
     const { mountEurekaPreview } = await import('../src/index.ts')
     document.body.innerHTML = '<div id="root"></div>'
