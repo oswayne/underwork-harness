@@ -7,7 +7,6 @@
   },
   "regions": [
     "body",
-    "toolbar",
     "header"
   ],
   "body": [
