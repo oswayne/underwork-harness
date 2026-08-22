@@ -215,7 +215,11 @@ function responseInputTexts(body: Record<string, unknown>): string[] {
   })
 }
 
-describe('real @openai/codex 0.147.0 product', () => {
+// This downstream fork does not support or maintain external CLI product
+// integrations: the uicp preset disables the codex subagent provider, so
+// these real-binary tests stay skipped by default (set
+// DSH_RUN_CLI_PRODUCT_TESTS=1 to run them against an installed Codex CLI).
+describe.skipIf(!process.env.DSH_RUN_CLI_PRODUCT_TESTS)('real @openai/codex 0.147.0 product', () => {
   it('starts approve-for-me through the real app-server and returns exact text', async () => {
     const sentinel = 'REAL_CODEX_SENTINEL_0_147_0'
     const task = 'Return the fixture sentinel exactly.'

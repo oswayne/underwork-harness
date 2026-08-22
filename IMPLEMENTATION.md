@@ -384,6 +384,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 - 外部依赖函数（axios/ai/requireAdapter）：沙盒不支持，由用户在协作阶段实际使用/真实环境验证后确认。
 - 平台侧行为问题：由平台维护方负责修复（平台已通过线上验证），不作为 dsh 风险项。
 - 平台侧发布回滚：暂不考虑。
+- 外部 CLI 产品集成（Codex / Claude Code 子代理）：本下游项目不支持、不维护；uicp preset 已禁用对应提供方，相关 real-product 测试默认跳过（`DSH_RUN_CLI_PRODUCT_TESTS=1` 可显式运行）。
 - 单机单用户模型：不涉及多人/多机协作。
 - 工程验收项：eureka 构建嵌入（M2，编辑器独立浏览器窗口）；无桌面打包。
 - 长期观察项：上游 client 接口演进（适配层与补丁重放兜底）。

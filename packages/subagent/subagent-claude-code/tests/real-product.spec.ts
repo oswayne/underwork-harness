@@ -284,7 +284,11 @@ function startRequest(
   })
 }
 
-describe('real Claude Agent SDK 0.3.220 and its distributed Claude Code 2.1.220 fixture', {
+// This downstream fork does not support or maintain external CLI product
+// integrations: the uicp preset disables the claude-code subagent provider,
+// so these real-binary tests stay skipped by default (set
+// DSH_RUN_CLI_PRODUCT_TESTS=1 to run them against an installed Claude Code).
+describe.skipIf(!process.env.DSH_RUN_CLI_PRODUCT_TESTS)('real Claude Agent SDK 0.3.220 and its distributed Claude Code 2.1.220 fixture', {
   timeout: 60_000,
 }, () => {
   it('inherits host settings and sends the exact task and fake key to local Messages', async () => {
