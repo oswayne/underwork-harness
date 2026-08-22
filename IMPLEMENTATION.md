@@ -371,7 +371,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 ## 12. 上游同步操作手册
 
 - 同步范围：核心 + Web UI（跟随上游）；我们的功能全部为新增插件/配置，不改上游文件。
-- 共享文件清单（确需修改的最小集）：pnpm-workspace.yaml、tsconfig.host.json / tsconfig.client.json、根 package.json、docs 导航、`packages/boot/app-boot/src/profile.ts`（profile 模板一行）；改动保持最小并记录。
+- 共享文件清单（确需修改的最小集）：pnpm-workspace.yaml、tsconfig.host.json / tsconfig.client.json、根 package.json、docs 导航、`packages/boot/app-boot/src/profile.ts`（profile 模板一行）；改动保持最小并记录。本 fork 已落地的差异：根 `package.json` 钉住 `react`/`react-dom` 18（devDependencies，修正合并后 lockfile 的 peer 解析）、`apps/web/vite.config.ts`（Underwork 默认标题与 `DSH_CLIENT_TITLE` define 兜底）、`apps/web/index.html`（Underwork 标题/图标）。
 - UICP Web 组装层是独立 bundle `packages/bundle/uicp-web-app/`，不修改上游 `packages/bundle/web-app/cordis.patch.yml`。
 - 冲突预案：先取上游 → 重放本地补丁（脚本化、可重放）；import 经适配层（8.5）收口。
 - 依赖隔离：eureka 私有 registry 依赖只出现在新增包中，不写入上游包 package.json。
