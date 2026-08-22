@@ -8,7 +8,7 @@ const src = (rel: string): string => fileURLToPath(new URL(rel, import.meta.url)
 const STANDALONE_ERROR = 'apps/web is not a standalone application: bare Vite cannot inject window.__DSH_BOOT__. '
   + 'From a repository checkout, run `pnpm dsh web`; an installed package uses `dsh web`. '
   + 'For client-plugin HMR, run `pnpm dsh web` together with `pnpm run dev:web`.'
-const DEFAULT_CLIENT_TITLE = 'DSH Local Build'
+const DEFAULT_CLIENT_TITLE = 'Underwork Harness'
 
 /** Escape build-time text before placing it in the HTML title element. */
 function escapeHtmlText(value: string): string {
@@ -21,7 +21,7 @@ function clientDocumentTitle(): Plugin {
   return {
     name: 'dsh-client-document-title',
     transformIndexHtml(html) {
-      return html.replace('<title>DSH Local Build</title>', `<title>${title}</title>`)
+      return html.replace('<title>Underwork Harness</title>', `<title>${title}</title>`)
     },
   }
 }
@@ -165,6 +165,12 @@ export default defineConfig({
   },
   define: {
     ...clientBuildEnvironmentDefines(process.env),
+    // The fork's web app opens as Underwork Harness even when the build env
+    // omits DSH_CLIENT_TITLE (upstream's DocumentTitle default is
+    // "DSH Local Build"); an explicit build env still wins.
+    ...(process.env.DSH_CLIENT_TITLE === undefined
+      ? { 'process.env.DSH_CLIENT_TITLE': JSON.stringify(DEFAULT_CLIENT_TITLE) }
+      : {}),
     // vendored loader internal.ts: fromInternal() probes the Node major —
     // "0.0.0" takes neither branch, returning undefined (exactly the empty
     // internal slot the shell boot fills with the client module loader).
