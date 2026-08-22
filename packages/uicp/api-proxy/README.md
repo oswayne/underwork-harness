@@ -30,3 +30,8 @@ None, as the proxy forwards already-composed platform requests and registers not
 #### KV Cache effect
 
 None; the proxy neither assembles nor sends a provider request.
+
+## Known Limitations and Deferred Work
+
+- The proxy requires the platform to be reachable; there is no offline mode, and responses pass through without transformation.
+- The `upstream` base is static per deployment; request paths rebase `/uicp-api/*` onto it without tenant-specific routing.

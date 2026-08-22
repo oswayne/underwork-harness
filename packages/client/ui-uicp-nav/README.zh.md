@@ -25,3 +25,8 @@
 #### KV Cache effect
 
 无；本插件既不组装也不发送 provider 请求。
+
+## Known Limitations and Deferred Work
+
+- 登录仅支持 JWT；平台可选的 Passkey 流程在本 fork 中未实现。
+- 本插件仅在 uicp web 组装中挂载：缺少同源平台代理与预览根 seam 时，租户发现与 workspace 采纳无法触达平台。

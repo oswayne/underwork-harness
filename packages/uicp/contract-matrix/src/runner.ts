@@ -10,6 +10,7 @@ export interface MatrixRequest {
   body?: Record<string, unknown>
 }
 
+/** One matrix-case HTTP response from a target. */
 export interface MatrixResponse {
   statusCode: number
   body: { status?: number; msg: string; data: unknown }
@@ -88,7 +89,15 @@ export async function runMatrix(
   return results
 }
 
-/** Compare two targets on the same corpus; returns per-case divergences. */
+/**
+ * Compare two targets on the same corpus; returns per-case divergences.
+ * @param left - the left target runner (the local sandbox reference).
+ * @param right - the right target runner (the platform benchmark).
+ * @param cases - the corpus both targets execute.
+ * @param leftResolve - optional path rewriter for the left target.
+ * @param rightResolve - optional path rewriter for the right target.
+ * @returns one entry per case whose outcome diverges between the targets.
+ */
 export async function diffMatrix(
   left: (request: MatrixRequest) => Promise<MatrixResponse>,
   right: (request: MatrixRequest) => Promise<MatrixResponse>,

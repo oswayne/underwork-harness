@@ -41,8 +41,9 @@ export const zh = {
   'publish.missingAuth': '缺少登录信息，请重新登录',
 }
 
-/** English dictionary. */
+/** Key set of the app-package workspace dictionaries (zh is the source of truth). */
 export type AppPackageKey = keyof typeof zh
+/** English dictionary mirroring the zh key set. */
 export const en: Record<AppPackageKey, string> = {
   'workspace.tab.preview': 'Preview',
   'workspace.tab.editor': 'Edit',

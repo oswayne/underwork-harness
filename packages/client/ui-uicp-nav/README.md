@@ -25,3 +25,8 @@ None, as the plugin is browser chrome; nothing here reaches a model request.
 #### KV Cache effect
 
 None; the plugin neither assembles nor sends a provider request.
+
+## Known Limitations and Deferred Work
+
+- Sign-in is JWT-only; the platform's optional Passkey flow is not implemented in this fork.
+- The plugin mounts only in the uicp web composition: without the same-origin platform proxy and the preview-root seam, tenant discovery and workspace adoption cannot reach the platform.

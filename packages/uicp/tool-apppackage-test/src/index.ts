@@ -18,7 +18,11 @@ import { runSuite, type CaseResult } from './runner.ts'
 export const name = 'tool-apppackage-test'
 export const inject = ['fs', 'tools']
 
-/** Load `data/<entity>.json` fixtures into a map keyed by entity identifier. */
+/**
+ * Load `data/<entity>.json` fixtures into a map keyed by entity identifier.
+ * @param packageDir - the app-package directory.
+ * @returns fixtures by entity identifier.
+ */
 export function loadFixtures(packageDir: string): Map<string, Record<string, unknown>[]> {
   const fixtures = new Map<string, Record<string, unknown>[]>()
   const dataDir = join(packageDir, 'data')
@@ -38,7 +42,11 @@ export interface AppPackageTestResult {
   results: CaseResult[]
 }
 
-/** Pure terminal presentation of the canonical result. */
+/**
+ * Pure terminal presentation of the canonical result.
+ * @param value - the test-run summary.
+ * @returns the rendered terminal lines.
+ */
 export function renderResult(value: AppPackageTestResult): { type: 'text'; text: string }[] {
   const lines = [`apppackage_test: ${value.ok ? 'PASS' : 'FAIL'} (${value.passed}/${value.cases})`]
   for (const result of value.results) {

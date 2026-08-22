@@ -4,6 +4,7 @@ import type { KvBackend } from './types.ts'
 
 /** Volatile KV surface; usable wherever a durable backend is not required. */
 export class MemoryKvBackend implements KvBackend {
+  /** In-memory table name → record key → record. */
   readonly tables: Record<string, Record<string, unknown>> = {}
 
   loadAll(): Promise<{ tables: Record<string, Record<string, unknown>>; global: unknown }> {

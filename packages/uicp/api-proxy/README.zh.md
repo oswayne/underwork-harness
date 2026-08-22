@@ -30,3 +30,8 @@ None，因为该代理转发已组装好的平台请求，不注册任何模型�
 #### KV Cache effect
 
 无；该代理既不组装也不发送 provider 请求。
+
+## Known Limitations and Deferred Work
+
+- 代理要求平台可达；没有离线模式，响应原样透传、不做转换。
+- `upstream` 基址按部署静态配置；请求路径把 `/uicp-api/*` 重基到其上，不做租户级路由。

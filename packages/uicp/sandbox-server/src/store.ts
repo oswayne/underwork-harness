@@ -10,7 +10,11 @@ export class SandboxError extends Error {
   }
 }
 
-/** Collection name derivation: `sd_<identifier>` with dashes as underscores. */
+/**
+ * Collection name derivation: `sd_<identifier>` with dashes as underscores.
+ * @param identifier - the entity identifier.
+ * @returns the sandbox table name.
+ */
 export function tableName(identifier: string): string {
   return identifier.toLowerCase().replaceAll('-', '_')
 }
@@ -47,18 +51,32 @@ export class SandboxStore {
     await this.backend.putRecord(tableName(identifier), String(record._id), record)
   }
 
-  /** All records of one entity. */
+  /**
+   * All records of one entity.
+   * @param identifier - the entity identifier.
+   * @returns every stored record.
+   */
   async list(identifier: string): Promise<Record<string, unknown>[]> {
     return this.rows(identifier)
   }
 
-  /** One record by id, or null. */
+  /**
+   * One record by id, or null.
+   * @param identifier - the entity identifier.
+   * @param id - the record id.
+   * @returns the matching record or null.
+   */
   async findById(identifier: string, id: unknown): Promise<Record<string, unknown> | null> {
     const target = String(id)
     return (await this.rows(identifier)).find(record => String(record._id) === target) ?? null
   }
 
-  /** Insert one record with unique checks, defaults, and tree data. */
+  /**
+   * Insert one record with unique checks, defaults, and tree data.
+   * @param identifier - the entity identifier.
+   * @param input - the record fields to insert.
+   * @returns the stored record with generated metadata.
+   */
   async insert(identifier: string, input: Record<string, unknown>): Promise<Record<string, unknown>> {
     const existing = await this.rows(identifier)
     for (const field of this.fields(identifier)) {
@@ -85,14 +103,25 @@ export class SandboxStore {
     return record
   }
 
-  /** Batch insert; no constructor semantics (mirrors `insertBatch`). */
+  /**
+   * Batch insert; no constructor semantics (mirrors `insertBatch`).
+   * @param identifier - the entity identifier.
+   * @param records - the records to insert.
+   * @returns the stored records.
+   */
   async insertBatch(identifier: string, records: Record<string, unknown>[]): Promise<Record<string, unknown>[]> {
     const inserted: Record<string, unknown>[] = []
     for (const record of records) inserted.push(await this.insert(identifier, record))
     return inserted
   }
 
-  /** Merge a patch into one record, refreshing `modifyTime`. */
+  /**
+   * Merge a patch into one record, refreshing `modifyTime`.
+   * @param identifier - the entity identifier.
+   * @param id - the record id.
+   * @param patch - the fields to merge.
+   * @returns the updated record.
+   */
   async update(identifier: string, id: unknown, patch: Record<string, unknown>): Promise<Record<string, unknown>> {
     const record = await this.findById(identifier, id)
     if (record === null) throw new SandboxError(404, '数据不存在')
@@ -101,14 +130,24 @@ export class SandboxStore {
     return next
   }
 
-  /** Delete one record; returns the removed record or null. */
+  /**
+   * Delete one record; returns the removed record or null.
+   * @param identifier - the entity identifier.
+   * @param id - the record id.
+   * @returns the removed record or null when absent.
+   */
   async removeById(identifier: string, id: unknown): Promise<Record<string, unknown> | null> {
     const record = await this.findById(identifier, id)
     if (record !== null) await this.backend.deleteRecord(tableName(identifier), String(id))
     return record
   }
 
-  /** Delete many records; returns the number removed. */
+  /**
+   * Delete many records; returns the number removed.
+   * @param identifier - the entity identifier.
+   * @param ids - the record ids to remove.
+   * @returns the number actually removed.
+   */
   async removeMany(identifier: string, ids: unknown[]): Promise<number> {
     let removed = 0
     for (const id of ids) {

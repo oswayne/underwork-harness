@@ -3,6 +3,7 @@
 import type { SandboxField } from './types.ts'
 import { SandboxError } from './store.ts'
 
+/** Every operator the sandbox query engine implements. */
 export const QUERY_OPERATORS = new Set([
   'like', 'notLike', 'isNull', 'isNotNull', 'isBlank', 'isNotBlank', 'in', 'notIn',
   'eq', 'ne', 'gt', 'ge', 'gte', 'lt', 'le', 'lte', 'between', 'notBetween',
@@ -10,17 +11,30 @@ export const QUERY_OPERATORS = new Set([
 
 const RESERVED_PARAMS = new Set(['page', 'perPage', '_sort', '_preventListAll'])
 
-/** `field[sub]` → `field.sub`. */
+/**
+ * `field[sub]` → `field.sub`.
+ * @param key - the raw query key.
+ * @returns the dot-normalized key.
+ */
 export function normalizeKey(key: string): string {
   return key.replace(/\[([^\]]+)\]/g, '.$1')
 }
 
-/** Escape a literal for RegExp construction (like the platform `like`). */
+/**
+ * Escape a literal for RegExp construction (like the platform `like`).
+ * @param text - the literal to escape.
+ * @returns the escaped literal.
+ */
 export function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
-/** Convert one query value by field type. */
+/**
+ * Convert one query value by field type.
+ * @param type - the platform field type.
+ * @param value - the raw query value.
+ * @returns the typed value.
+ */
 export function parseFieldValue(type: string | undefined, value: string): unknown {
   if (type === '数字') return Number(value)
   if (type === '布尔') return value === 'true' || value === '1'
@@ -66,6 +80,12 @@ function condition(field: SandboxField | undefined, operator: string, value: str
 }
 
 /** Build the Mongo-shaped filter from query params. */
+/**
+ * Build one match filter from normalized query parameters.
+ * @param params - the normalized query parameters.
+ * @param fields - entity field definitions for type conversion.
+ * @returns the filter object consumed by {@link matches}.
+ */
 export function buildFilter(
   params: Record<string, string | string[] | undefined>,
   fields: ReadonlyMap<string, SandboxField>,
@@ -133,7 +153,12 @@ function matchesOperators(actual: unknown, op: Record<string, unknown>): boolean
   return true
 }
 
-/** Whether one record satisfies the filter. */
+/**
+ * Whether one record satisfies the filter.
+ * @param record - the candidate record.
+ * @param filter - the filter built by {@link buildFilter}.
+ * @returns true when every filter key matches the record.
+ */
 export function matches(record: Record<string, unknown>, filter: Record<string, unknown>): boolean {
   for (const [key, expected] of Object.entries(filter)) {
     const actual = valueAtPath(record, key)
@@ -156,6 +181,12 @@ export function matches(record: Record<string, unknown>, filter: Record<string, 
 }
 
 /** Sort rows by `_sort=field>asc,...` (default `_id` desc). */
+/**
+ * Sort rows by `_sort` rules, defaulting to `_id` descending.
+ * @param rows - the rows to sort.
+ * @param sortParam - the `_sort` parameter value.
+ * @returns a new sorted row array.
+ */
 export function sortRows(rows: Record<string, unknown>[], sortParam?: string): Record<string, unknown>[] {
   const rules: { field: string; direction: number }[] = []
   if (sortParam === undefined || sortParam === '') {
@@ -176,6 +207,7 @@ export function sortRows(rows: Record<string, unknown>[], sortParam?: string): R
   })
 }
 
+/** One filtered, sorted, and paginated query result. */
 export interface QueryOutcome {
   items: Record<string, unknown>[]
   total: number
@@ -183,7 +215,13 @@ export interface QueryOutcome {
   perPage: number
 }
 
-/** Filter, sort, and paginate (mirrors `DataRepository.findByPage` semantics). */
+/**
+ * Filter, sort, and paginate (mirrors `DataRepository.findByPage` semantics).
+ * @param records - all rows of the entity.
+ * @param params - the raw query parameters.
+ * @param fields - entity field definitions for type conversion.
+ * @returns the page slice plus totals.
+ */
 export function applyQuery(
   records: Record<string, unknown>[],
   params: Record<string, string | string[] | undefined>,
@@ -206,7 +244,11 @@ export function applyQuery(
   }
 }
 
-/** Assemble parent/child tree from flat rows. */
+/**
+ * Assemble parent/child tree from flat rows.
+ * @param rows - flat rows carrying `_id` and optional `parent`.
+ * @returns root rows with nested `children` arrays.
+ */
 export function buildTree(rows: Record<string, unknown>[]): Record<string, unknown>[] {
   const nodeMap = new Map(rows.map(row => [String(row._id), row]))
   const tree: Record<string, unknown>[] = []
@@ -226,13 +268,24 @@ export function buildTree(rows: Record<string, unknown>[]): Record<string, unkno
   return tree
 }
 
-/** Rows whose tree path descends from `id` (mirrors the branch regex). */
+/**
+ * Rows whose tree path descends from `id` (mirrors the branch regex).
+ * @param rows - the candidate rows.
+ * @param id - the ancestor id whose path prefix selects rows.
+ * @returns the descending rows.
+ */
 export function pathPrefixRows(rows: Record<string, unknown>[], id: unknown): Record<string, unknown>[] {
   const prefix = `/${String(id).toLowerCase()}`
   return rows.filter(row => typeof row.path === 'string' && row.path.toLowerCase().startsWith(prefix))
 }
 
 /** Sum a numeric field across rows. */
+/**
+ * Sum one numeric field across rows.
+ * @param rows - the rows to sum.
+ * @param field - the numeric field name.
+ * @returns the total (missing values count as zero).
+ */
 export function sumField(rows: Record<string, unknown>[], field: string): number {
   return rows.reduce((total, row) => total + (Number(row[field]) || 0), 0)
 }

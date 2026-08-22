@@ -13,7 +13,11 @@ export interface MatrixCase {
   data?: Record<string, unknown> | null
 }
 
-/** The fixed corpus: every query operator, CRUD, stats, tree, constructor, and func semantics. */
+/**
+ * The fixed corpus: every query operator, CRUD, stats, tree, constructor, and
+ * func semantics.
+ * @returns the canonical matrix cases in execution order.
+ */
 export function buildMatrix(): MatrixCase[] {
   const cases: MatrixCase[] = []
   const add = (

@@ -70,7 +70,11 @@ export function apply(ctx: Context, config: Config): void {
   )
 }
 
-/** Read an app-package directory's entities and funcs from disk. */
+/**
+ * Read an app-package directory's entities and funcs from disk.
+ * @param packageDir - the app-package directory.
+ * @returns entity definitions by identifier and function lists by entity identifier.
+ */
 export function loadPackage(packageDir: string): {
   entities: Map<string, SandboxEntity>
   funcs: Map<string, SandboxFunc[]>
@@ -141,7 +145,10 @@ class StorageBackend implements KvBackend {
   }
 }
 
-/** Mock upload endpoint so upload components preview without real uploads. */
+/**
+ * Mock upload endpoint so upload components preview without real uploads.
+ * @param res - the response receiving the mock success payload.
+ */
 export function uploadMock(res: ServerResponse): void {
   writeJson(res, 200, { status: 0, msg: '', data: { url: 'mock://upload' } })
 }

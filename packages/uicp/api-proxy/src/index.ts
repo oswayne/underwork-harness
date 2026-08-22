@@ -41,7 +41,12 @@ export function apply(ctx: Context, config: Config): void {
 
 const FORWARD_HEADERS = ['authorization', 'tenant', 'content-type'] as const
 
-/** Forward one request to the upstream and echo the JSON response. */
+/**
+ * Forward one request to the upstream and echo the JSON response.
+ * @param req - the incoming request whose URL is rebased onto the upstream.
+ * @param res - the response the upstream JSON is written to.
+ * @param upstream - the platform API base URL.
+ */
 export async function routeHandler(
   req: IncomingMessage,
   res: ServerResponse,

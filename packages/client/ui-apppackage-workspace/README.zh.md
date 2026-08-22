@@ -19,3 +19,8 @@ None，因为本插件为浏览器界面，不触及任何模型请求。
 #### KV Cache effect
 
 无；本插件既不组装也不发送 provider 请求。
+
+## Known Limitations and Deferred Work
+
+- 该 workspace 依赖同一个本地 `dsh web` 提供预览与沙盒 seam；缺少这些路由的独立部署会在预览与测试标签页报错。
+- 编辑标签页打开独立浏览器窗口并依赖构建后的预览 bundle；它不内嵌在会话面板中。

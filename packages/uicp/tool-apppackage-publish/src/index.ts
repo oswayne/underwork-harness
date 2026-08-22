@@ -15,7 +15,11 @@ export const inject = ['tools']
 export { HttpPlatformClient } from './client.ts'
 export { publishPackage, type PublishSummary } from './publish.ts'
 
-/** Pure terminal presentation of the canonical result. */
+/**
+ * Pure terminal presentation of the canonical result.
+ * @param value - the publish summary.
+ * @returns the rendered terminal lines.
+ */
 export function renderResult(value: PublishSummary): { type: 'text'; text: string }[] {
   const created = value.created
   const lines = [

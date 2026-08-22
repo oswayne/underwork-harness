@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs'
 import { loadPackage } from '@deepseek-ai/dsh-sandbox-server'
 import type { PlatformClient } from './client.ts'
 
+/** Created/reused counts from one publish run. */
 export interface PublishSummary {
   ok: boolean
   appId: string
@@ -14,6 +15,9 @@ export interface PublishSummary {
  * Upsert every record in creation order (App → Entity → fields → funcs →
  * menu → page), reusing existing records by identifier/path. Fixture data is
  * never written to the platform.
+ * @param directory - the app-package directory.
+ * @param client - the platform API client.
+ * @returns the create/reuse summary.
  */
 export async function publishPackage(directory: string, client: PlatformClient): Promise<PublishSummary> {
   const { entities, funcs } = loadPackage(directory)

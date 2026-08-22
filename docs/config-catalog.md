@@ -1682,6 +1682,28 @@ Depends on: [`SandboxMode`](subsystems/sandbox.md)
 
 Source: [`packages/sandbox/sandbox-policy/src/index.ts:67`](../packages/sandbox/sandbox-policy/src/index.ts)
 
+<a id="deepseek-aidsh-sandbox-server"></a>
+
+## `@deepseek-ai/dsh-sandbox-server`
+
+Requires: `webServer` · `storage`
+
+```ts config-catalog
+/** Sandbox plugin configuration. */
+export interface Config {
+  /** Absolute path of the app-package directory whose entities/funcs to serve. */
+  packageDir: string
+  /** Data partition; defaults to `default` and derives the storage unit name. */
+  session?: string
+  /** Body size cap for writes; defaults to 4 MiB. */
+  maxBodyBytes?: number
+  /** ctx.storage backend name exposing the KV facet; defaults to `json`. */
+  backendName?: string
+}
+```
+
+Source: [`packages/uicp/sandbox-server/src/index.ts:28`](../packages/uicp/sandbox-server/src/index.ts)
+
 <a id="deepseek-aidsh-sdk-jsonrpc-server"></a>
 
 ## `@deepseek-ai/dsh-sdk-jsonrpc-server`
@@ -3007,6 +3029,40 @@ export interface Config {
 
 Source: [`packages/typert/loader/src/index.ts:47`](../packages/typert/loader/src/index.ts)
 
+<a id="deepseek-aidsh-uicp-api-proxy"></a>
+
+## `@deepseek-ai/dsh-uicp-api-proxy`
+
+Requires: `webServer`
+
+```ts config-catalog
+/** Proxy configuration. */
+export interface Config {
+  /** Platform API base, e.g. `https://api.underwork.cn/uicp`. */
+  upstream: string
+}
+```
+
+Source: [`packages/uicp/api-proxy/src/index.ts:20`](../packages/uicp/api-proxy/src/index.ts)
+
+<a id="deepseek-aidsh-uicp-preview-backend"></a>
+
+## `@deepseek-ai/dsh-uicp-preview-backend`
+
+Requires: `webServer`
+
+```ts config-catalog
+/** Preview seam configuration. */
+export interface Config {
+  /** App-packages root; defaults to the nearest `app-packages` walking up from cwd. */
+  appPackagesRoot?: string
+  /** Platform API base; defaults to the production UICP endpoint. */
+  platformBase?: string
+}
+```
+
+Source: [`packages/uicp/preview-backend/src/index.ts:31`](../packages/uicp/preview-backend/src/index.ts)
+
 <a id="deepseek-aidsh-user-approval"></a>
 
 ## `@deepseek-ai/dsh-user-approval`
@@ -3230,6 +3286,7 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@deepseek-ai/dsh-client-modules` — requires `webServer` · `loader` ([`packages/client/modules/src/index.ts`](../packages/client/modules/src/index.ts))
 - `@deepseek-ai/dsh-client-runtime` ([`packages/client/runtime/src/index.ts`](../packages/client/runtime/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-agent-preset` ([`packages/client/ui-agent-preset/src/index.ts`](../packages/client/ui-agent-preset/src/index.ts))
+- `@deepseek-ai/dsh-client-ui-apppackage-workspace` ([`packages/client/ui-apppackage-workspace/src/index.ts`](../packages/client/ui-apppackage-workspace/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-attachment` ([`packages/client/ui-attachment/src/index.ts`](../packages/client/ui-attachment/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-brand-official` ([`packages/client/ui-brand-official/src/index.ts`](../packages/client/ui-brand-official/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-commands` ([`packages/client/ui-commands/src/index.ts`](../packages/client/ui-commands/src/index.ts))
@@ -3259,6 +3316,7 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@deepseek-ai/dsh-client-ui-theme` ([`packages/client/ui-theme/src/index.ts`](../packages/client/ui-theme/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-tool` ([`packages/client/ui-tool/src/index.ts`](../packages/client/ui-tool/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-trajectory` ([`packages/client/ui-trajectory/src/index.ts`](../packages/client/ui-trajectory/src/index.ts))
+- `@deepseek-ai/dsh-client-ui-uicp-nav` ([`packages/client/ui-uicp-nav/src/index.ts`](../packages/client/ui-uicp-nav/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-user-questions` ([`packages/client/ui-user-questions/src/index.ts`](../packages/client/ui-user-questions/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-workflow-run` ([`packages/client/ui-workflow-run/src/index.ts`](../packages/client/ui-workflow-run/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-workspace` ([`packages/client/ui-workspace/src/index.ts`](../packages/client/ui-workspace/src/index.ts))
@@ -3286,6 +3344,10 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@deepseek-ai/dsh-subagent` ([`packages/subagent/subagent/src/index.ts`](../packages/subagent/subagent/src/index.ts))
 - `@deepseek-ai/dsh-subprocess-local` ([`packages/subprocess/subprocess-local/src/index.ts`](../packages/subprocess/subprocess-local/src/index.ts))
 - `@deepseek-ai/dsh-terminal` ([`packages/terminal/terminal/src/index.ts`](../packages/terminal/terminal/src/index.ts))
+- `@deepseek-ai/dsh-tool-apppackage-publish` — requires `tools` ([`packages/uicp/tool-apppackage-publish/src/index.ts`](../packages/uicp/tool-apppackage-publish/src/index.ts))
+- `@deepseek-ai/dsh-tool-apppackage-test` — requires `fs` · `tools` ([`packages/uicp/tool-apppackage-test/src/index.ts`](../packages/uicp/tool-apppackage-test/src/index.ts))
+- `@deepseek-ai/dsh-tool-apppackage-validate` — requires `fs` · `tools` ([`packages/uicp/tool-apppackage-validate/src/index.ts`](../packages/uicp/tool-apppackage-validate/src/index.ts))
+- `@deepseek-ai/dsh-tool-apppackage-version` — requires `fs` · `tools` ([`packages/uicp/tool-apppackage-version/src/index.ts`](../packages/uicp/tool-apppackage-version/src/index.ts))
 - `@deepseek-ai/dsh-tool-ask-user` — requires `tools` · `userQuestions` ([`packages/interaction/tool-ask-user/src/index.ts`](../packages/interaction/tool-ask-user/src/index.ts))
 - `@deepseek-ai/dsh-tool-call-timeout-policy` — requires `tools` ([`packages/guard/timeout-policy/src/index.ts`](../packages/guard/timeout-policy/src/index.ts))
 - `@deepseek-ai/dsh-tool-cordis` — requires `tools` · `systemPrompt` · `dynamicCordisRunner` · `cordisInspect` ([`packages/extensions/tool-cordis/src/index.ts`](../packages/extensions/tool-cordis/src/index.ts))
@@ -3331,6 +3393,8 @@ Imported as libraries by other packages; a `cordis.yml` cannot load them.
 - `@deepseek-ai/dsh-client-web` ([`packages/client/web/src/index.ts`](../packages/client/web/src/index.ts))
 - `@deepseek-ai/dsh-cmdline` ([`packages/boot/cmdline/src/index.ts`](../packages/boot/cmdline/src/index.ts))
 - `@deepseek-ai/dsh-code-runtime-python` ([`packages/code-runtime/code-runtime-python/src/index.ts`](../packages/code-runtime/code-runtime-python/src/index.ts))
+- `@deepseek-ai/dsh-contract-matrix` ([`packages/uicp/contract-matrix/src/index.ts`](../packages/uicp/contract-matrix/src/index.ts))
+- `@deepseek-ai/dsh-eureka-preview-host` ([`packages/uicp/eureka-preview-host/src/index.ts`](../packages/uicp/eureka-preview-host/src/index.ts))
 - `@deepseek-ai/dsh-home-paths` ([`packages/util/home-paths/src/index.ts`](../packages/util/home-paths/src/index.ts))
 - `@deepseek-ai/dsh-hook-protocol` ([`packages/hooks/hook-protocol/src/index.ts`](../packages/hooks/hook-protocol/src/index.ts))
 - `@deepseek-ai/dsh-launch-environment` ([`packages/util/launch-environment/src/index.ts`](../packages/util/launch-environment/src/index.ts))
@@ -3350,3 +3414,4 @@ Imported as libraries by other packages; a `cordis.yml` cannot load them.
 - `@deepseek-ai/dsh-typert-generator` ([`packages/typert/generator/src/index.ts`](../packages/typert/generator/src/index.ts))
 - `@deepseek-ai/dsh-typert-protocol` ([`packages/typert/protocol/src/index.ts`](../packages/typert/protocol/src/index.ts))
 - `@deepseek-ai/dsh-typert-registry` ([`packages/typert/registry/src/index.ts`](../packages/typert/registry/src/index.ts))
+- `@deepseek-ai/dsh-uicp-web-app` ([`packages/bundle/uicp-web-app/src/index.ts`](../packages/bundle/uicp-web-app/src/index.ts))

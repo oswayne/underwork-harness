@@ -14,7 +14,14 @@ export const inject = ['fs', 'tools']
 
 const EXCLUDED_TOP_LEVEL = new Set(['tests', 'versions'])
 
-/** Recursively collect product files (excluding tests/, versions/, and data session dirs). */
+/**
+ * Recursively collect product files (excluding tests/, versions/, and data
+ * session dirs).
+ * @param fs - the filesystem service.
+ * @param target - the directory to walk.
+ * @param rel - the relative path prefix for recursion.
+ * @returns product file contents by repository-relative path.
+ */
 export async function collectProductFiles(fs: FileSystem, target: FsTarget, rel = ''): Promise<Map<string, string>> {
   const files = new Map<string, string>()
   for (const entry of await fs.listDir(target)) {
@@ -31,7 +38,13 @@ export async function collectProductFiles(fs: FileSystem, target: FsTarget, rel 
   return files
 }
 
-/** Snapshot product files into `versions/<name>`; returns the version id. */
+/**
+ * Snapshot product files into `versions/<name>`; returns the version id.
+ * @param fs - the filesystem service.
+ * @param directory - the app-package directory.
+ * @param name - optional version id; defaults to a timestamp.
+ * @returns the version id.
+ */
 export async function snapshotVersion(fs: FileSystem, directory: string, name?: string): Promise<string> {
   const files = await collectProductFiles(fs, await fs.resolve(directory))
   const version = name ?? new Date().toISOString().replace(/[:.]/g, '-')
@@ -42,7 +55,13 @@ export async function snapshotVersion(fs: FileSystem, directory: string, name?: 
   return version
 }
 
-/** Restore one version's files over the working directory; returns file count. */
+/**
+ * Restore one version's files over the working directory; returns file count.
+ * @param fs - the filesystem service.
+ * @param directory - the app-package directory.
+ * @param version - the version id to restore.
+ * @returns the number of files restored.
+ */
 export async function restoreVersion(fs: FileSystem, directory: string, version: string): Promise<number> {
   const files = await collectProductFiles(fs, await fs.resolve(`${directory}/versions/${version}`))
   let count = 0
@@ -53,7 +72,12 @@ export async function restoreVersion(fs: FileSystem, directory: string, version:
   return count
 }
 
-/** List version directories, newest first; empty when none exist. */
+/**
+ * List version directories, newest first; empty when none exist.
+ * @param fs - the filesystem service.
+ * @param directory - the app-package directory.
+ * @returns version ids in newest-first order.
+ */
 export async function listVersions(fs: FileSystem, directory: string): Promise<string[]> {
   const target = await fs.resolve(`${directory}/versions`)
   const info = await fs.stat(target)
@@ -71,7 +95,11 @@ export interface AppPackageVersionResult {
   restored?: number
 }
 
-/** Pure terminal presentation. */
+/**
+ * Pure terminal presentation.
+ * @param value - the version-action result.
+ * @returns the rendered terminal lines.
+ */
 export function renderResult(value: AppPackageVersionResult): { type: 'text'; text: string }[] {
   const lines = [`apppackage_version: ${value.action}`]
   if (value.version !== undefined) lines.push(`  version: ${value.version}`)

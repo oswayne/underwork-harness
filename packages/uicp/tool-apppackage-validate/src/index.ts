@@ -33,7 +33,11 @@ export interface AppPackageResult {
   dependencies: Dependency[]
 }
 
-/** Pure terminal presentation of the canonical result. */
+/**
+ * Pure terminal presentation of the canonical result.
+ * @param value - the validation result.
+ * @returns the rendered terminal lines.
+ */
 export function renderResult(value: AppPackageResult): { type: 'text'; text: string }[] {
   const lines = [`apppackage_validate: ${value.ok ? 'OK' : 'FAIL'}`]
   if (value.issues.length > 0) {
@@ -51,6 +55,10 @@ export function renderResult(value: AppPackageResult): { type: 'text'; text: str
  * Collect the contract-relevant files of an app-package directory into a
  * relative-path → content map, walking `entities/`, `pages/`, `data/`, and
  * the two-level `funcs/<entity>/` tree.
+ * @param fs - the filesystem service.
+ * @param root - the app-package directory target.
+ * @param signal - optional cancellation signal.
+ * @returns repository-relative path → file content.
  */
 export async function collectFiles(
   fs: FileSystem,

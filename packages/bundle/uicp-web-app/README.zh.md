@@ -2,11 +2,7 @@
 
 [English](README.md) | 中文
 
-UICP Web 表面 bundle。[`cordis.patch.yml`](cordis.patch.yml) 叠加在
-[`dsh-web-app`](../web-app/README.zh.md) 之上：插入同源平台 API 代理
-（`/uicp-api/*`）、应用包预览 seam、UICP 侧边栏导航和应用包 workspace，并将
-directory-picker 固定为 browse 后端，使租户切换可以编程式创建应用包目录。所有行
-引用的插件归各包所有；本 bundle 只声明它们及其 peer 提供者。
+UICP Web 表面 bundle。[`cordis.patch.yml`](cordis.patch.yml) 叠加在 [`dsh-web-app`](../web-app/README.zh.md) 之上：插入同源平台 API 代理（`/uicp-api/*`）、应用包预览 seam、UICP 侧边栏导航和应用包 workspace，并将 directory-picker 固定为 browse 后端，使租户切换可以编程式创建应用包目录。所有行引用的插件归各包所有；本 bundle 只声明它们及其 peer 提供者。
 
 ## Model Experience
 

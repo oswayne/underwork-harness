@@ -689,6 +689,7 @@ export async function versionHandler(
  * @param req - the incoming POST with `{ cwd, baseUrl, token, tenantId, adopted }`.
  * @param res - the response.
  * @param root - the app-packages root for path validation.
+ * @param platformBase - the platform API base URL; defaults to the shipped platform.
  */
 export async function publishHandler(
   req: IncomingMessage,

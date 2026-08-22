@@ -12,8 +12,9 @@ export const zh = {
   'nav.sessions': '会话',
 }
 
-/** English dictionary. */
+/** Key set of the uicp-nav dictionaries (zh is the source of truth). */
 export type NavKey = keyof typeof zh
+/** English dictionary mirroring the zh key set. */
 export const en: Record<NavKey, string> = {
   'login.brand': 'Underwork Harness',
   'login.title': 'Sign in',

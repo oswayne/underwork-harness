@@ -5,6 +5,7 @@ import { SandboxError, SandboxStore } from './store.ts'
 import { applyQuery, buildTree, pathPrefixRows, sumField } from './query.ts'
 import { SandboxExecutor } from './executor.ts'
 
+/** Dependencies shared by the sandbox REST dispatcher. */
 export interface SandboxRouterDeps {
   store: SandboxStore
   executor: SandboxExecutor
@@ -20,6 +21,11 @@ function ok(data: unknown): SandboxResponse {
 export class SandboxRouter {
   constructor(private readonly deps: SandboxRouterDeps) {}
 
+  /**
+   * Dispatch one sandbox request to its handler.
+   * @param request - the parsed sandbox REST request.
+   * @returns the canonical sandbox response.
+   */
   async handle(request: SandboxRequest): Promise<SandboxResponse> {
     try {
       return await this.dispatch(request)

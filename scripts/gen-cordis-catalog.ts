@@ -152,6 +152,7 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   conversationViews: 'client-side interface-typed registry — packages/client/runtime/README.md owns the API',
   layout: 'client-side interface-typed browser service — packages/client/ui-layout/README.md owns the API',
   locale: 'client-side interface-typed browser service — packages/client/locale/README.md owns the API',
+  managedWorkspaces: 'client-side interface-typed workspace guard (declared in contract/managed.ts, provided by ui-uicp-nav) — packages/client/ui-workspace/README.md owns the API',
   modelDirectories: 'client-side interface-typed browser service — packages/client/ui-model-selection/README.md owns the API',
   modules: 'client-side interface-typed browser service — packages/client/modules/README.md owns the API',
   remote: 'client-side interface-typed gateway accessor (ClientRemote) — packages/api/gateway/README.md owns the API',

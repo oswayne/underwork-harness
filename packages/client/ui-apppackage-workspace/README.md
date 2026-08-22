@@ -19,3 +19,8 @@ None, as the plugin is browser chrome; nothing here reaches a model request.
 #### KV Cache effect
 
 None; the plugin neither assembles nor sends a provider request.
+
+## Known Limitations and Deferred Work
+
+- The workspace depends on the same local `dsh web` serving the preview and sandbox seams; a standalone deployment without those routes renders the preview and test tabs as errors.
+- The editor tab opens a separate browser window and requires the built preview bundle; it is not embedded in the conversation pane.

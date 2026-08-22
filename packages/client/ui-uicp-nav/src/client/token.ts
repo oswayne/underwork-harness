@@ -32,6 +32,7 @@ let validation: Promise<void> | undefined
 /**
  * Subscribe to effective-token changes. Returns the unsubscribe function.
  * @param listener - called whenever the effective token changes.
+ * @returns the unsubscribe function.
  */
 export function subscribeAuth(listener: AuthListener): () => void {
   authListeners.add(listener)
@@ -40,7 +41,10 @@ export function subscribeAuth(listener: AuthListener): () => void {
   }
 }
 
-/** Synchronous snapshot of the auth state for useSyncExternalStore. */
+/**
+ * Synchronous snapshot of the auth state for useSyncExternalStore.
+ * @returns the current auth state.
+ */
 export function authSnapshot(): AuthState {
   return authState
 }
@@ -115,12 +119,21 @@ export function resetAuth(): void {
   validation = undefined
 }
 
+/**
+ * The effective platform token: the persisted value when set, else the
+ * in-memory value.
+ * @returns the effective token or undefined.
+ */
 export function getToken(): string | undefined {
   const local = readLocalToken()
   if (local !== undefined) return local
   return memoryToken
 }
 
+/**
+ * Persist a token and validate it, transitioning the auth state.
+ * @param token - the platform JWT to adopt.
+ */
 export async function setToken(token: string): Promise<void> {
   writeLocalToken(token)
   memoryToken = token
@@ -133,6 +146,7 @@ export async function setToken(token: string): Promise<void> {
   setState({ status: 'authenticated', token, invalid: false })
 }
 
+/** Drop the persisted and in-memory token, returning to the anonymous state. */
 export function clearToken(): void {
   writeLocalToken(undefined)
   memoryToken = undefined

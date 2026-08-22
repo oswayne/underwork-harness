@@ -6,6 +6,7 @@ import type { SandboxFunc } from './types.ts'
 import { SandboxStore } from './store.ts'
 import { matches } from './query.ts'
 
+/** Canonical sandbox function-execution result. */
 export interface ExecResult {
   status: number
   msg: string | null
@@ -47,7 +48,12 @@ export class SandboxExecutor {
     private readonly funcs: ReadonlyMap<string, SandboxFunc[]>,
   ) {}
 
-  /** Run one body; `entity` is injected for object functions. */
+  /**
+   * Run one body; `entity` is injected for object functions.
+   * @param body - the Func body source.
+   * @param entity - optional record injected as `context.entity`.
+   * @returns the canonical sandbox result.
+   */
   async execute(body: string, entity?: Record<string, unknown>): Promise<ExecResult> {
     try {
       const context = this.buildContext()
@@ -60,7 +66,13 @@ export class SandboxExecutor {
     }
   }
 
-  /** Resolve and run a function by schema/identifier (static/object/constructor). */
+  /**
+   * Resolve and run a function by schema/identifier (static/object/constructor).
+   * @param schemaIdentifier - the entity identifier owning the function.
+   * @param funcIdentifier - the function identifier within the entity.
+   * @param entityId - the record id for object functions.
+   * @returns the canonical sandbox result.
+   */
   async call(schemaIdentifier: string, funcIdentifier: string, entityId?: string): Promise<ExecResult> {
     const func = (this.funcs.get(schemaIdentifier) ?? []).find(candidate => candidate.identifier === funcIdentifier)
     if (func === undefined) return { status: 404, data: { schema: schemaIdentifier, identifier: funcIdentifier }, msg: '函数不存在' }

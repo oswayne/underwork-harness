@@ -45,55 +45,114 @@ const state: {
   packagesRoot: undefined,
 }
 
+/**
+ * Install the action bridge provided by the plugin apply.
+ * @param actions - the session/workspace action set.
+ */
 export function setNavActions(actions: NavActions): void {
   state.actions = actions
 }
 
+/**
+ * Select a tenant, clearing the current app selection.
+ * @param tenant - the tenant to select.
+ */
 export function selectTenant(tenant: SelectedTenant): void {
   state.tenant = tenant
   state.app = undefined
 }
 
+/**
+ * Select an app package within the current tenant.
+ * @param app - the app package to select.
+ */
 export function selectApp(app: AppPackage): void {
   state.app = app
 }
 
+/**
+ * The currently selected tenant.
+ * @returns the tenant or undefined before selection.
+ */
 export function currentTenant(): SelectedTenant | undefined {
   return state.tenant
 }
 
+/**
+ * The currently selected app package.
+ * @returns the app package or undefined before selection.
+ */
 export function currentApp(): AppPackage | undefined {
   return state.app
 }
 
+/**
+ * Open a session.
+ * @param id - the session to open.
+ */
 export function openSession(id: SessionId): void {
   state.actions?.openSession(id)
 }
 
+/**
+ * Create a session bound to one app-package workspace.
+ * @param cwd - the app-package directory path.
+ * @returns the creation promise when an action is registered.
+ */
 export function createSession(cwd: string): Promise<void> | undefined {
   return state.actions?.createSession(cwd)
 }
 
+/**
+ * Rename a session.
+ * @param id - the session id.
+ * @param title - the new title.
+ * @returns the rename promise when an action is registered.
+ */
 export function renameSession(id: SessionId, title: string): Promise<void> | undefined {
   return state.actions?.renameSession(id, title)
 }
 
+/**
+ * Fork a session.
+ * @param id - the session to fork.
+ */
 export function forkSession(id: SessionId): void {
   state.actions?.forkSession(id)
 }
 
+/**
+ * Archive a session.
+ * @param id - the session to archive.
+ * @returns the archive promise when an action is registered.
+ */
 export function archiveSession(id: SessionId): Promise<void> | undefined {
   return state.actions?.archiveSession(id)
 }
 
+/**
+ * Adopt an app-package directory as a workspace.
+ * @param cwd - the app-package directory path.
+ * @param title - the workspace title.
+ * @returns the adoption promise when an action is registered.
+ */
 export function registerAppWorkspace(cwd: string, title: string): Promise<void> | undefined {
   return state.actions?.registerAppWorkspace(cwd, title)
 }
 
+/**
+ * Delete a managed workspace.
+ * @param workspaceId - the workspace to delete.
+ * @returns the deletion promise when an action is registered.
+ */
 export function deleteWorkspace(workspaceId: WorkspaceId): Promise<void> | undefined {
   return state.actions?.deleteWorkspace(workspaceId)
 }
 
+/**
+ * Remember the resolved app-packages root.
+ * @param root - the server-resolved root directory.
+ */
 export function setPackagesRoot(root: string): void {
   state.packagesRoot = root
 }
@@ -120,6 +179,10 @@ export async function resolvePackagesRoot(): Promise<string | undefined> {
   }
 }
 
+/**
+ * The remembered app-packages root.
+ * @returns the root directory or undefined.
+ */
 export function packagesRoot(): string | undefined {
   return state.packagesRoot
 }
@@ -132,7 +195,12 @@ export function resetNav(): void {
   state.packagesRoot = undefined
 }
 
-/** Session workspace directory for one app package, when the root is known. */
+/**
+ * Session workspace directory for one app package, when the root is known.
+ * @param tenant - the selected tenant whose identifier keys the directory.
+ * @param app - the app package whose identifier keys the directory.
+ * @returns the absolute workspace directory, or undefined when no app-packages root is known.
+ */
 export function appCwd(tenant: SelectedTenant, app: AppPackage): string | undefined {
   const root = state.packagesRoot
   return root === undefined ? undefined : `${root}/${tenant.identifier}/${app.identifier}`

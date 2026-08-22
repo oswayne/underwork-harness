@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   normalizeSessionLog,
+  normalizeSessionSnapshot,
   normalizeStdout,
   scrubRequestHeaders,
   type NormalizeContext,
@@ -185,7 +186,7 @@ describe('uicp app-package driver snapshots', () => {
         expect(JSON.stringify(finalAssistant)).toContain('UICP_APP_PACKAGE_OK')
 
         const context = contextFromLogs([log.content])
-        const session = scrubRequestHeaders(normalizeSessionLog(log.content, context))
+        const session = normalizeSessionSnapshot(log.content, context)
         if (refreshing) await writeFile(sessionExpected, session)
         expect(session).toBe(await readFile(sessionExpected, 'utf8'))
         expect(session).toContain('apppackage_validate')
