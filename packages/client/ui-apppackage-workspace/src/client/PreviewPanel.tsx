@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
-import { makeSandboxFetcher } from './sandbox-fetcher.ts'
+import { makeSandboxFetcher, previewHeaders } from './sandbox-fetcher.ts'
 import { loadPreviewBundle } from './preview-bundle.ts'
 import css from './AppPackageWorkspace.module.css'
 
@@ -42,7 +42,7 @@ export function PreviewPanel({ cwd, t }: PreviewPanelProps) {
     if (wanted !== undefined) query.set('page', wanted)
     void (async () => {
       try {
-        const response = await fetch(`/uicp/preview/page?${query}`)
+        const response = await fetch(`/uicp/preview/page?${query}`, { headers: previewHeaders() })
         const body = (await response.json()) as {
           status: number
           data?: { schema: unknown; fixtures?: unknown; pages?: PageInfo[] }

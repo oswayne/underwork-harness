@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
 import css from './AppPackageWorkspace.module.css'
+import { previewHeaders } from './sandbox-fetcher.ts'
 
 /** Version action outcome returned by `POST /uicp/preview/version`. */
 interface VersionResult {
@@ -34,7 +35,7 @@ export function VersionsPanel({ cwd, t }: VersionsPanelProps) {
     try {
       const response = await fetch('/uicp/preview/version', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: previewHeaders({ 'content-type': 'application/json' }),
         body: JSON.stringify({ cwd, ...body }),
       })
       const parsed = (await response.json()) as { status: number; data?: VersionResult; msg?: string }

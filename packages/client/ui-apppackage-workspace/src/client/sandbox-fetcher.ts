@@ -19,6 +19,26 @@ export interface PreviewRequest {
   data?: unknown
 }
 
+/** localStorage key owned by the ui-uicp-nav auth store (same origin). */
+const TOKEN_KEY = 'uicp.platform.token'
+
+/**
+ * Preview seam headers: the platform JWT plus any caller extras. The remote
+ * seam rejects anonymous requests, so every preview call carries the token.
+ * @param extra - additional headers (e.g. the JSON content type).
+ * @returns the merged header record.
+ */
+export function previewHeaders(extra?: HeadersInit): HeadersInit {
+  const headers: Record<string, string> = { ...(extra as Record<string, string> | undefined) }
+  try {
+    const token = window.localStorage.getItem(TOKEN_KEY)
+    if (token !== null && token !== '') headers.Authorization = `Bearer ${token}`
+  } catch {
+    // Storage unavailable: the preview seam answers 401 and the UI falls back to sign-in.
+  }
+  return headers
+}
+
 /**
  * Build a preview fetcher proxying the package's data reads and writes to the
  * workspace sandbox seam.
@@ -39,8 +59,10 @@ export function makeSandboxFetcher(cwd: string): (request: PreviewRequest) => Pr
     target.searchParams.set('cwd', cwd)
     const init: RequestInit = { method: request.method }
     if (request.data !== undefined) {
-      init.headers = { 'content-type': 'application/json' }
+      init.headers = previewHeaders({ 'content-type': 'application/json' })
       init.body = JSON.stringify(request.data)
+    } else {
+      init.headers = previewHeaders()
     }
     return fetch(`${target.pathname}${target.search}`, init).then(response => response.json() as Promise<PreviewResponse>)
   }

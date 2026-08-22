@@ -5,6 +5,7 @@ import { makeSandboxFetcher } from '../src/client/sandbox-fetcher.ts'
 
 afterEach(() => {
   vi.unstubAllGlobals()
+  window.localStorage.clear()
 })
 
 describe('makeSandboxFetcher', () => {
@@ -42,6 +43,20 @@ describe('makeSandboxFetcher', () => {
     const call = fetchMock.mock.calls[0]
     expect(call?.[1]?.body).toBe(JSON.stringify({ work_no: 'X' }))
     expect((call?.[1]?.headers as Record<string, string> | undefined)?.['content-type']).toBe('application/json')
+  })
+
+  it('carries the stored platform token on preview requests', async () => {
+    const fetchMock = vi.fn(async (_url: unknown, _init?: RequestInit) => new Response(JSON.stringify({
+      status: 0,
+      data: {},
+      msg: null,
+    })))
+    vi.stubGlobal('fetch', fetchMock)
+    window.localStorage.setItem('uicp.platform.token', 'tok')
+    const fetcher = makeSandboxFetcher('/root/cszh/sre-w')
+    await fetcher({ url: '/app-package/entity/sre-work-work-order/list', method: 'GET' })
+    const call = fetchMock.mock.calls[0]
+    expect((call?.[1]?.headers as Record<string, string> | undefined)?.Authorization).toBe('Bearer tok')
   })
 
   it('mocks uploads and answers non-entity paths without a network call', async () => {

@@ -1,5 +1,6 @@
 import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
+import { getToken } from './token.ts'
 
 /** One platform app-package row (identifier-scoped local record). */
 export interface AppPackage {
@@ -166,7 +167,10 @@ export function setPackagesRoot(root: string): void {
 export async function resolvePackagesRoot(): Promise<string | undefined> {
   if (state.packagesRoot !== undefined) return state.packagesRoot
   try {
-    const res = await fetch('/uicp/preview/root')
+    const token = getToken()
+    const res = await fetch('/uicp/preview/root', {
+      headers: token === undefined ? {} : { Authorization: `Bearer ${token}` },
+    })
     const body = await res.json() as { status?: number; data?: { root?: string } }
     if (res.ok && body.status === 0 && typeof body.data?.root === 'string' && body.data.root !== '') {
       setPackagesRoot(body.data.root)

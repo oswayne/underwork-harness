@@ -3,6 +3,7 @@ import type { AppPackageKey } from '../locales.ts'
 import {
   PageInfo, postPageSave, SaveResult, SaveResultLine,
 } from './SaveResult.tsx'
+import { previewHeaders } from './sandbox-fetcher.ts'
 import css from './AppPackageWorkspace.module.css'
 
 /** Props for the JSON seat. */
@@ -38,7 +39,7 @@ export function JsonPanel({ cwd, t }: JsonPanelProps) {
     if (wanted !== undefined) query.set('page', wanted)
     void (async () => {
       try {
-        const response = await fetch(`/uicp/preview/page?${query}`)
+        const response = await fetch(`/uicp/preview/page?${query}`, { headers: previewHeaders() })
         const body = (await response.json()) as {
           status: number
           data?: { schema: unknown; pages?: PageInfo[] }

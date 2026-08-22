@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { AppPackageKey } from '../locales.ts'
 import css from './AppPackageWorkspace.module.css'
+import { previewHeaders } from './sandbox-fetcher.ts'
 
 /** One generated case outcome from the workspace test seam. */
 interface CaseResult {
@@ -48,7 +49,7 @@ export function TestsPanel({ cwd, t }: TestsPanelProps) {
     try {
       const response = await fetch('/uicp/preview/test', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: previewHeaders({ 'content-type': 'application/json' }),
         body: JSON.stringify({ cwd }),
       })
       const body = (await response.json()) as { status: number; data?: TestResult; msg?: string }
@@ -89,7 +90,7 @@ export function TestsPanel({ cwd, t }: TestsPanelProps) {
     try {
       const response = await fetch('/uicp/preview/publish', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: previewHeaders({ 'content-type': 'application/json' }),
         body: JSON.stringify({ cwd, token, tenantId, adopted: true }),
       })
       const body = (await response.json()) as {

@@ -1,5 +1,6 @@
 import type { AppPackageKey } from '../locales.ts'
 import css from './AppPackageWorkspace.module.css'
+import { previewHeaders } from './sandbox-fetcher.ts'
 
 /** One selectable page in the app package. */
 export interface PageInfo {
@@ -37,7 +38,7 @@ export async function postPageSave(cwd: string, page: string, value: unknown): P
   try {
     const response = await fetch('/uicp/preview/page', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: previewHeaders({ 'content-type': 'application/json' }),
       body: JSON.stringify({ cwd, page, value }),
     })
     const body = (await response.json()) as { status: number; data?: SaveResult; msg?: string }

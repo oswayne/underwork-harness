@@ -8,6 +8,7 @@
  */
 
 import { createRequire } from 'node:module'
+import { createHash } from 'node:crypto'
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
 import { basename, dirname, join, resolve, sep } from 'node:path'
@@ -33,6 +34,45 @@ export interface Config {
   appPackagesRoot?: string
   /** Platform API base; defaults to the production UICP endpoint. */
   platformBase?: string
+}
+
+/** Read the platform JWT from the Authorization header, or undefined. */
+function bearerToken(req: IncomingMessage): string | undefined {
+  const header = req.headers.authorization
+  if (header === undefined) return undefined
+  const [scheme, token, ...rest] = header.split(/\s+/)
+  return scheme?.toLowerCase() === 'bearer' && token !== undefined && token !== '' && rest.length === 0
+    ? token
+    : undefined
+}
+
+/**
+ * Derive a stable per-user sandbox key from the JWT without keeping the raw
+ * token in the router map.
+ * @param token - the platform JWT.
+ * @returns a short hex digest identifying the credential.
+ */
+function userKeyOf(token: string): string {
+  return createHash('sha256').update(token).digest('hex').slice(0, 16)
+}
+
+/**
+ * Guard one preview request: answer 401 for anonymous callers so the remote
+ * seam never serves files or sandbox data without a platform JWT.
+ * @param req - the incoming request.
+ * @param json - the handler's JSON responder.
+ * @returns the per-user sandbox key, or undefined when the request is anonymous.
+ */
+function requireUser(
+  req: IncomingMessage,
+  json: (status: number, body: unknown) => void,
+): string | undefined {
+  const token = bearerToken(req)
+  if (token === undefined) {
+    json(401, { status: 401, msg: 'missing platform token', data: null })
+    return undefined
+  }
+  return userKeyOf(token)
 }
 
 const require = createRequire(import.meta.url)
@@ -97,6 +137,8 @@ const EDITOR_WINDOW_HTML = `<!doctype html>
       const issues = document.getElementById('issues')
       let handle
       let currentPage
+      const token = localStorage.getItem('uicp.platform.token') ?? ''
+      const authHeaders = token === '' ? {} : { Authorization: 'Bearer ' + token }
       function setStatus(text, ok) {
         status.textContent = text
         status.className = 'status' + (ok === true ? ' ok' : ok === false ? ' err' : '')
@@ -123,7 +165,7 @@ const EDITOR_WINDOW_HTML = `<!doctype html>
         renderIssues([])
         const response = await fetch('/uicp/preview/page', {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
+          headers: { 'content-type': 'application/json', ...authHeaders },
           body: JSON.stringify({ cwd, page: currentPage, value })
         })
         const body = await response.json()
@@ -135,7 +177,7 @@ const EDITOR_WINDOW_HTML = `<!doctype html>
         const query = new URLSearchParams({ cwd })
         if (wanted) query.set('page', wanted)
         setStatus('正在加载…')
-        const response = await fetch('/uicp/preview/page?' + query)
+        const response = await fetch('/uicp/preview/page?' + query, { headers: authHeaders })
         const body = await response.json()
         if (body.status !== 0 || body.data === undefined) throw new Error(body.msg ?? '加载失败')
         select.innerHTML = ''
@@ -264,6 +306,8 @@ export async function pageHandler(
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
   }
+  const user = requireUser(req, json)
+  if (user === undefined) return
   if (dir === undefined) {
     json(400, { status: 400, msg: 'cwd must be an app-package directory under the app-packages root', data: null })
     return
@@ -385,6 +429,8 @@ export async function savePageHandler(
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
   }
+  const user = requireUser(req, json)
+  if (user === undefined) return
   let body: { cwd?: unknown; page?: unknown; value?: unknown }
   try {
     const parsed = await readJsonBody(req)
@@ -438,15 +484,19 @@ async function createSandboxSetup(dir: string): Promise<SandboxSetup> {
   return { router: new SandboxRouter({ store, executor, entities, funcs }), package: pkg, fixtures }
 }
 
-/** Per-package preview routers so CRUD edits persist for the workspace session. */
+/**
+ * Per-user preview routers so CRUD edits persist per credential: the same
+ * app-package directory has one isolated in-memory sandbox per user.
+ */
 const previewRouters = new Map<string, Promise<SandboxSetup>>()
 
-/** Resolve the cached preview router for one package directory. */
-function getPreviewRouter(dir: string): Promise<SandboxRouter> {
-  let router = previewRouters.get(dir)
+/** Resolve the cached preview router for one user and package directory. */
+function getPreviewRouter(dir: string, user: string): Promise<SandboxRouter> {
+  const key = `${user}/${dir}`
+  let router = previewRouters.get(key)
   if (router === undefined) {
     router = createSandboxSetup(dir)
-    previewRouters.set(dir, router)
+    previewRouters.set(key, router)
   }
   return router.then(setup => setup.router)
 }
@@ -490,6 +540,8 @@ export async function testHandler(
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
   }
+  const user = requireUser(req, json)
+  if (user === undefined) return
   if (req.method !== 'POST') {
     json(405, { status: 405, msg: 'method not allowed', data: null })
     return
@@ -534,6 +586,8 @@ export async function entityHandler(
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
   }
+  const user = requireUser(req, json)
+  if (user === undefined) return
   try {
     const url = new URL(req.url ?? '/', 'http://sandbox.local')
     const dir = resolvePackageDir(root, url.searchParams.get('cwd') ?? undefined)
@@ -553,13 +607,13 @@ export async function entityHandler(
     } catch {
       body = undefined
     }
-    const router = await getPreviewRouter(dir)
+    const router = await getPreviewRouter(dir, user)
     const response = await router.handle({
       method: req.method ?? 'GET',
       path: url.pathname.replace(/^\/uicp\/preview\/entity/, ''),
       query,
       body,
-      session: 'uicp_workspace',
+      session: user,
     })
     json(response.statusCode, response.body)
   } catch (error) {
@@ -646,6 +700,8 @@ export async function versionHandler(
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
   }
+  const user = requireUser(req, json)
+  if (user === undefined) return
   if (req.method !== 'POST') {
     json(405, { status: 405, msg: 'method not allowed', data: null })
     return
@@ -711,6 +767,8 @@ export async function publishHandler(
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
   }
+  const user = requireUser(req, json)
+  if (user === undefined) return
   if (req.method !== 'POST') {
     json(405, { status: 405, msg: 'method not allowed', data: null })
     return
@@ -798,6 +856,11 @@ export function apply(ctx: Context, config: Config = {}): void {
           kind: 'exact',
           path: '/uicp/preview/root',
           handler: (_req, res) => {
+            const json = (status: number, body: unknown): void => {
+              res.writeHead(status, { 'content-type': 'application/json' })
+              res.end(JSON.stringify(body))
+            }
+            if (requireUser(_req, json) === undefined) return
             res.writeHead(200, { 'content-type': 'application/json' })
             res.end(JSON.stringify({ status: 0, data: { root } }))
           },

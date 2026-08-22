@@ -57,11 +57,27 @@ afterEach(async () => {
   for (const dir of dirs.splice(0)) await rm(dir, { recursive: true, force: true })
 })
 
-function fakeReq(url: string): never {
-  return Object.assign(Readable.from([]), { method: 'GET', url, headers: {} }) as never
+function fakeReq(url: string, token = 'test-token'): never {
+  return Object.assign(Readable.from([]), {
+    method: 'GET',
+    url,
+    headers: { authorization: `Bearer ${token}` },
+  }) as never
 }
 
-function fakePostReq(url: string, body: unknown): never {
+function fakePostReq(url: string, body: unknown, token = 'test-token'): never {
+  return Object.assign(Readable.from([JSON.stringify(body)]), {
+    method: 'POST',
+    url,
+    headers: { authorization: `Bearer ${token}` },
+  }) as never
+}
+
+function anonymousReq(url: string, method = 'GET'): never {
+  return Object.assign(Readable.from([]), { method, url, headers: {} }) as never
+}
+
+function anonymousPostReq(url: string, body: unknown): never {
   return Object.assign(Readable.from([JSON.stringify(body)]), { method: 'POST', url, headers: {} }) as never
 }
 
@@ -222,7 +238,10 @@ describe('pageHandler', () => {
 
   it('answers 400 when the request carries no url', async () => {
     const app = await packageDir()
-    const noUrl = Object.assign(Readable.from([]), { method: 'GET', headers: {} }) as unknown as IncomingMessage
+    const noUrl = Object.assign(Readable.from([]), {
+      method: 'GET',
+      headers: { authorization: 'Bearer test-token' },
+    }) as unknown as IncomingMessage
     const { res, captured } = fakeRes()
     await pageHandler(noUrl, res, join(app, '..'))
     expect(captured.statusCode).toBe(400)
@@ -503,7 +522,7 @@ describe('savePageHandler edge cases', () => {
     const errorReq = Object.assign(new EventEmitter(), {
       method: 'POST',
       url: '/uicp/preview/page',
-      headers: {},
+      headers: { authorization: 'Bearer test-token' },
     }) as unknown as IncomingMessage
     const errorRes = fakeRes()
     const pending = savePageHandler(errorReq, errorRes.res, join(app, '..'))
@@ -619,13 +638,42 @@ describe('versionHandler edge cases', () => {
 })
 
 describe('entityHandler edge cases', () => {
+  it('isolates sandbox data per credential', async () => {
+    const app = await packageDir()
+    const insert = fakeRes()
+    await entityHandler(fakePostReq(`/uicp/preview/entity/order?cwd=${encodeURIComponent(app)}`, {
+      orderNo: 'A-ONLY',
+      amount: 1,
+    }), insert.res, join(app, '..'))
+    expect(insert.captured.statusCode).toBe(200)
+
+    const same = fakeRes()
+    await entityHandler(fakeReq(`/uicp/preview/entity/order/page?cwd=${encodeURIComponent(app)}`), same.res, join(app, '..'))
+    expect((JSON.parse(same.captured.body) as { data: { total: number } }).data.total).toBe(2)
+
+    const other = fakeRes()
+    await entityHandler(
+      fakeReq(`/uicp/preview/entity/order/page?cwd=${encodeURIComponent(app)}`, 'other-token'),
+      other.res,
+      join(app, '..'),
+    )
+    expect((JSON.parse(other.captured.body) as { data: { total: number } }).data.total).toBe(1)
+
+    const again = fakeRes()
+    await entityHandler(fakeReq(`/uicp/preview/entity/order/page?cwd=${encodeURIComponent(app)}`), again.res, join(app, '..'))
+    expect((JSON.parse(again.captured.body) as { data: { total: number } }).data.total).toBe(2)
+  })
+
   it('rejects missing cwd/url, folds query params, tolerates non-JSON bodies, and 500s when the package cannot load', async () => {
     const app = await packageDir()
     const noCwd = fakeRes()
     await entityHandler(fakeReq('/uicp/preview/entity/order/list'), noCwd.res, join(app, '..'))
     expect(noCwd.captured.statusCode).toBe(400)
 
-    const noUrl = Object.assign(Readable.from([]), { method: 'GET', headers: {} }) as unknown as IncomingMessage
+    const noUrl = Object.assign(Readable.from([]), {
+      method: 'GET',
+      headers: { authorization: 'Bearer test-token' },
+    }) as unknown as IncomingMessage
     const noUrlRes = fakeRes()
     await entityHandler(noUrl, noUrlRes.res, join(app, '..'))
     expect(noUrlRes.captured.statusCode).toBe(400)
@@ -647,7 +695,7 @@ describe('entityHandler edge cases', () => {
 
     const bare = Object.assign(Readable.from([]), {
       url: `/uicp/preview/entity/order/list?cwd=${encodeURIComponent(app)}`,
-      headers: {},
+      headers: { authorization: 'Bearer test-token' },
     }) as unknown as IncomingMessage
     const bareRes = fakeRes()
     await entityHandler(bare, bareRes.res, join(app, '..'))
@@ -656,7 +704,7 @@ describe('entityHandler edge cases', () => {
     const badJson = Object.assign(Readable.from(['not json']), {
       method: 'POST',
       url: `/uicp/preview/entity/order?cwd=${encodeURIComponent(app)}`,
-      headers: {},
+      headers: { authorization: 'Bearer test-token' },
     }) as unknown as IncomingMessage
     const badJsonRes = fakeRes()
     await entityHandler(badJson, badJsonRes.res, join(app, '..'))
@@ -714,6 +762,42 @@ describe('publishHandler after adoption', () => {
 })
 
 describe('apply route registration', () => {
+  it('rejects anonymous preview seam requests with 401', async () => {
+    const app = await packageDir()
+    const ctx = new Context()
+    const registrations: Array<{ path: string; handler: (req: IncomingMessage, res: ServerResponse) => void }> = []
+    ctx.provide('webServer', {
+      register: (registration: unknown) => {
+        registrations.push(registration as typeof registrations[number])
+        return () => {}
+      },
+    } as never)
+    apply(ctx, { appPackagesRoot: app })
+
+    const cases: Array<[string, IncomingMessage]> = [
+      ['/uicp/preview/root', anonymousReq('/uicp/preview/root')],
+      ['/uicp/preview/page', anonymousReq('/uicp/preview/page?cwd=x')],
+      ['/uicp/preview/page', Object.assign(Readable.from([]), {
+        method: 'GET',
+        url: '/uicp/preview/page?cwd=x',
+        headers: { authorization: 'Basic abc' },
+      }) as IncomingMessage],
+      ['/uicp/preview/page', anonymousPostReq('/uicp/preview/page', { cwd: app })],
+      ['/uicp/preview/test', anonymousPostReq('/uicp/preview/test', { cwd: app })],
+      ['/uicp/preview/version', anonymousPostReq('/uicp/preview/version', { cwd: app })],
+      ['/uicp/preview/entity', anonymousReq(`/uicp/preview/entity/order/list?cwd=${encodeURIComponent(app)}`)],
+      ['/uicp/preview/publish', anonymousPostReq('/uicp/preview/publish', { cwd: app })],
+    ]
+    for (const [path, req] of cases) {
+      const registration = registrations.find(entry => entry.path === path)!
+      const { res, captured } = fakeRes()
+      registration.handler(req, res)
+      await vi.waitFor(() => { expect(captured.statusCode).not.toBe(0) })
+      expect(captured.statusCode).toBe(401)
+    }
+    await ctx.fiber.dispose()
+  })
+
   it('defaults the publish platform base when the config omits it', async () => {
     const app = await packageDir()
     const ctx = new Context()

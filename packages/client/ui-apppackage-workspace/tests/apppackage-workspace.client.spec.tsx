@@ -63,7 +63,10 @@ describe('AppPackageWorkspace', () => {
     expect(call?.[0]).toBeInstanceOf(HTMLElement)
     expect(call?.[1]).toEqual({ type: 'page' })
     expect(typeof (call?.[2] as { fetcher?: unknown } | undefined)?.fetcher).toBe('function')
-    expect(fetchMock).toHaveBeenCalledWith('/uicp/preview/page?cwd=' + encodeURIComponent('/root/cszh/dsh-test'))
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/uicp/preview/page?cwd=' + encodeURIComponent('/root/cszh/dsh-test'),
+      expect.anything(),
+    )
   })
 
   it('shows the no-session hint without a current cwd', () => {
@@ -102,7 +105,7 @@ describe('AppPackageWorkspace', () => {
     expect(select).toBeTruthy()
     fireEvent.change(select, { target: { value: 'order-detail' } })
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('page=order-detail'))
+      expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('page=order-detail'), expect.anything())
     })
     await waitFor(() => {
       const call = mount.mock.calls.at(-1)

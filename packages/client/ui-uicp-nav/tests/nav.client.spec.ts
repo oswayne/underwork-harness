@@ -16,6 +16,7 @@ describe('ui-uicp-nav nav state', () => {
   afterEach(() => {
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
+    window.localStorage.clear()
   })
 
   it('selects tenant and app and derives cwd from the packages root', () => {
@@ -61,9 +62,11 @@ describe('ui-uicp-nav nav state', () => {
 
   it('resolves the packages root from the web server when present', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 0, data: { root: '/root' } }))))
+    window.localStorage.setItem('uicp.platform.token', 'tok')
     await resolvePackagesRoot()
     expect(packagesRoot()).toBe('/root')
-    expect(fetch).toHaveBeenCalledWith('/uicp/preview/root')
+    const init = vi.mocked(fetch).mock.calls[0]?.[1] as { headers?: Record<string, string> } | undefined
+    expect(init?.headers?.Authorization).toBe('Bearer tok')
   })
 
   it('keeps the root unset when the web server is unavailable', async () => {
