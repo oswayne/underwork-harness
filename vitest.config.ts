@@ -227,6 +227,15 @@ export default defineConfig({
         // harness the jsdom lane doesn't cover yet. TODO(gui): cover and
         // remove as the client test lane matures.
         'packages/client/ui-trajectory/src/*',
+        // The uicp preview bundle is a browser IIFE built by vite; its worker
+        // wiring needs a browser-grade harness (jsdom lane defers).
+        'packages/uicp/eureka-preview-host/src/bundle.ts',
+        // uicp client chrome: the jsdom lane covers the tool surface and the
+        // assembled-app snapshot; interaction branches defer to the GUI lane.
+        'packages/client/ui-uicp-nav/src/client/TenantSwitch.tsx',
+        'packages/client/ui-uicp-nav/src/client/Brand.tsx',
+        'packages/client/ui-uicp-nav/src/client/SessionSwitchAction.tsx',
+        'packages/client/ui-apppackage-workspace/src/client/*',
         // Trajectory's compact Markdown projection retains deferred branch coverage.
         'packages/client/ui-primitives/src/markdown/plain-text.ts',
         'packages/client/ui-user-questions/src/client/QuestionComposer.tsx',

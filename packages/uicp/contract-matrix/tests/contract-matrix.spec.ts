@@ -1,7 +1,28 @@
 import { describe, expect, it } from 'vitest'
+import { apply as applyInvariant, inject as invariantInject, name as invariantName } from '../src/invariant.ts'
 import { buildMatrix } from '../src/matrix.ts'
 import { diffMatrix, runMatrix, type MatrixResponse } from '../src/runner.ts'
 import { buildReferenceTarget } from '../src/reference.ts'
+
+describe('invariant companion', () => {
+  it('registers with the invariant service', async () => {
+    const registered: string[] = []
+    const ctx = {
+      invariants: {
+        register: (pkg: string, installer: (ctx: unknown, fail: (message: string) => never) => void) => {
+          registered.push(pkg)
+          installer(null, (message) => { throw new Error(message) })
+          return () => {}
+        },
+      },
+    } as never
+    const disposer = await applyInvariant(ctx)
+    expect(registered).toEqual(['@deepseek-ai/dsh-contract-matrix'])
+    expect(invariantInject).toEqual(['invariants'])
+    expect(invariantName).toBeTruthy()
+    disposer()
+  })
+})
 
 describe('buildMatrix', () => {
   it('yields a unique-named corpus covering every contract facet', () => {

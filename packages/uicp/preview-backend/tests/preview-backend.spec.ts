@@ -94,6 +94,16 @@ describe('resolveAppPackagesRoot', () => {
   it('honours an explicit root', () => {
     expect(resolveAppPackagesRoot({ appPackagesRoot: '/tmp/x' })).toBe('/tmp/x')
   })
+
+  it('walks up when the configured root is empty and falls back to cwd/app-packages at the filesystem root', () => {
+    const previous = process.cwd()
+    try {
+      process.chdir(tmpdir())
+      expect(resolveAppPackagesRoot({ appPackagesRoot: '' })).toBe(join(process.cwd(), 'app-packages'))
+    } finally {
+      process.chdir(previous)
+    }
+  })
 })
 
 describe('resolvePackageDir', () => {
@@ -161,6 +171,20 @@ describe('pageHandler', () => {
     const badCwd = fakeRes()
     await pageHandler(fakeReq('/uicp/preview/page?cwd=/etc'), badCwd.res, join(app, '..'))
     expect(badCwd.captured.statusCode).toBe(400)
+  })
+
+  it('answers the page list with untitled and non-JSON page entries and a missing page id', async () => {
+    const app = await packageDir()
+    await writeFile(join(app, 'pages', 'untitled.json'), JSON.stringify({ type: 'page', body: [] }))
+    await writeFile(join(app, 'pages', 'notes.txt'), 'not a page')
+    const missing = fakeRes()
+    await pageHandler(fakeReq(`/uicp/preview/page?cwd=${encodeURIComponent(app)}&page=does-not-exist`), missing.res, app)
+    expect(missing.captured.statusCode).toBe(404)
+    const first = fakeRes()
+    await pageHandler(fakeReq(`/uicp/preview/page?cwd=${encodeURIComponent(app)}`), first.res, app)
+    expect(first.captured.statusCode).toBe(200)
+    const pages = (JSON.parse(first.captured.body) as { data: { pages: { id: string; title: string }[] } }).data.pages
+    expect(pages.find(page => page.id === 'untitled')?.title).toBe('untitled')
   })
 
   it('registers its invariant companion under the package name', () => {
