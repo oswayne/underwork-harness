@@ -54,6 +54,9 @@ importers:
       eslint-plugin-sonarjs:
         specifier: ^4.1.0
         version: 4.1.0(eslint@10.5.0(jiti@2.7.0))
+      eureka:
+        specifier: ^8.14.6
+        version: 8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3)
       execa:
         specifier: ^10.0.0
         version: 10.0.0
@@ -1796,10 +1799,6 @@ importers:
         version: 18.3.1
 
   packages/client/ui-apppackage-workspace:
-    dependencies:
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:^
@@ -1810,18 +1809,12 @@ importers:
       '@deepseek-ai/dsh-client-runtime':
         specifier: workspace:^
         version: link:../runtime
-      '@deepseek-ai/dsh-client-test-runtime':
-        specifier: workspace:^
-        version: link:../../test-support/client-runtime
       '@deepseek-ai/dsh-client-ui-conversation':
         specifier: workspace:^
         version: link:../ui-conversation
       '@deepseek-ai/dsh-client-ui-layout':
         specifier: workspace:^
         version: link:../ui-layout
-      '@deepseek-ai/dsh-client-ui-primitives':
-        specifier: workspace:^
-        version: link:../ui-primitives
       '@deepseek-ai/dsh-client-ui-slots':
         specifier: workspace:^
         version: link:../ui-slots
@@ -2011,9 +2004,6 @@ importers:
       '@deepseek-ai/dsh-client-ui-settings':
         specifier: workspace:^
         version: link:../ui-settings
-      '@deepseek-ai/dsh-client-ui-sidebar':
-        specifier: workspace:^
-        version: link:../ui-sidebar
       '@deepseek-ai/dsh-client-ui-slots':
         specifier: workspace:^
         version: link:../ui-slots
@@ -3171,38 +3161,31 @@ importers:
         version: 18.3.1(react@18.3.1)
 
   packages/client/ui-uicp-nav:
-    dependencies:
-      '@deepseek-ai/dsh-api-remotes':
-        specifier: workspace:^
-        version: link:../../api/remotes
-      '@deepseek-ai/dsh-client-ui-conversation':
-        specifier: workspace:^
-        version: link:../ui-conversation
-      '@deepseek-ai/dsh-client-ui-sidebar':
-        specifier: workspace:^
-        version: link:../ui-sidebar
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-api-remotes':
+        specifier: workspace:^
+        version: link:../../api/remotes
       '@deepseek-ai/dsh-client-locale':
         specifier: workspace:^
         version: link:../locale
       '@deepseek-ai/dsh-client-runtime':
         specifier: workspace:^
         version: link:../runtime
-      '@deepseek-ai/dsh-client-test-runtime':
+      '@deepseek-ai/dsh-client-ui-conversation':
         specifier: workspace:^
-        version: link:../../test-support/client-runtime
+        version: link:../ui-conversation
       '@deepseek-ai/dsh-client-ui-layout':
         specifier: workspace:^
         version: link:../ui-layout
       '@deepseek-ai/dsh-client-ui-primitives':
         specifier: workspace:^
         version: link:../ui-primitives
+      '@deepseek-ai/dsh-client-ui-sidebar':
+        specifier: workspace:^
+        version: link:../ui-sidebar
       '@deepseek-ai/dsh-client-ui-slots':
         specifier: workspace:^
         version: link:../ui-slots
@@ -3224,6 +3207,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
 
   packages/client/ui-user-questions:
     dependencies:
@@ -8464,9 +8450,6 @@ importers:
 
   packages/uicp/eureka-preview-host:
     dependencies:
-      '@deepseek-ai/dsh-invariants':
-        specifier: workspace:^
-        version: link:../../runtime-diagnostics/invariants
       '@fortawesome/fontawesome-free':
         specifier: ^7.2.0
         version: 7.3.1
@@ -8488,6 +8471,9 @@ importers:
       eureka-ui:
         specifier: ^8.14.6
         version: 8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
+      monaco-editor:
+        specifier: ^0.53.0
+        version: 0.53.0
       react:
         specifier: ^19.2.8
         version: 19.2.8
@@ -8498,6 +8484,9 @@ importers:
       '@deepseek-ai/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
       '@types/react':
         specifier: ^19.2.0
         version: 19.2.18
@@ -17012,11 +17001,25 @@ snapshots:
       '@floating-ui/core': 1.8.0
       '@floating-ui/utils': 0.2.12
 
+  '@floating-ui/react-dom@2.1.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@floating-ui/dom': 1.8.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@floating-ui/react-dom@2.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@floating-ui/dom': 1.8.0
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  '@floating-ui/react@0.27.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@floating-ui/react-dom': 2.1.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@floating-ui/utils': 0.2.12
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tabbable: 6.5.0
 
   '@floating-ui/react@0.27.20(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -17074,6 +17077,10 @@ snapshots:
       '@antfu/install-pkg': 1.1.0
       '@iconify/types': 2.0.0
       import-meta-resolve: 4.2.0
+
+  '@icons/material@0.2.4(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
 
   '@icons/material@0.2.4(react@19.2.8)':
     dependencies:
@@ -17745,6 +17752,14 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.7
 
+  '@rc-component/portal@1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      classnames: 2.5.1
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   '@rc-component/portal@1.1.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@babel/runtime': 7.29.7
@@ -17752,6 +17767,17 @@ snapshots:
       rc-util: 5.44.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  '@rc-component/trigger@2.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@rc-component/portal': 1.1.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      classnames: 2.5.1
+      rc-motion: 2.9.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-resize-observer: 1.4.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   '@rc-component/trigger@2.3.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
@@ -19315,6 +19341,15 @@ snapshots:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
+  downshift@9.4.0(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      compute-scroll-into-view: 3.1.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-is: 18.3.1
+      tslib: 2.8.1
+
   downshift@9.4.0(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -19599,6 +19634,38 @@ snapshots:
 
   etag@1.8.1: {}
 
+  eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3):
+    dependencies:
+      '@floating-ui/dom': 1.8.0
+      '@floating-ui/react': 0.27.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@rc-component/mini-decimal': 1.1.4
+      classnames: 2.5.1
+      cross-env: 10.1.0
+      dayjs: 1.11.21
+      decimal.js: 10.6.0
+      eureka-formula: 8.14.6
+      file-saver: 2.0.5
+      hoist-non-react-statics: 3.3.2
+      json-edit-react: 1.30.2(react@18.3.1)
+      lodash: 4.18.1
+      match-sorter: 8.3.0
+      mobx: 6.16.1
+      mobx-react: 9.2.2(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      mobx-state-tree: 7.3.2(mobx@6.16.1)(typescript@6.0.3)
+      papaparse: 5.6.0
+      path-to-regexp: 8.4.2
+      qs: 6.15.3
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-intersection-observer: 11.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-is: 19.2.8
+      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tslib: 2.8.1
+      uncontrollable: 9.0.0(react@18.3.1)
+    transitivePeerDependencies:
+      - react-native
+      - typescript
+
   eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3):
     dependencies:
       '@floating-ui/dom': 1.8.0
@@ -19693,6 +19760,56 @@ snapshots:
       lodash: 4.18.1
       tslib: 2.8.1
 
+  eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3):
+    dependencies:
+      '@rc-component/mini-decimal': 1.1.4
+      animate.css: 4.1.1
+      classnames: 2.5.1
+      codemirror: 5.65.21
+      cropperjs: 1.6.2
+      dayjs: 1.11.21
+      downshift: 9.4.0(react@18.3.1)
+      echarts: 6.1.0
+      eureka-core: 8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3)
+      eureka-formula: 8.14.6
+      hoist-non-react-statics: 3.3.2
+      jsbarcode: 3.12.3
+      json-edit-react: 1.30.2(react@18.3.1)
+      katex: 0.17.0
+      lodash: 4.18.1
+      markdown-it: 14.3.0
+      markdown-it-html5-media: 0.8.0(markdown-it@14.3.0)
+      match-sorter: 8.3.0
+      mobx: 6.16.1
+      mobx-react: 9.2.2(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      mobx-state-tree: 7.3.2(mobx@6.16.1)(typescript@6.0.3)
+      monaco-editor: 0.53.0
+      prop-types: 15.8.1
+      punycode.js: 2.3.1
+      rc-input-number: 9.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-menu: 9.16.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-progress: 4.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-color: 2.19.3(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      react-draggable: 4.7.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-hook-form: 7.85.0(react@18.3.1)
+      react-intersection-observer: 11.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-pdf: 10.4.1(@types/react@19.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-textarea-autosize: 8.5.9(@types/react@19.2.18)(react@18.3.1)
+      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-visibility-sensor: 5.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      smooth-signature: 1.1.0
+      sortablejs: 1.15.7
+      tinymce: 8.8.2
+      tslib: 2.8.1
+      uncontrollable: 9.0.0(react@18.3.1)
+      video.js: 8.24.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - react-native
+      - typescript
+
   eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3):
     dependencies:
       '@rc-component/mini-decimal': 1.1.4
@@ -19740,6 +19857,51 @@ snapshots:
       video.js: 8.24.0
     transitivePeerDependencies:
       - '@types/react'
+      - react-native
+      - typescript
+
+  eureka@8.14.6(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(eureka-formula@8.14.6)(eureka-ui@8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3):
+    dependencies:
+      '@rc-component/mini-decimal': 1.1.4
+      attr-accept: 2.2.5
+      blueimp-canvastoblob: 2.1.0
+      classnames: 2.5.1
+      cropperjs: 1.6.2
+      dayjs: 1.11.21
+      downshift: 9.4.0(react@18.3.1)
+      echarts: 6.1.0
+      echarts-stat: 1.2.0
+      eureka-core: 8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3)
+      eureka-formula: 8.14.6
+      eureka-ui: 8.14.6(@types/react@19.2.18)(eureka-core@8.14.6(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3))(eureka-formula@8.14.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@6.0.3)
+      exceljs: 4.4.0
+      file-saver: 2.0.5
+      file64: 1.0.6
+      hls.js: 1.7.0
+      hoist-non-react-statics: 3.3.2
+      hotkeys-js: 4.0.5
+      immutability-helper: 3.1.1
+      jsbarcode: 3.12.3
+      json-edit-react: 1.30.2(react@18.3.1)
+      lodash: 4.18.1
+      match-sorter: 8.3.0
+      mobx: 6.16.1
+      mobx-react: 9.2.2(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      mobx-react-lite: 4.1.1(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      mobx-state-tree: 7.3.2(mobx@6.16.1)(typescript@6.0.3)
+      monaco-editor: 0.53.0
+      prop-types: 15.8.1
+      qrcode.react: 4.2.0(react@18.3.1)
+      react: 18.3.1
+      react-cropper: 2.3.3(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      react-dropzone: 15.0.0(react@18.3.1)
+      react-intersection-observer: 11.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      sortablejs: 1.15.7
+      tslib: 2.8.1
+      video.js: 8.24.0
+    transitivePeerDependencies:
       - react-native
       - typescript
 
@@ -20370,6 +20532,10 @@ snapshots:
       bignumber.js: 9.3.1
 
   json-buffer@3.0.1: {}
+
+  json-edit-react@1.30.2(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   json-edit-react@1.30.2(react@19.2.8):
     dependencies:
@@ -21090,6 +21256,14 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
+  mobx-react-lite@4.1.1(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      mobx: 6.16.1
+      react: 18.3.1
+      use-sync-external-store: 1.6.0(react@18.3.1)
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
+
   mobx-react-lite@4.1.1(mobx@6.16.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       mobx: 6.16.1
@@ -21097,6 +21271,14 @@ snapshots:
       use-sync-external-store: 1.6.0(react@19.2.8)
     optionalDependencies:
       react-dom: 19.2.8(react@19.2.8)
+
+  mobx-react@9.2.2(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      mobx: 6.16.1
+      mobx-react-lite: 4.1.1(mobx@6.16.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
 
   mobx-react@9.2.2(mobx@6.16.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21510,6 +21692,10 @@ snapshots:
 
   pure-rand@8.4.0: {}
 
+  qrcode.react@4.2.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   qrcode.react@4.2.0(react@19.2.8):
     dependencies:
       react: 19.2.8
@@ -21530,6 +21716,16 @@ snapshots:
       iconv-lite: 0.7.3
       unpipe: 1.0.0
 
+  rc-input-number@9.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@rc-component/mini-decimal': 1.1.4
+      classnames: 2.5.1
+      rc-input: 1.8.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   rc-input-number@9.5.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -21540,6 +21736,14 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
+  rc-input@1.8.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      classnames: 2.5.1
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   rc-input@1.8.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -21547,6 +21751,17 @@ snapshots:
       rc-util: 5.44.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  rc-menu@9.16.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@rc-component/trigger': 2.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      classnames: 2.5.1
+      rc-motion: 2.9.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-overflow: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   rc-menu@9.16.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21559,6 +21774,14 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
+  rc-motion@2.9.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      classnames: 2.5.1
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   rc-motion@2.9.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -21566,6 +21789,15 @@ snapshots:
       rc-util: 5.44.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  rc-overflow@1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      classnames: 2.5.1
+      rc-resize-observer: 1.4.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   rc-overflow@1.5.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21576,6 +21808,14 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
+  rc-progress@4.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      classnames: 2.5.1
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   rc-progress@4.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -21583,6 +21823,15 @@ snapshots:
       rc-util: 5.44.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  rc-resize-observer@1.4.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      classnames: 2.5.1
+      rc-util: 5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      resize-observer-polyfill: 1.5.1
 
   rc-resize-observer@1.4.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21593,12 +21842,30 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
       resize-observer-polyfill: 1.5.1
 
+  rc-util@5.44.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-is: 18.3.1
+
   rc-util@5.44.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
       react-is: 18.3.1
+
+  react-color@2.19.3(react@18.3.1):
+    dependencies:
+      '@icons/material': 0.2.4(react@18.3.1)
+      lodash: 4.18.1
+      lodash-es: 4.18.1
+      material-colors: 1.2.6
+      prop-types: 15.8.1
+      react: 18.3.1
+      reactcss: 1.2.3(react@18.3.1)
+      tinycolor2: 1.6.0
 
   react-color@2.19.3(react@19.2.8):
     dependencies:
@@ -21610,6 +21877,11 @@ snapshots:
       react: 19.2.8
       reactcss: 1.2.3(react@19.2.8)
       tinycolor2: 1.6.0
+
+  react-cropper@2.3.3(react@18.3.1):
+    dependencies:
+      cropperjs: 1.6.2
+      react: 18.3.1
 
   react-cropper@2.3.3(react@19.2.8):
     dependencies:
@@ -21627,12 +21899,26 @@ snapshots:
       react: 19.2.8
       scheduler: 0.27.0
 
+  react-draggable@4.7.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      clsx: 2.1.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   react-draggable@4.7.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       clsx: 2.1.1
       prop-types: 15.8.1
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  react-dropzone@15.0.0(react@18.3.1):
+    dependencies:
+      attr-accept: 2.2.5
+      file-selector: 2.1.2
+      prop-types: 15.8.1
+      react: 18.3.1
 
   react-dropzone@15.0.0(react@19.2.8):
     dependencies:
@@ -21647,9 +21933,19 @@ snapshots:
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
 
+  react-hook-form@7.85.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   react-hook-form@7.85.0(react@19.2.8):
     dependencies:
       react: 19.2.8
+
+  react-intersection-observer@11.0.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+    optionalDependencies:
+      react-dom: 18.3.1(react@18.3.1)
 
   react-intersection-observer@11.0.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21664,6 +21960,21 @@ snapshots:
   react-is@18.3.1: {}
 
   react-is@19.2.8: {}
+
+  react-pdf@10.4.1(@types/react@19.2.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      clsx: 2.1.1
+      dequal: 2.0.3
+      make-cancellable-promise: 2.0.0
+      make-event-props: 2.0.0
+      merge-refs: 2.0.0(@types/react@19.2.18)
+      pdfjs-dist: 5.4.296
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tiny-invariant: 1.3.3
+      warning: 4.0.3
+    optionalDependencies:
+      '@types/react': 19.2.18
 
   react-pdf@10.4.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21682,6 +21993,15 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
+  react-textarea-autosize@8.5.9(@types/react@19.2.18)(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      react: 18.3.1
+      use-composed-ref: 1.4.0(@types/react@19.2.18)(react@18.3.1)
+      use-latest: 1.3.0(@types/react@19.2.18)(react@18.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+
   react-textarea-autosize@8.5.9(@types/react@19.2.18)(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -21691,6 +22011,15 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
+  react-transition-group@4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      dom-helpers: 5.2.1
+      loose-envify: 1.4.0
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
   react-transition-group@4.4.5(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
@@ -21699,6 +22028,12 @@ snapshots:
       prop-types: 15.8.1
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
+
+  react-visibility-sensor@5.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react-visibility-sensor@5.1.1(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -21711,6 +22046,11 @@ snapshots:
       loose-envify: 1.4.0
 
   react@19.2.8: {}
+
+  reactcss@1.2.3(react@18.3.1):
+    dependencies:
+      lodash: 4.18.1
+      react: 18.3.1
 
   reactcss@1.2.3(react@19.2.8):
     dependencies:
@@ -22272,6 +22612,10 @@ snapshots:
       '@quansync/fs': 1.0.0
       quansync: 1.0.0
 
+  uncontrollable@9.0.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
   uncontrollable@9.0.0(react@19.2.8):
     dependencies:
       react: 19.2.8
@@ -22339,15 +22683,34 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
+  use-composed-ref@1.4.0(@types/react@19.2.18)(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+    optionalDependencies:
+      '@types/react': 19.2.18
+
   use-composed-ref@1.4.0(@types/react@19.2.18)(react@19.2.8):
     dependencies:
       react: 19.2.8
     optionalDependencies:
       '@types/react': 19.2.18
 
+  use-isomorphic-layout-effect@1.2.1(@types/react@19.2.18)(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+    optionalDependencies:
+      '@types/react': 19.2.18
+
   use-isomorphic-layout-effect@1.2.1(@types/react@19.2.18)(react@19.2.8):
     dependencies:
       react: 19.2.8
+    optionalDependencies:
+      '@types/react': 19.2.18
+
+  use-latest@1.3.0(@types/react@19.2.18)(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      use-isomorphic-layout-effect: 1.2.1(@types/react@19.2.18)(react@18.3.1)
     optionalDependencies:
       '@types/react': 19.2.18
 
@@ -22359,6 +22722,10 @@ snapshots:
       '@types/react': 19.2.18
 
   use-sync-external-store@1.2.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+
+  use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 

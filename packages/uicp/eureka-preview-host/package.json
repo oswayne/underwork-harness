@@ -18,6 +18,10 @@
       "types": "./lib/types/index.d.ts",
       "default": "./lib/index.js"
     },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
@@ -34,7 +38,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.2.0",
     "eureka": "^8.14.6",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "monaco-editor": "^0.53.0",
     "eureka-core": "^8.14.6",
     "eureka-editor": "^8.14.6",
     "eureka-editor-core": "^8.14.6",
@@ -44,10 +48,12 @@
     "react-dom": "^19.2.8"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^"
+    "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
+    "@deepseek-ai/dsh-invariants": "workspace:^",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "vite": "^7.0.0"

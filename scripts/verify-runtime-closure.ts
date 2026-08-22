@@ -32,6 +32,13 @@ type RuntimePlatformManifest = Record<string, RuntimePlatform>
 
 const AGENT_PRESET_GLOB = 'apps/cli/config/agent-presets/*/agent.cordis.yml'
 
+/**
+ * Shipped presets intentionally outside the Python SDK runtime closure. The
+ * uicp preset targets the local web product (`dsh web`) and composes host-side
+ * AppPackage tools that the single-exe runtime neither needs nor can load.
+ */
+const PRESETS_OUTSIDE_RUNTIME_CLOSURE = new Set(['uicp'])
+
 export interface RuntimeClosureResult {
   failures: string[]
   presetCount: number
@@ -53,7 +60,9 @@ export async function verifyRuntimeClosure(
   const workspace = await loadWorkspacePackages(root)
   const runtimeDependencies = runtimeManifest.dependencies ?? {}
   const platforms = await loadJson<RuntimePlatformManifest>(resolve(root, 'python/sdk-runtime/platforms.json'))
-  const presetPaths = globSync(AGENT_PRESET_GLOB, { cwd: root }).sort()
+  const presetPaths = globSync(AGENT_PRESET_GLOB, { cwd: root })
+    .filter(path => !PRESETS_OUTSIDE_RUNTIME_CLOSURE.has(basename(dirname(path))))
+    .sort()
   const targets = Object.keys(platforms).sort()
   const parents = new Map<string, string | undefined>()
   const queue: string[] = []
