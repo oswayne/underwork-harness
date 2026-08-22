@@ -108,7 +108,7 @@ describe('resolvePackageDir', () => {
 describe('editorWindowPage', () => {
   it('serves the standalone editor window with the preview bundle and mount call', async () => {
     const { res, captured } = fakeRes()
-    await editorWindowPage(res)
+    editorWindowPage(res)
     expect(captured.statusCode).toBe(200)
     expect(captured.body).toContain('/uicp/preview/bundle.js')
     expect(captured.body).toContain('/uicp/preview/bundle.css')

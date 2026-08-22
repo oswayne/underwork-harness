@@ -21,12 +21,12 @@ describe('ui-uicp-nav token', () => {
 
   it('falls back to memory without a stored token', async () => {
     selfOk()
-    expect(await getToken()).toBeUndefined()
+    expect(getToken()).toBeUndefined()
     await setToken('mem-token')
-    expect(await getToken()).toBe('mem-token')
+    expect(getToken()).toBe('mem-token')
     expect(authSnapshot().status).toBe('authenticated')
-    await clearToken()
-    expect(await getToken()).toBeUndefined()
+    clearToken()
+    expect(getToken()).toBeUndefined()
     expect(authSnapshot().status).toBe('anonymous')
   })
 
@@ -35,8 +35,8 @@ describe('ui-uicp-nav token', () => {
     await setToken('new')
     expect(window.localStorage.getItem('uicp.platform.token')).toBe('new')
     window.localStorage.removeItem('uicp.platform.token')
-    expect(await getToken()).toBe('new')
-    await clearToken()
+    expect(getToken()).toBe('new')
+    clearToken()
     expect(window.localStorage.getItem('uicp.platform.token')).toBeNull()
   })
 
@@ -56,7 +56,7 @@ describe('ui-uicp-nav token', () => {
     await vi.waitFor(() => { expect(authSnapshot().status).toBe('anonymous') })
     expect(authSnapshot().invalid).toBe(true)
     expect(window.localStorage.getItem('uicp.platform.token')).toBeNull()
-    expect(await getToken()).toBeUndefined()
+    expect(getToken()).toBeUndefined()
   })
 
   it('notifies auth subscribers on set and clear', async () => {
@@ -67,7 +67,7 @@ describe('ui-uicp-nav token', () => {
     expect(authSnapshot().token).toBe('a')
     expect(authSnapshot().status).toBe('authenticated')
     expect(listener).toHaveBeenCalled()
-    await clearToken()
+    clearToken()
     expect(authSnapshot().token).toBeUndefined()
     expect(authSnapshot().status).toBe('anonymous')
     const calls = listener.mock.calls.length

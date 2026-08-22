@@ -91,14 +91,14 @@ async function validateToken(token: string): Promise<boolean> {
  */
 export function refreshAuth(): void {
   validation ??= (async () => {
-    const token = await getToken()
+    const token = getToken()
     if (token === undefined) {
       setState({ status: 'anonymous', token: undefined, invalid: false })
       return
     }
     setState({ status: 'checking', token, invalid: false })
     if (!(await validateToken(token))) {
-      await clearToken()
+      clearToken()
       setState({ status: 'anonymous', token: undefined, invalid: true })
       return
     }
@@ -115,7 +115,7 @@ export function resetAuth(): void {
   validation = undefined
 }
 
-export async function getToken(): Promise<string | undefined> {
+export function getToken(): string | undefined {
   const local = readLocalToken()
   if (local !== undefined) return local
   return memoryToken
@@ -126,14 +126,14 @@ export async function setToken(token: string): Promise<void> {
   memoryToken = token
   setState({ status: 'checking', token, invalid: false })
   if (!(await validateToken(token))) {
-    await clearToken()
+    clearToken()
     setState({ status: 'anonymous', token: undefined, invalid: true })
     return
   }
   setState({ status: 'authenticated', token, invalid: false })
 }
 
-export async function clearToken(): Promise<void> {
+export function clearToken(): void {
   writeLocalToken(undefined)
   memoryToken = undefined
   setState({ status: 'anonymous', token: undefined, invalid: false })

@@ -761,7 +761,7 @@ async function serveFile(res: ServerResponse, path: string, contentType: string)
  * Handle `GET /uicp/editor`: serve the standalone editor window page.
  * @param res - the response.
  */
-export async function editorWindowPage(res: ServerResponse): Promise<void> {
+export function editorWindowPage(res: ServerResponse): void {
   res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
   res.end(EDITOR_WINDOW_HTML)
 }
@@ -779,7 +779,7 @@ export function apply(ctx: Context, config: Config = {}): void {
         ctx.webServer.register({
           kind: 'exact',
           path: '/uicp/editor',
-          handler: (_req, res) => { void editorWindowPage(res) },
+          handler: (_req, res) => { editorWindowPage(res) },
         }),
         ctx.webServer.register({
           kind: 'exact',
