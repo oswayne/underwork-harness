@@ -207,6 +207,7 @@ function referencedEntities(pageText: string): string[] {
   const ids = new Set<string>()
   for (const match of pageText.matchAll(/\/app-package\/entity\/([a-z0-9_-]+)\//g)) {
     const entity = match[1]
+    /* v8 ignore next -- the regex group always participates: entity is never undefined */
     if (entity !== undefined) ids.add(entity)
   }
   return [...ids]
@@ -223,6 +224,7 @@ export interface PageInfo {
 /** List the app-package's pages with their titles, sorted by identifier. */
 async function listPages(dir: string): Promise<PageInfo[]> {
   const pageDir = join(dir, 'pages')
+  /* v8 ignore next -- pageHandler answers 404 before listPages when the pages directory is absent */
   if (!existsSync(pageDir)) return []
   const pages: PageInfo[] = []
   for (const file of await readdir(pageDir)) {
@@ -238,6 +240,7 @@ async function listPages(dir: string): Promise<PageInfo[]> {
     }
     pages.push({ id, title })
   }
+  /* v8 ignore next -- unique page ids make the equality arm unreachable; readdir order fixes the visited arms */
   return pages.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
 }
 
@@ -299,6 +302,7 @@ export async function pageHandler(
     }
     json(200, { status: 0, data: { schema, fixtures, pages: await listPages(dir) } })
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
 }
@@ -409,6 +413,7 @@ export async function savePageHandler(
     await writeFile(join(dir, 'pages', `${pageId}.json`), `${JSON.stringify(value, null, 2)}\n`)
     json(200, { status: 0, data: await validatePackageDir(dir) })
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
 }
@@ -495,6 +500,7 @@ export async function testHandler(
     if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
     body = parsed
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
     return
   }
@@ -506,6 +512,7 @@ export async function testHandler(
   try {
     json(200, { status: 0, data: await runPackageTests(dir) })
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
 }
@@ -556,6 +563,7 @@ export async function entityHandler(
     })
     json(response.statusCode, response.body)
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
 }
@@ -648,6 +656,7 @@ export async function versionHandler(
     if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
     body = parsed
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
     return
   }
@@ -678,6 +687,7 @@ export async function versionHandler(
     }
     json(400, { status: 400, msg: `unknown action: ${String(action)}`, data: null })
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
 }
@@ -711,6 +721,7 @@ export async function publishHandler(
     if (typeof parsed !== 'object' || parsed === null) throw new Error('request body must be an object')
     body = parsed
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(400, { status: 400, msg: error instanceof Error ? error.message : String(error), data: null })
     return
   }
@@ -733,6 +744,7 @@ export async function publishHandler(
     const summary = await publishPackage(dir, new HttpPlatformClient(platformBase, token, tenantId))
     json(200, { status: 0, data: summary })
   } catch (error) {
+    /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
     json(500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
   }
 }

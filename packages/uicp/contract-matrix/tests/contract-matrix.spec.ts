@@ -85,6 +85,15 @@ describe('diffMatrix', () => {
 })
 
 describe('runMatrix expectation matching', () => {
+  it('defaults a missing response body status to zero', async () => {
+    const statuslessTarget = async (): Promise<MatrixResponse> =>
+      ({ statusCode: 200, body: { msg: 'ok', data: {} } })
+    const results = await runMatrix(statuslessTarget, [
+      { name: 'statusless', method: 'GET', path: '/x' },
+    ])
+    expect(results[0]!.passed).toBe(true)
+  })
+
   it('matches nested, scalar, array, and null expectations with failures', async () => {
     const objectTarget = async (): Promise<MatrixResponse> =>
       ({ statusCode: 200, body: { status: 0, msg: '', data: { deep: { a: 1 }, n: 5 } } })

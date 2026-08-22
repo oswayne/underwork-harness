@@ -2,10 +2,23 @@ import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
+import { apply as applyHost } from '../src/index.ts'
 import { apply, inject } from '../src/client/index.ts'
+import { UnderworkBrandMark, UnderworkBrandName } from '../src/client/Brand.tsx'
+import { LoginPage } from '../src/client/LoginPage.tsx'
 import { TenantSwitch } from '../src/client/TenantSwitch.tsx'
 import { SessionSwitchAction } from '../src/client/SessionSwitchAction.tsx'
-import { createSession, openSession, registerAppWorkspace, resetNav } from '../src/client/nav.ts'
+import {
+  archiveSession,
+  createSession,
+  deleteWorkspace,
+  forkSession,
+  openSession,
+  registerAppWorkspace,
+  renameSession,
+  resetNav,
+  setPackagesRoot,
+} from '../src/client/nav.ts'
 
 async function bench() {
   const ctx = new Context()
@@ -19,12 +32,28 @@ async function bench() {
   const startSession = vi.fn()
   const renameWorkspace = vi.fn(async () => undefined)
   const createDirectory = vi.fn(async () => undefined)
-  ctx.provide('sessions', { open } as never)
-  ctx.provide('workspaces', { create: createWorkspace, startSession, rename: renameWorkspace, createDirectory } as never)
+  const sessionRename = vi.fn(async (_title: string): Promise<{ ok: boolean; error?: { message: string } }> => ({ ok: true }))
+  const fork = vi.fn(async () => 'child-1' as never)
+  const archive = vi.fn(async () => undefined)
+  const remove = vi.fn(async () => undefined)
+  ctx.provide('sessions', {
+    open,
+    binding: (id: string) => (id === 'known' ? { session: { rename: sessionRename } } : undefined),
+    fork,
+  } as never)
+  ctx.provide('workspaces', {
+    create: createWorkspace,
+    startSession,
+    rename: renameWorkspace,
+    createDirectory,
+    archiveSession: archive,
+    delete: remove,
+  } as never)
   const locale = new LocaleRuntime(ctx)
   ctx.provide('locale', locale)
   return {
-    ctx, slots: ctx.get('slots') as SlotRegistry, locale, open, createWorkspace, startSession, renameWorkspace, createDirectory,
+    ctx, slots: ctx.get('slots') as SlotRegistry, locale, open, createWorkspace, startSession, renameWorkspace,
+    createDirectory, sessionRename, fork, archive, remove,
   }
 }
 
@@ -66,5 +95,68 @@ describe('ui-uicp-nav apply', () => {
     expect(b.renameWorkspace).toHaveBeenCalledWith('ws-1', '应用')
     expect(b.createDirectory).toHaveBeenCalledWith('/root', 't')
     expect(b.createDirectory).toHaveBeenCalledWith('/root/t', 'a')
+    b.createDirectory.mockRejectedValueOnce(new Error('exists')).mockRejectedValueOnce(new Error('exists'))
+    b.renameWorkspace.mockRejectedValueOnce(new Error('conflict'))
+    await registerAppWorkspace('/root/t/a', '应用')
+    expect(b.createWorkspace).toHaveBeenCalledTimes(3)
+  })
+
+  it('registers the Underwork brand occupants and the full-window login gate', async () => {
+    resetNav()
+    const b = await bench()
+    declare(b.slots, [
+      ['sidebar.brand.mark', 'single', 'root'],
+      ['sidebar.brand.name', 'single', 'root'],
+      ['conversation.hero.brand.mark', 'single', 'session'],
+      ['shell.overlay', 'single', 'root'],
+    ])
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+    expect(b.slots.entries('sidebar.brand.mark')[0]!.component).toBe(UnderworkBrandMark)
+    expect(b.slots.entries('sidebar.brand.name')[0]!.component).toBe(UnderworkBrandName)
+    expect(b.slots.entries('conversation.hero.brand.mark')[0]!.component).toBe(UnderworkBrandMark)
+    const overlay = b.slots.entries('shell.overlay')[0]!
+    expect(overlay.options.id).toBe('uicp.login')
+    expect(overlay.component).toBe(LoginPage)
+  })
+
+  it('routes rename, fork, archive, and delete through the provided services', async () => {
+    resetNav()
+    const b = await bench()
+    declare(b.slots, [['sidebar.footer.action', 'list', 'root']])
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+
+    await renameSession('known' as never, '新标题')
+    expect(b.sessionRename).toHaveBeenCalledWith('新标题')
+    b.sessionRename.mockResolvedValueOnce({ ok: false, error: { message: '已占用' } })
+    await expect(renameSession('known' as never, '撞名')).rejects.toThrow('已占用')
+    await expect(renameSession('unknown' as never, 'x')).rejects.toThrow('unknown session "unknown"')
+
+    forkSession('s1' as never)
+    await vi.waitFor(() => { expect(b.open).toHaveBeenCalledWith('child-1') })
+    b.fork.mockRejectedValueOnce(new Error('boom'))
+    forkSession('s2' as never)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    expect(b.open).toHaveBeenCalledTimes(1)
+
+    await archiveSession('s3' as never)
+    expect(b.archive).toHaveBeenCalledWith('s3')
+    await deleteWorkspace('ws-1' as never)
+    expect(b.remove).toHaveBeenCalledWith('ws-1')
+  })
+
+  it('guards managed workspaces under the resolved app-packages root', async () => {
+    resetNav()
+    const b = await bench()
+    declare(b.slots, [])
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+    const guard = b.ctx.reflect.get('managedWorkspaces') as { isManaged: (path: string) => boolean }
+    expect(guard.isManaged('/x')).toBe(false)
+    setPackagesRoot('/root')
+    expect(guard.isManaged('/root/t/a')).toBe(true)
+    expect(guard.isManaged('/else')).toBe(false)
+  })
+
+  it('host half applies as a no-op', () => {
+    expect(() => { applyHost() }).not.toThrow()
   })
 })

@@ -115,6 +115,7 @@ export function refreshAuth(): void {
 
 /** Test hook: reset the auth store between tests. */
 export function resetAuth(): void {
+  memoryToken = undefined
   authState = initialState
   validation = undefined
 }

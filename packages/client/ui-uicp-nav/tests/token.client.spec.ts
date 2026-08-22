@@ -75,4 +75,14 @@ describe('ui-uicp-nav token', () => {
     await setToken('b')
     expect(listener).toHaveBeenCalledTimes(calls)
   })
+
+  it('falls back without localStorage and treats transport failures as invalid', async () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('storage denied') })
+    expect(getToken()).toBeUndefined()
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('network down') }))
+    await setToken('x')
+    expect(authSnapshot().status).toBe('anonymous')
+    expect(authSnapshot().invalid).toBe(true)
+    expect(getToken()).toBeUndefined()
+  })
 })

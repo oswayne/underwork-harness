@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { apply } from '../src/index.ts'
 import { makeSandboxFetcher } from '../src/client/sandbox-fetcher.ts'
 
 afterEach(() => {
@@ -7,6 +8,10 @@ afterEach(() => {
 })
 
 describe('makeSandboxFetcher', () => {
+  it('host half applies as a no-op', () => {
+    expect(() => { apply() }).not.toThrow()
+  })
+
   it('forwards entity reads to the workspace sandbox seam with cwd and query', async () => {
     const fetchMock = vi.fn(async (_url: unknown, _init?: RequestInit) => new Response(JSON.stringify({
       status: 0,
