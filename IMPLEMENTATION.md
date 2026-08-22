@@ -429,6 +429,27 @@ app-packages/<tenant-identifier>/<app-identifier>/
 - [x] 废止壳打包（签名/公证/安装包/更新）——B/S 形态无桌面分发。
 - [x] schema 与 eureka 版本同步脚本；上游同步手册可执行。
 
+## 15. M5：多用户身份与隔离（2026-08-22 方案确认）
+
+### 15.1 决策
+
+- 隔离粒度：方案 A（客户端/UI 层隔离）——每个用户只看到自己的工作区与会话；服务端强制隔离列为 P3 可选硬化，需要时以受控差异处理（动 api-proxy 会扩大上游合并面）。
+- 应用包：所有用户可见、无权限限制；每个用户的工作内容各自不同。每次进入工作区先打本地版本快照，再从平台 API 拉取最新状态注入会话上下文，避免多用户互相覆盖（P1 实现）。
+- 用户信息持久化：独立 JSONL（默认 `$DSH_HOME/uicp-users/users.jsonl`），按 userId upsert、超过阈值自动压缩；保留原始 profile 载荷供后续展示。
+
+### 15.2 组成与阶段
+
+- **P0（已实现）**：`packages/uicp/user-identity` 插件——JWT → `/user/user/self` 校验（缓存 TTL 5min）→ 用户记录 → JSONL 持久化 → `GET /uicp/user/me`。
+- **P1**：归属记录与隔离——客户端在 registerAppWorkspace/会话创建时上报 `workspace/session ↔ userId`（`POST /uicp/user/owns`）；侧栏工作区/会话列表按归属过滤；进入工作区时"版本快照 + 平台最新状态拉取"刷新上下文。
+- **P2**：用户信息展示——侧栏/头部显示当前用户（name/avatar），读取持久化记录。
+- **P3（可选）**：服务端强制隔离（请求级身份绑定 workspaceRegistry/sessions RPC）。
+
+### 15.3 上游合并策略
+
+- 新代码 100% 落在 fork 自有领地：`packages/uicp/user-identity`、`ui-uicp-nav`、`ui-apppackage-workspace`、`packages/bundle/uicp-web-app`。
+- 共享文件最小集零改动（tsconfig.host.json 新增包引用属机械项）。
+- 触点：`/user/user/self`、`workspaceRegistry`、sessions RPC；上游演进时冲突面可预测。
+
 ## 附录 A：已验证代码位置索引
 
 - dsh webserver 路由：`packages/host/webserver/src/index.ts`

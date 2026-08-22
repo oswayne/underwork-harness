@@ -16,6 +16,11 @@
       config:
         upstream: https://api.underwork.cn/uicp
 
+    # M5: user identity seam: validates the JWT against the platform self
+    # endpoint and persists user records for later display.
+    - id: uicp-user-identity
+      name: '@deepseek-ai/dsh-uicp-user-identity'
+
     # M2 preview seam: serves the self-contained eureka preview bundle and
     # read-only page/fixture data for the app-package workspace preview tab.
     - id: uicp-preview-backend

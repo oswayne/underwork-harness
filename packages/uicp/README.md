@@ -13,5 +13,6 @@ The UICP low-code platform driver turns dsh into a generation driver for the uic
 | [`tool-apppackage-version/`](tool-apppackage-version/README.md) | Local version snapshots: list / snapshot / restore | — |
 | [`tool-apppackage-publish/`](tool-apppackage-publish/README.md) | Adoption-gated, idempotent API save to the platform | — |
 | [`contract-matrix/`](contract-matrix/README.md) | Behavior-matrix corpus + dual-target diff runner (M4 fidelity gate) | — |
+| [`user-identity/`](user-identity/README.md) | Platform user identity seam: JWT → `/user/user/self`, cached user records, append-only JSONL persistence (M5) | — |
 
 The design and implementation documents are [UPGRADE.md](../../UPGRADE.md) and [IMPLEMENTATION.md](../../IMPLEMENTATION.md).

@@ -49,7 +49,8 @@
     "@deepseek-ai/dsh-tool-apppackage-test": "workspace:^",
     "@deepseek-ai/dsh-tool-apppackage-validate": "workspace:^",
     "@deepseek-ai/dsh-uicp-api-proxy": "workspace:^",
-    "@deepseek-ai/dsh-uicp-preview-backend": "workspace:^"
+    "@deepseek-ai/dsh-uicp-preview-backend": "workspace:^",
+    "@deepseek-ai/dsh-uicp-user-identity": "workspace:^"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
