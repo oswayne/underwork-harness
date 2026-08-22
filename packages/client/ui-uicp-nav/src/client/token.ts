@@ -1,13 +1,18 @@
 /**
  * Platform token access for the web app: localStorage is the local store
  * (SharedPreferences-style), kept under one key so the token survives
- * reloads on the fixed server origin. In-memory fallback keeps non-browser
- * runs usable. Sign-in phase is decided by validating the stored token
- * against `/user/user/self` on entry.
+ * reloads on the fixed server origin. A `jwt` handoff parameter on the page
+ * URL takes priority over the stored token, so other pages can navigate in
+ * with a fresh credential; after it validates it is adopted into the store
+ * and dropped from the URL. In-memory fallback keeps non-browser runs usable.
+ * Sign-in phase is decided by validating the effective token against
+ * `/user/user/self` on entry.
  */
 let memoryToken: string | undefined
 /** localStorage key for the platform token. */
 const TOKEN_KEY = 'uicp.platform.token'
+/** Page URL query parameter carrying the token on cross-page handoffs. */
+const URL_TOKEN_KEY = 'jwt'
 
 /** Auth listeners run on every effective-token change (sign-in/logout). */
 type AuthListener = () => void
@@ -64,6 +69,23 @@ function readLocalToken(): string | undefined {
   }
 }
 
+/** Read the `jwt` handoff parameter from the page URL, if present. */
+function readUrlToken(): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  const value = new URLSearchParams(window.location.search).get(URL_TOKEN_KEY)
+  return value !== null && value !== '' ? value : undefined
+}
+
+/** Drop the consumed `jwt` handoff parameter from the page URL. */
+function clearUrlToken(): void {
+  /* v8 ignore next -- callers only reach this after a URL jwt was read, which requires a window */
+  if (typeof window === 'undefined') return
+  const url = new URL(window.location.href)
+  if (!url.searchParams.has(URL_TOKEN_KEY)) return
+  url.searchParams.delete(URL_TOKEN_KEY)
+  window.history.replaceState(null, '', url)
+}
+
 function writeLocalToken(token: string | undefined): void {
   try {
     if (token === undefined) window.localStorage.removeItem(TOKEN_KEY)
@@ -91,7 +113,10 @@ async function validateToken(token: string): Promise<boolean> {
 
 /**
  * Resolve the stored token, validate it against the platform, and publish the
- * resulting auth phase. Concurrent callers share one in-flight validation.
+ * resulting auth phase. A URL `jwt` handoff wins over the stored token; after
+ * it validates it is adopted into the store and removed from the URL, and an
+ * invalid one is cleared together with the stored token. Concurrent callers
+ * share one in-flight validation.
  */
 export function refreshAuth(): void {
   validation ??= (async () => {
@@ -103,8 +128,13 @@ export function refreshAuth(): void {
     setState({ status: 'checking', token, invalid: false })
     if (!(await validateToken(token))) {
       clearToken()
+      clearUrlToken()
       setState({ status: 'anonymous', token: undefined, invalid: true })
       return
+    }
+    if (readUrlToken() === token) {
+      writeLocalToken(token)
+      clearUrlToken()
     }
     setState({ status: 'authenticated', token, invalid: false })
   })()
@@ -121,11 +151,13 @@ export function resetAuth(): void {
 }
 
 /**
- * The effective platform token: the persisted value when set, else the
- * in-memory value.
+ * The effective platform token: the URL `jwt` handoff when present, else the
+ * persisted value, else the in-memory value.
  * @returns the effective token or undefined.
  */
 export function getToken(): string | undefined {
+  const urlToken = readUrlToken()
+  if (urlToken !== undefined) return urlToken
   const local = readLocalToken()
   if (local !== undefined) return local
   return memoryToken

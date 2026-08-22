@@ -8,6 +8,7 @@ import { UnderworkBrandMark, UnderworkBrandName } from '../src/client/Brand.tsx'
 import { LoginPage } from '../src/client/LoginPage.tsx'
 import { TenantSwitch } from '../src/client/TenantSwitch.tsx'
 import { SessionSwitchAction } from '../src/client/SessionSwitchAction.tsx'
+import { authSnapshot, getToken, refreshAuth } from '../src/client/token.ts'
 import {
   archiveSession,
   createSession,
@@ -63,6 +64,12 @@ function declare(slots: SlotRegistry, entries: Array<[string, 'single' | 'list',
 }
 
 describe('ui-uicp-nav apply', () => {
+  it('token store stays anonymous without a window and without a stored token', () => {
+    expect(getToken()).toBeUndefined()
+    refreshAuth()
+    expect(authSnapshot().status).toBe('anonymous')
+  })
+
   it('declares the services it drives', () => {
     expect(inject).toEqual(['slots', 'locale', 'sessions', 'workspaces'])
   })

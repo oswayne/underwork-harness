@@ -85,4 +85,31 @@ describe('ui-uicp-nav token', () => {
     expect(authSnapshot().invalid).toBe(true)
     expect(getToken()).toBeUndefined()
   })
+
+  it('prefers the URL jwt over the stored token and adopts it after validation', async () => {
+    selfOk()
+    const replaceState = vi.spyOn(History.prototype, 'replaceState').mockImplementation(() => {})
+    vi.stubGlobal('location', new URL('http://localhost:3080/?jwt=url-token'))
+    window.localStorage.setItem('uicp.platform.token', 'local-token')
+    expect(getToken()).toBe('url-token')
+    refreshAuth()
+    await vi.waitFor(() => { expect(authSnapshot().status).toBe('authenticated') })
+    expect(authSnapshot().token).toBe('url-token')
+    expect(window.localStorage.getItem('uicp.platform.token')).toBe('url-token')
+    const cleaned = replaceState.mock.calls[0]?.[2]
+    expect(new URL(String(cleaned)).searchParams.has('jwt')).toBe(false)
+  })
+
+  it('treats an invalid URL jwt as authoritative and clears the store', async () => {
+    const replaceState = vi.spyOn(History.prototype, 'replaceState').mockImplementation(() => {})
+    vi.stubGlobal('location', new URL('http://localhost:3080/?jwt=expired-url'))
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ status: 401 }), { status: 401 })))
+    window.localStorage.setItem('uicp.platform.token', 'local-token')
+    refreshAuth()
+    await vi.waitFor(() => { expect(authSnapshot().status).toBe('anonymous') })
+    expect(authSnapshot().invalid).toBe(true)
+    expect(window.localStorage.getItem('uicp.platform.token')).toBeNull()
+    const cleaned = replaceState.mock.calls[0]?.[2]
+    expect(new URL(String(cleaned)).searchParams.has('jwt')).toBe(false)
+  })
 })
