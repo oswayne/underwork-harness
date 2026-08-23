@@ -21,6 +21,11 @@
     - id: uicp-user-identity
       name: '@deepseek-ai/dsh-uicp-user-identity'
 
+    # M5: per-user git project workspaces (clone-on-create with optional
+    # username/password through the credential capability).
+    - id: uicp-project-git
+      name: '@deepseek-ai/dsh-uicp-project-git'
+
     # M2 preview seam: serves the self-contained eureka preview bundle and
     # read-only page/fixture data for the app-package workspace preview tab.
     - id: uicp-preview-backend

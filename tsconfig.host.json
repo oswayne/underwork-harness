@@ -294,6 +294,7 @@
     { "path": "./packages/uicp/contract-matrix" },
     { "path": "./packages/uicp/api-proxy" },
     { "path": "./packages/uicp/user-identity" },
+    { "path": "./packages/uicp/project-git" },
     { "path": "./packages/uicp/preview-backend" },
     { "path": "./packages/plan/plan-mode" },
     { "path": "./packages/preset/agent-presets" },

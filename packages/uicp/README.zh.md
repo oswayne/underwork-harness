@@ -14,5 +14,6 @@ UICP 低代码平台驱动器把 dsh 改造为 uicp 平台的生成驱动器：�
 | [`tool-apppackage-publish/`](tool-apppackage-publish/README.zh.md) | 采纳闸门 + 幂等 API 保存到平台 | — |
 | [`contract-matrix/`](contract-matrix/README.zh.md) | 行为矩阵语料 + 双端差异执行器（M4 保真闸门） | — |
 | [`user-identity/`](user-identity/README.zh.md) | 平台用户身份 seam：JWT → `/user/user/self`、缓存用户记录、追加式 JSONL 持久化（M5） | — |
+| [`project-git/`](project-git/README.zh.md) | 按用户的 Git 项目工作区：创建即克隆 + 凭据安全的 askpass 注入（M5） | — |
 
 设计与实现文档为 [UPGRADE.md](../../UPGRADE.md) 与 [IMPLEMENTATION.md](../../IMPLEMENTATION.md)。

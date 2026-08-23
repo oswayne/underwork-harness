@@ -64,7 +64,7 @@ export function tokenHash(token: string): string {
 }
 
 /** Read the platform JWT from the Authorization header, or undefined. */
-function bearerToken(req: IncomingMessage): string | undefined {
+export function bearerToken(req: IncomingMessage): string | undefined {
   const header = req.headers.authorization
   if (header === undefined) return undefined
   const [scheme, token, ...rest] = header.split(/\s+/)
@@ -154,21 +154,33 @@ export async function fetchUser(token: string, platformBase: string, selfPath: s
   return record
 }
 
+/** Options shared by the identity resolver factory. */
+export interface UserResolverOptions {
+  /** Platform API base; defaults to the production UICP endpoint. */
+  platformBase?: string
+  /** Platform self-check path; defaults to `/user/user/self`. */
+  selfPath?: string
+  /** Append-only JSONL holding user records; defaults under the dsh home. */
+  usersFile?: string
+  /** Credential cache lifetime in milliseconds. */
+  cacheTtlMs?: number
+}
+
 /**
- * Register the `/uicp/user/me` route: validate the JWT against the platform,
- * persist the user record, and answer the resolved user.
- * @param ctx - host context with the webserver.
- * @param config - seam configuration.
+ * Build a JWT → user resolver with its own credential cache and user ledger.
+ * Shared by the `/uicp/user/me` route and fork plugins that need the current
+ * user id from a request.
+ * @param options - resolver configuration.
+ * @returns a resolver validating one token and persisting its user record.
  */
-export function apply(ctx: Context, config: Config = {}): void {
-  const platformBase = config.platformBase ?? DEFAULT_PLATFORM_BASE
-  const selfPath = config.selfPath ?? DEFAULT_SELF_PATH
-  const usersFile = config.usersFile ?? dshHomePath('uicp-users', 'users.jsonl')
-  const cacheTtlMs = config.cacheTtlMs ?? DEFAULT_CACHE_TTL_MS
+export function createUserResolver(options: UserResolverOptions = {}): (token: string) => Promise<UserRecord> {
+  const platformBase = options.platformBase ?? DEFAULT_PLATFORM_BASE
+  const selfPath = options.selfPath ?? DEFAULT_SELF_PATH
+  const usersFile = options.usersFile ?? dshHomePath('uicp-users', 'users.jsonl')
+  const cacheTtlMs = options.cacheTtlMs ?? DEFAULT_CACHE_TTL_MS
   const cache = new Map<string, CacheEntry>()
   const store = new UserStore(usersFile)
-
-  async function resolveUser(token: string): Promise<UserRecord> {
+  return async (token) => {
     const key = tokenHash(token)
     const cached = cache.get(key)
     if (cached !== undefined && cached.expiresAt > Date.now()) return cached.record
@@ -178,6 +190,16 @@ export function apply(ctx: Context, config: Config = {}): void {
     await store.maybeCompact()
     return record
   }
+}
+
+/**
+ * Register the `/uicp/user/me` route: validate the JWT against the platform,
+ * persist the user record, and answer the resolved user.
+ * @param ctx - host context with the webserver.
+ * @param config - seam configuration.
+ */
+export function apply(ctx: Context, config: Config = {}): void {
+  const resolveUser = createUserResolver(config)
 
   ctx.effect(
     () => ctx.webServer.register({

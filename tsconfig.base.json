@@ -70,6 +70,8 @@
       "@deepseek-ai/dsh-uicp-preview-backend": ["./packages/uicp/preview-backend/src/index.ts"],
       "@deepseek-ai/dsh-uicp-user-identity": ["./packages/uicp/user-identity/src/index.ts"],
       "@deepseek-ai/dsh-uicp-user-identity/src/*": ["./packages/uicp/user-identity/src/*"],
+      "@deepseek-ai/dsh-uicp-project-git": ["./packages/uicp/project-git/src/index.ts"],
+      "@deepseek-ai/dsh-uicp-project-git/src/*": ["./packages/uicp/project-git/src/*"],
       "@deepseek-ai/dsh-client-ui-apppackage-workspace": ["./packages/client/ui-apppackage-workspace/src/index.ts"],
       "@deepseek-ai/dsh-session-title/types": ["./packages/session/session-title/src/types.ts"],
       "@deepseek-ai/dsh-session-title/client": ["./packages/session/session-title/src/client.ts"],
