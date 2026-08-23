@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/proposed/simplification/2026-08-23-shared-uicp-seam-helpers.md
+2026-08-23-shared-uicp-seam-helpers.md: f144b8ecb57b9c0bb2bd76c87792a4d970044516
+2026-08-23-shared-uicp-seam-helpers.zh.md: c0f53005166f4a7157f4c85b76595ff29eaba51b
