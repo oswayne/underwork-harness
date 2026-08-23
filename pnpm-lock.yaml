@@ -1329,6 +1329,12 @@ importers:
       '@deepseek-ai/dsh-uicp-preview-backend':
         specifier: workspace:^
         version: link:../../uicp/preview-backend
+      '@deepseek-ai/dsh-uicp-project-git':
+        specifier: workspace:^
+        version: link:../../uicp/project-git
+      '@deepseek-ai/dsh-uicp-user-identity':
+        specifier: workspace:^
+        version: link:../../uicp/user-identity
       '@deepseek-ai/dsh-web-app':
         specifier: workspace:^
         version: link:../web-app
@@ -8524,6 +8530,27 @@ importers:
         specifier: workspace:^
         version: link:../tool-apppackage-validate
 
+  packages/uicp/project-git:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-credentials':
+        specifier: workspace:^
+        version: link:../../credentials/credentials
+      '@deepseek-ai/dsh-home-paths':
+        specifier: workspace:^
+        version: link:../../util/home-paths
+      '@deepseek-ai/dsh-host-webserver':
+        specifier: workspace:^
+        version: link:../../host/webserver
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+      '@deepseek-ai/dsh-uicp-user-identity':
+        specifier: workspace:^
+        version: link:../user-identity
+
   packages/uicp/sandbox-server:
     devDependencies:
       '@deepseek-ai/cordis':
@@ -8605,6 +8632,21 @@ importers:
       '@deepseek-ai/dsh-tools':
         specifier: workspace:^
         version: link:../../core/tools
+
+  packages/uicp/user-identity:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-home-paths':
+        specifier: workspace:^
+        version: link:../../util/home-paths
+      '@deepseek-ai/dsh-host-webserver':
+        specifier: workspace:^
+        version: link:../../host/webserver
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
 
   packages/util/atomic-write:
     devDependencies:
