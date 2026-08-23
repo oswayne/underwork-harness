@@ -71,7 +71,11 @@ function fakeRes(): { res: ServerResponse; captured: { statusCode: number; body:
 
 async function mountWith(config: { projectsRoot?: string }): Promise<{
   registrations: Array<{ path: string; handler: (req: IncomingMessage, res: ServerResponse) => Promise<void> }>
-  credentials: { set: ReturnType<typeof vi.fn> }
+  credentials: {
+    set: ReturnType<typeof vi.fn>
+    resolve: ReturnType<typeof vi.fn>
+    describe: ReturnType<typeof vi.fn>
+  }
   dispose: () => Promise<void>
 }> {
   const home = await tempDir()
@@ -304,6 +308,64 @@ describe('apply /uicp/projects', () => {
     const body = JSON.parse(captured.body) as { data: { projects: Array<{ name: string; path: string }> } }
     expect(body.data.projects.map(project => project.name)).toEqual(['alpha'])
     expect(body.data.projects[0]!.path).toContain('u1')
+    await dispose()
+  })
+
+  it('pulls a project with stored credentials', async () => {
+    selfOk()
+    const projectsRoot = await tempDir()
+    const { registrations, credentials, dispose } = await mount(projectsRoot)
+    const projectDir = join(projectsRoot, 'users', 'u1', 'projects', 'alpha')
+    await mkdir(projectDir, { recursive: true })
+    credentials.resolve
+      .mockResolvedValueOnce({ value: 'wayne', source: 'store' })
+      .mockResolvedValueOnce({ value: 's3cret', source: 'store' })
+    const { res, captured } = fakeRes()
+    await registrations[1]!.handler(
+      fakePostReq('/uicp/projects/alpha/pull', {}),
+      res,
+    )
+    expect(captured.statusCode).toBe(200)
+    expect(captures).toHaveLength(1)
+    expect(captures[0]!.args).toEqual(['pull'])
+    expect(captures[0]!.env.UWA_GIT_USER).toBe('wayne')
+    expect(captures[0]!.env.UWA_GIT_PASS).toBe('s3cret')
+    expect(captures[0]!.env.GIT_ASKPASS).toBeTruthy()
+    await expect(readFile(captures[0]!.env.GIT_ASKPASS!, 'utf8')).rejects.toThrow()
+    await dispose()
+  })
+
+  it('pulls a public project without credentials and answers 404 for missing projects and unknown actions', async () => {
+    selfOk()
+    const projectsRoot = await tempDir()
+    const { registrations, dispose } = await mount(projectsRoot)
+    const projectDir = join(projectsRoot, 'users', 'u1', 'projects', 'public')
+    await mkdir(projectDir, { recursive: true })
+    const ok = fakeRes()
+    await registrations[1]!.handler(fakePostReq('/uicp/projects/public/pull', {}), ok.res)
+    expect(ok.captured.statusCode).toBe(200)
+    expect(captures[0]!.env.GIT_ASKPASS).toBeUndefined()
+    const missing = fakeRes()
+    await registrations[1]!.handler(fakePostReq('/uicp/projects/nope/pull', {}), missing.res)
+    expect(missing.captured.statusCode).toBe(404)
+    const unknown = fakeRes()
+    await registrations[1]!.handler(fakePostReq('/uicp/projects/public/rebuild', {}), unknown.res)
+    expect(unknown.captured.statusCode).toBe(404)
+    const anonymous = Object.assign(Readable.from([]), {
+      method: 'POST',
+      url: '/uicp/projects/public/pull',
+      headers: {},
+    }) as unknown as IncomingMessage
+    const anonymousRes = fakeRes()
+    await registrations[1]!.handler(anonymous, anonymousRes.res)
+    expect(anonymousRes.captured.statusCode).toBe(401)
+    const noUrl = Object.assign(Readable.from([]), {
+      method: 'POST',
+      headers: { authorization: 'Bearer tok' },
+    }) as unknown as IncomingMessage
+    const noUrlRes = fakeRes()
+    await registrations[1]!.handler(noUrl, noUrlRes.res)
+    expect(noUrlRes.captured.statusCode).toBe(404)
     await dispose()
   })
 

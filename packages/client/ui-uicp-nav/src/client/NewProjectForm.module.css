@@ -1,0 +1,66 @@
+/* Sidebar-foot Git project creation: a trigger styled like the shell's New
+   Session button, expanding into an inline form. */
+
+.trigger {
+  flex: 1 1 0%;
+  width: 100%;
+  box-sizing: border-box;
+  height: 30px;
+  border: 1px solid var(--dsh-border, #d4d6d9);
+  border-radius: 6px;
+  background: var(--dsh-surface, #fff);
+  color: var(--dsh-fg, #141a25);
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 2px;
+}
+
+.form input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #d4d6d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #141a25;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  flex: 1 1 0%;
+  height: 28px;
+  border: 1px solid #d4d6d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #141a25;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.actions button[type='submit'] {
+  background: #2468f2;
+  border-color: #2468f2;
+  color: #fff;
+}
+
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  color: #a94442;
+  font-size: 12px;
+  line-height: 16px;
+}

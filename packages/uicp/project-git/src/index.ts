@@ -94,6 +94,20 @@ case "$1" in
 esac
 `
 
+/** Git environment for one operation, with an askpass helper when credentials are present. */
+async function gitEnv(
+  projectsRoot: string,
+  values: { username?: string; password?: string },
+): Promise<Record<string, string>> {
+  const env: Record<string, string> = { GIT_TERMINAL_PROMPT: '0' }
+  if (values.username !== undefined) env.UWA_GIT_USER = values.username
+  if (values.password !== undefined) env.UWA_GIT_PASS = values.password
+  if (env.UWA_GIT_USER !== undefined || env.UWA_GIT_PASS !== undefined) {
+    env.GIT_ASKPASS = await writeAskpass(projectsRoot)
+  }
+  return env
+}
+
 /** Deterministic credential reference names for one user + project. */
 function gitCredentialRefs(userId: string, project: string): { user: string; password: string } {
   const digest = createHash('sha256').update(`${userId}/${project}`).digest('hex').slice(0, 16)
@@ -182,18 +196,16 @@ export function apply(ctx: Context, config: Config = {}): void {
           }
           await mkdir(join(userProjectsRoot(userId)), { recursive: true })
           const refs = gitCredentialRefs(userId, requestedName)
-          const env: Record<string, string> = { GIT_TERMINAL_PROMPT: '0' }
+          const values: { username?: string; password?: string } = {}
           if (typeof body.username === 'string' && body.username !== '') {
             await ctx.credentials.set(credentialRef(refs.user), body.username)
-            env.UWA_GIT_USER = body.username
+            values.username = body.username
           }
           if (typeof body.password === 'string' && body.password !== '') {
             await ctx.credentials.set(credentialRef(refs.password), body.password)
-            env.UWA_GIT_PASS = body.password
+            values.password = body.password
           }
-          if (env.UWA_GIT_USER !== undefined || env.UWA_GIT_PASS !== undefined) {
-            env.GIT_ASKPASS = await writeAskpass(projectsRoot)
-          }
+          const env = await gitEnv(projectsRoot, values)
           try {
             await internals.runGit(['clone', repoUrl, projectDir], { cwd: projectsRoot, env })
           } finally {
@@ -208,6 +220,48 @@ export function apply(ctx: Context, config: Config = {}): void {
       },
     }),
     'uicp-project-git: project routes',
+  )
+  ctx.effect(
+    () => ctx.webServer.register({
+      kind: 'prefix',
+      path: '/uicp/projects/',
+      handler: async (req, res) => {
+        const userId = await userIdOf(req, res)
+        if (userId === undefined) return
+        const url = new URL(req.url ?? '/', 'http://project.local')
+        const segments = url.pathname.split('/').filter(segment => segment !== '')
+        const name = segments[2] ?? ''
+        const action = segments[3]
+        if (!safeProjectName(name) || action !== 'pull' || req.method !== 'POST') {
+          json(res, 404, { status: 404, msg: 'project action not found', data: null })
+          return
+        }
+        const projectDir = join(userProjectsRoot(userId), name)
+        if (!existsSync(projectDir)) {
+          json(res, 404, { status: 404, msg: 'project not found', data: null })
+          return
+        }
+        try {
+          const refs = gitCredentialRefs(userId, name)
+          const username = await ctx.credentials.resolve(credentialRef(refs.user))
+          const password = await ctx.credentials.resolve(credentialRef(refs.password))
+          const values: { username?: string; password?: string } = {}
+          if (username !== undefined) values.username = username.value
+          if (password !== undefined) values.password = password.value
+          const env = await gitEnv(projectsRoot, values)
+          try {
+            await internals.runGit(['pull'], { cwd: projectDir, env })
+          } finally {
+            if (env.GIT_ASKPASS !== undefined) await rmAskpass(env.GIT_ASKPASS)
+          }
+          json(res, 200, { status: 0, data: { name, ok: true } })
+        } catch (error) {
+          /* v8 ignore next -- only Error instances reach this catch; the String arm is a defensive backstop */
+          json(res, 500, { status: 500, msg: error instanceof Error ? error.message : String(error), data: null })
+        }
+      },
+    }),
+    'uicp-project-git: pull route',
   )
 }
 

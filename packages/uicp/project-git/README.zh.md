@@ -12,6 +12,7 @@
 |---|---|---|
 | `POST` | `/uicp/projects` | `{ repoUrl, name?, username?, password? }` + `Authorization: Bearer <JWT>`：把仓库克隆到用户项目根。无有效 Token 返回 401；URL/名称/body 非法返回 400；项目已存在返回 409。 |
 | `GET` | `/uicp/projects` | 列出当前用户的项目。 |
+| `POST` | `/uicp/projects/<name>/pull` | 用已存凭据在项目中执行 `git pull`。项目缺失或动作未知返回 404。 |
 
 ## 配置
 

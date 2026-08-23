@@ -453,7 +453,7 @@ app-packages/<tenant-identifier>/<app-identifier>/
 ### 15.4 项目创建（标准模式，2026-08-23 调整）
 
 - 新建项目时用户填写 **Git 仓库地址**；私有仓库可填写用户名/密码（或令牌）。
-- 服务端以该用户身份克隆到用户项目根（`<数据根>/users/<userId>/projects/<项目名>`）；UWA 应用包仍由系统默认创建、不走 Git。标准模式项目按用户私有目录隔离，若需团队共享仓库再单独调整。**服务端已实现（`uicp-project-git`：POST/GET `/uicp/projects`）；客户端新建项目表单待接入。**
+- 服务端以该用户身份克隆到用户项目根（`<数据根>/users/<userId>/projects/<项目名>`）；UWA 应用包仍由系统默认创建、不走 Git。标准模式项目按用户私有目录隔离，若需团队共享仓库再单独调整。**服务端与客户端均已实现（`uicp-project-git`：POST/GET `/uicp/projects` + `/uicp/projects/<name>/pull`；ui-uicp-nav 侧栏"新建项目"表单）。**
 - 凭据处理：通过 dsh 凭据能力（`ctx.credentials` 持久化记录）按"用户 + 项目"保存；克隆/后续拉取时经 git askpass / credential helper 注入，**绝不写入克隆 URL、命令行参数或日志**；落盘权限收紧（0600），加密留作部署项。
 
 ## 附录 A：已验证代码位置索引

@@ -16,8 +16,9 @@ Status: implemented
 - 凭据经固定 askpass 助手注入，脚本从进程环境变量 `UWA_GIT_USER`/`UWA_GIT_PASS` 读取，0700 权限、单次克隆后删除——秘密不会进入克隆 URL、argv 或日志。
 - 项目名限定单一路径段；重复项目返回 409；克隆失败清理残留目录。
 - git 执行器可注入（`internals.runGit`），单元测试无需真实仓库；默认实现调用系统 git。
+- `POST /uicp/projects/<name>/pull` 复用已存凭据经 askpass 助手重新拉取；ui-uicp-nav 侧栏"新建项目"表单提交仓库地址与可选凭据，克隆成功后打开会话。
 
-UWA 应用包仍由服务端默认创建，不走此 seam。客户端"新建项目"表单与后续 `pull` 复用已存凭据仍待实现。
+UWA 应用包仍由服务端默认创建，不走此 seam。M5 归属映射与侧栏过滤（P1）仍待实施。
 
 ## 备选方案
 

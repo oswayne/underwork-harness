@@ -10,6 +10,14 @@ export const zh = {
   'nav.rootUnavailable': '应用包目录不可用（{root}）',
   'nav.rootMissing': '无法获取应用包根目录',
   'nav.sessions': '会话',
+  'newProject.open': '新建项目',
+  'newProject.repoUrl': 'Git 仓库地址',
+  'newProject.name': '项目名（可选）',
+  'newProject.username': '用户名（可选）',
+  'newProject.password': '密码（可选）',
+  'newProject.create': '创建',
+  'newProject.creating': '创建中…',
+  'newProject.cancel': '取消',
 }
 
 /** Key set of the uicp-nav dictionaries (zh is the source of truth). */
@@ -26,4 +34,12 @@ export const en: Record<NavKey, string> = {
   'nav.rootUnavailable': 'App package directory unavailable ({root})',
   'nav.rootMissing': 'Cannot resolve the app-package root',
   'nav.sessions': 'Sessions',
+  'newProject.open': 'New project',
+  'newProject.repoUrl': 'Git repository URL',
+  'newProject.name': 'Project name (optional)',
+  'newProject.username': 'Username (optional)',
+  'newProject.password': 'Password (optional)',
+  'newProject.create': 'Create',
+  'newProject.creating': 'Creating…',
+  'newProject.cancel': 'Cancel',
 }

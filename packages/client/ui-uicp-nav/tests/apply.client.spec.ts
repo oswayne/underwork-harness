@@ -8,6 +8,7 @@ import { UnderworkBrandMark, UnderworkBrandName } from '../src/client/Brand.tsx'
 import { LoginPage } from '../src/client/LoginPage.tsx'
 import { TenantSwitch } from '../src/client/TenantSwitch.tsx'
 import { SessionSwitchAction } from '../src/client/SessionSwitchAction.tsx'
+import { NewProjectForm } from '../src/client/NewProjectForm.tsx'
 import { authSnapshot, getToken, refreshAuth } from '../src/client/token.ts'
 import {
   archiveSession,
@@ -79,7 +80,9 @@ describe('ui-uicp-nav apply', () => {
     const b = await bench()
     declare(b.slots, [['sidebar.footer.action', 'list', 'root'], ['conversation.session.header.actions', 'list', 'session']])
     await b.ctx.plugin({ inject: [...inject], apply }).await()
-    expect(b.slots.entries('sidebar.footer.action')[0]!.component).toBe(TenantSwitch)
+    const footer = b.slots.entries('sidebar.footer.action')
+    expect(footer.find(entry => entry.options.id === 'uicp.tenant.switch')!.component).toBe(TenantSwitch)
+    expect(footer.find(entry => entry.options.id === 'uicp.new.project')!.component).toBe(NewProjectForm)
     const action = b.slots.entries('conversation.session.header.actions')[0]!
     expect(action.component).toBe(SessionSwitchAction)
     // The test lane never runs browser-language detection, so the runtime

@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-22-uicp-project-git.md
-2026-08-22-uicp-project-git.md: ad3eea615ace0ece0fcd097477a5d42f5066e773
-2026-08-22-uicp-project-git.zh.md: d4e7d8b85f90a3d5c6d5e2718d922c0bc4168862
+2026-08-22-uicp-project-git.md: 4541418744554bd9ddddefeaf2f66cf58ba8bc61
+2026-08-22-uicp-project-git.zh.md: 374df790f10f78f4f0146bb3ad350eb224c02b5a

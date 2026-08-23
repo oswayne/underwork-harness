@@ -15,6 +15,7 @@ helper — secrets never appear in clone URLs, argv, or logs.
 |---|---|---|
 | `POST` | `/uicp/projects` | `{ repoUrl, name?, username?, password? }` with `Authorization: Bearer <JWT>`: clones the repository into the user's project root. 401 without a valid token; 400 for a bad URL/name/body; 409 when the project exists. |
 | `GET` | `/uicp/projects` | Lists the current user's projects. |
+| `POST` | `/uicp/projects/<name>/pull` | Runs `git pull` in the project with the stored credentials. 404 for a missing project or unknown action. |
 
 ## Configuration
 

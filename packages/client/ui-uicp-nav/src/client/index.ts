@@ -9,6 +9,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-workspace/client'
 import { en, zh, type NavKey } from '../locales.ts'
 import { UnderworkBrandMark, UnderworkBrandName } from './Brand.tsx'
 import { TenantSwitch } from './TenantSwitch.tsx'
+import { NewProjectForm } from './NewProjectForm.tsx'
 import { LoginPage } from './LoginPage.tsx'
 import { SessionSwitchAction } from './SessionSwitchAction.tsx'
 import { packagesRoot, setNavActions } from './nav.ts'
@@ -113,6 +114,16 @@ export function apply(ctx: ClientContext): void {
         locale: NS,
       }, TenantSwitch)),
     'ui-uicp-nav: tenant switch and app-workspace registration',
+  )
+  ctx.effect(
+    () => ctx.slots.inject('sidebar.footer.action', () =>
+      ctx.slots.register({
+        name: 'sidebar.footer.action',
+        id: 'uicp.new.project',
+        order: 90,
+        locale: NS,
+      }, NewProjectForm)),
+    'ui-uicp-nav: git project creation',
   )
   ctx.effect(
     () => ctx.slots.inject('conversation.session.header.actions', () =>

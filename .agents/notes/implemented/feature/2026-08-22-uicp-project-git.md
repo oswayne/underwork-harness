@@ -16,8 +16,9 @@ Standard-mode users on the shared SaaS server have no way to bring their own cod
 - Credentials are injected through a fixed askpass helper reading `UWA_GIT_USER`/`UWA_GIT_PASS` from the process environment, created 0700 per clone and removed afterwards — secrets never enter the clone URL, argv, or logs.
 - Project names are single path segments; a duplicate answers 409 and a failed clone removes the partial directory.
 - The git runner is injectable (`internals.runGit`) so unit tests never need a real repository; the default spawns the system git.
+- `POST /uicp/projects/<name>/pull` reruns the stored credentials through the askpass helper, and the sidebar-footer "New project" form in ui-uicp-nav submits the repository URL and optional credentials, then opens a session on the clone.
 
-UWA app packages stay auto-created by the server and do not use this seam. The client-side "new project" form and later `pull` reuse of the stored credentials remain pending.
+UWA app packages stay auto-created by the server and do not use this seam. The M5 ownership mapping and sidebar filtering (P1) remain pending.
 
 ## Alternatives considered
 
